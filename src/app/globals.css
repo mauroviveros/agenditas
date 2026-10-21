@@ -1,26 +1,208 @@
 @import "tailwindcss";
 
+/* Design system "Calma operativa" — ver docs/DESIGN_SYSTEM.md.
+   Los nombres siguen el contrato de shadcn/ui para instalar componentes sin retoques. */
+
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(
+        :root:not([data-theme="light"]),
+        :root:not([data-theme="light"]) *
+      ) {
+      @slot;
+    }
+  }
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+
+  /* Neutros */
+  --background: #f5f4f1;
+  --card: #ffffff;
+  --card-foreground: #1c1c1a;
+  --popover: #ffffff;
+  --popover-foreground: #1c1c1a;
+  --sunken: #efeeea;
+  --muted: #ecebe7;
+  --border: #e3e1db;
+  --border-strong: #cfcbc2;
+  --input: #e3e1db;
+  --foreground: #1c1c1a;
+  --foreground-2: #55534e;
+  --muted-foreground: #6e6b65;
+
+  /* Acento (lo pisa el negocio en runtime) */
+  --primary: #1f6f5c;
+  --primary-foreground: #ffffff;
+  --primary-soft: color-mix(in srgb, var(--primary) 9%, var(--card));
+  --primary-border: color-mix(in srgb, var(--primary) 30%, var(--card));
+  --primary-text: var(--primary);
+  --ring: var(--foreground);
+
+  /* shadcn: secondary y accent son superficies neutras de hover/selección */
+  --secondary: var(--muted);
+  --secondary-foreground: var(--foreground);
+  --accent: var(--muted);
+  --accent-foreground: var(--foreground);
+
+  /* Funcionales */
+  --destructive: #b42318;
+  --destructive-foreground: #ffffff;
+  --now: #d4402b;
+  --warning-bg: #fff5de;
+  --warning-border: #e8c878;
+  --warning-fg: #4d3500;
+
+  /* Estados de turno */
+  --appt-done-bg: #f1f0ec;
+  --block-break-a: #f1f0ec;
+  --block-break-b: #e8e6e1;
+  --block-busy-a: #fbf3e4;
+  --block-busy-b: #f1e2c4;
+
+  /* Forma */
+  --radius: 0.5rem;
+
+  /* Elevación: solo lo que flota */
+  --elev-float: 0 1px 2px rgb(28 28 26 / 0.06), 0 8px 24px rgb(28 28 26 / 0.1);
+  --elev-drag: 0 2px 4px rgb(28 28 26 / 0.08), 0 14px 32px rgb(28 28 26 / 0.16);
+
+  /* Movimiento */
+  --dur-fast: 120ms;
+  --dur-base: 160ms;
+  --dur-slow: 200ms;
+
+  /* Grilla */
+  --hour-height: 80px;
+}
+
+[data-density="compact"] {
+  --hour-height: 56px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --background: #151514;
+    --card: #1c1c1b;
+    --card-foreground: #edece8;
+    --popover: #232321;
+    --popover-foreground: #edece8;
+    --sunken: #232321;
+    --muted: #2a2a28;
+    --border: #33322f;
+    --border-strong: #46443f;
+    --input: #33322f;
+    --foreground: #edece8;
+    --foreground-2: #b4b1a9;
+    --muted-foreground: #8f8c85;
+    --primary: #23806a;
+    --primary-text: #5cc4a6;
+    --destructive: #f0806e;
+    --destructive-foreground: #151514;
+    --now: #f06a55;
+    --warning-bg: #3a2e12;
+    --warning-border: #6b5320;
+    --warning-fg: #f3d58b;
+    --appt-done-bg: #242422;
+    --block-break-a: #232321;
+    --block-break-b: #2e2e2b;
+    --block-busy-a: #2f2714;
+    --block-busy-b: #43361a;
+    --elev-float: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.4);
+    --elev-drag: 0 2px 4px rgb(0 0 0 / 0.3), 0 14px 32px rgb(0 0 0 / 0.5);
+  }
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #151514;
+  --card: #1c1c1b;
+  --card-foreground: #edece8;
+  --popover: #232321;
+  --popover-foreground: #edece8;
+  --sunken: #232321;
+  --muted: #2a2a28;
+  --border: #33322f;
+  --border-strong: #46443f;
+  --input: #33322f;
+  --foreground: #edece8;
+  --foreground-2: #b4b1a9;
+  --muted-foreground: #8f8c85;
+  --primary: #23806a;
+  --primary-text: #5cc4a6;
+  --destructive: #f0806e;
+  --destructive-foreground: #151514;
+  --now: #f06a55;
+  --warning-bg: #3a2e12;
+  --warning-border: #6b5320;
+  --warning-fg: #f3d58b;
+  --appt-done-bg: #242422;
+  --block-break-a: #232321;
+  --block-break-b: #2e2e2b;
+  --block-busy-a: #2f2714;
+  --block-busy-b: #43361a;
+  --elev-float: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.4);
+  --elev-drag: 0 2px 4px rgb(0 0 0 / 0.3), 0 14px 32px rgb(0 0 0 / 0.5);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-foreground-2: var(--foreground-2);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-sunken: var(--sunken);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-border: var(--primary-border);
+  --color-primary-text: var(--primary-text);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-now: var(--now);
+  --color-warning: var(--warning-bg);
+  --color-warning-border: var(--warning-border);
+  --color-warning-foreground: var(--warning-fg);
+
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --shadow-float: var(--elev-float);
+  --shadow-drag: var(--elev-drag);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@theme {
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }
