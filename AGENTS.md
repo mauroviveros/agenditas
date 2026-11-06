@@ -15,7 +15,7 @@ SaaS de turnos para pymes que venden tiempo. Next.js 16 + Supabase. Todo el prod
 
 - Anda: se ve en el navegador o lo prueba un test.
 - Cubre los estados de error, vacío y carga que le tocan.
-- Pasan `pnpm lint`, `pnpm tsc --noEmit` y los tests.
+- Pasan `pnpm lint`, `pnpm tsc --noEmit` y `pnpm test`.
 - El usuario lo revisó.
 
 ### Branches y commits
@@ -53,7 +53,7 @@ Si dos documentos chocan, manda el de la columna "Manda sobre" y se corrige el o
 pnpm dev                      # servidor local en :3000
 pnpm lint                     # Biome
 pnpm tsc --noEmit             # tipos
-node --test src/lib/*.test.ts # tests de lógica pura
+pnpm test                     # tests de lógica pura (node:test, busca *.test.ts)
 ```
 
 Desde la rebanada 1 del roadmap: `supabase start` (base local en Docker) y `supabase test db` (pgTAP).
