@@ -245,6 +245,16 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
+# Link mágico con token_hash (no PKCE): anda aunque se abra en otro dispositivo o navegador.
+# El alta (confirmation) usa la misma plantilla porque signInWithOtp crea la cuenta si no existe.
+[auth.email.template.magic_link]
+subject = "Tu link para ingresar a Agenditas"
+content_path = "./supabase/templates/magic_link.html"
+
+[auth.email.template.confirmation]
+subject = "Tu link para ingresar a Agenditas"
+content_path = "./supabase/templates/magic_link.html"
+
 # Uncomment to customize email template
 # [auth.email.template.invite]
 # subject = "You have been invited"

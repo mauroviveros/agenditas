@@ -70,6 +70,7 @@ Regla: no se agrega una librería para lo que resuelven unas pocas líneas o la 
 ### 3.4 Auth
 
 - Link mágico por email + Google. La sesión vive en cookies de `panel.agenditas.app`.
+- El link mágico usa `token_hash` (plantilla `supabase/templates/magic_link.html`, también para el alta) y no PKCE, para que ande aunque se abra en otro dispositivo. Google usa PKCE (`code`). Los dos vuelven a `/auth/callback`. La plantilla hay que cargarla también en los proyectos hosteados (rebanada 14).
 - El proxy refresca la sesión con `supabase.auth.getClaims()` y devuelve la respuesta que armó `setAll`.
 - Para proteger páginas y datos: `getClaims()`. `getUser()` solo cuando hace falta el registro fresco del servidor de Auth. **Nunca** `getSession()` en el servidor.
 - Cada Server Action y Route Handler vuelve a verificar la sesión y el rol cerca del dato.

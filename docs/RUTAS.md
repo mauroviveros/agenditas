@@ -70,7 +70,7 @@ src/proxy.ts
 | `/registro` | Crear cuenta | MVP | Lleva directo al alta del negocio |
 | `/invitacion/[token]` | Aceptar invitación al equipo | MVP | Para profesionales y recepción |
 | `/auth/callback` | Callback de OAuth / magic link | MVP | Sin vista |
-| `/salir` | Cerrar sesión | MVP | Sin vista |
+| `/salir` | Cerrar sesión | MVP | Sin ruta: es la Server Action `salir` (un GET de salida se puede disparar desde otro sitio) |
 
 ## C. Alta del negocio (`panel.agenditas.app/alta`)
 
