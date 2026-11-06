@@ -9,6 +9,8 @@ SaaS de turnos para pymes que venden tiempo. Next.js 16 + Supabase. Todo el prod
 3. **Auditar lo que construimos juntos.** Al cerrar cada branch, revisar todo su código y listar qué mejorarías y qué riesgos ves (`/ponytail-audit` o `/code-review`). Una segunda revisión siempre encuentra algo que se pasó.
 4. **Usar `/find-skills`** cuando aparezca un área nueva (una librería, una integración) y proponer la skill que corresponda. No instalar ninguna sin el OK del usuario.
 
+5. **Rebanadas verticales con datos reales.** Cada funcionalidad se arma de punta a punta y en este orden: tablas y RLS → funciones o Server Actions → la vista que las usa. No se construyen pantallas con datos inventados ni backend sin una vista que lo use. Si se empieza por las reservas, se hace el backend de las reservas y solo lo que esas vistas necesitan. El orden de las rebanadas está en `docs/ROADMAP.md`.
+
 ### Un bloque está listo cuando
 
 - Anda: se ve en el navegador o lo prueba un test.
