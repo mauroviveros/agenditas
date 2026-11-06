@@ -56,7 +56,15 @@ pnpm tsc --noEmit             # tipos
 pnpm test                     # tests de lógica pura (node:test, busca *.test.ts)
 ```
 
-Desde la rebanada 1 del roadmap: `supabase start` (base local en Docker) y `supabase test db` (pgTAP).
+Supabase (CLI fijada como devDependency, necesita Docker abierto):
+
+```bash
+pnpm supabase start           # base local; `pnpm supabase status` da URLs y claves
+pnpm supabase stop            # la frena sin borrar datos
+pnpm supabase test db         # tests pgTAP (desde la rebanada 2)
+```
+
+Studio en `:54323` y los mails de Auth en Mailpit, `:54324`.
 
 ## Skills
 

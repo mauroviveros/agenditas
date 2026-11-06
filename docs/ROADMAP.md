@@ -27,13 +27,13 @@ La UI de la página pública y la reserva ya existe en la branch `feat/pagina-pu
 
 ---
 
-## 1 · Base de Supabase e ingreso · `feat/ingresar`
+## 1 · Base de Supabase e ingreso · `feat/ingresar` ▶
 
 Primera rebanada: deja Supabase andando de punta a punta con lo mínimo que tiene vista, que es ingresar al panel.
 
-1. **DB** · `supabase init` + `supabase start`, `config.toml` con Auth por link mágico (Inbucket local) y Google; variables en `.env.local` y `.env.example`. *Listo cuando* `supabase status` muestra la base local y el Studio abre.
+1. **DB** · `supabase init` + `supabase start`, `config.toml` con Auth por link mágico (Mailpit local) y Google; variables en `.env.local` y `.env.example`. *Listo cuando* `supabase status` muestra la base local y el Studio abre.
 2. **Backend** · Clientes `src/lib/supabase/{server,client}.ts` con `@supabase/ssr`, tipos generados, y `src/proxy.ts` que solo refresca la sesión con `getClaims()`. *Listo cuando* un test de humo (un Route Handler de solo desarrollo) devuelve los claims con y sin sesión.
-3. **Backend** · Server Actions de ingresar (link mágico y Google), callback `/auth/callback` y salir. Errores en voseo (link vencido, email inválido). *Listo cuando* el mail llega a Inbucket y el link deja la sesión iniciada.
+3. **Backend** · Server Actions de ingresar (link mágico y Google), callback `/auth/callback` y salir. Errores en voseo (link vencido, email inválido). *Listo cuando* el mail llega a Mailpit y el link deja la sesión iniciada.
 4. **Vista** · `/ingresar`, `/ingresar/revisa-tu-mail` y un layout de panel vacío ("Tu agenda está por acá") protegido: sin sesión redirige a `/ingresar`. *Listo cuando* se ingresa, se recarga, se sale y se vuelve a ingresar sin errores.
 5. **Auditoría** · seguridad de sesión (nada de `getSession()` en el servidor, cookies `httpOnly`), recorrido en móvil y escritorio.
 

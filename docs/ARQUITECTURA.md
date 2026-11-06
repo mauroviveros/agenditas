@@ -33,6 +33,7 @@
 | Anti-spam | Cloudflare Turnstile en la reserva | Rebanada 6 |
 | Tests de lógica | `node:test` (sin Vitest hasta que haga falta testear componentes) | Ya en uso |
 | Tests e2e | `@playwright/test` | Rebanada 6 |
+| CLI de Supabase | `supabase` como devDependency (`pnpm supabase …`), versión fijada en el lock | Rebanada 1 |
 | Tests de base | pgTAP vía `supabase test db` | Rebanada 2 |
 | Lint y formato | Biome | Ya en uso |
 
