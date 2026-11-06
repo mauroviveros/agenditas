@@ -86,32 +86,9 @@ Principio rector: **la marca es del negocio**. Agenditas es el andamio; todo lo 
 - Planes por cantidad de profesionales y features (señas, WhatsApp, dominio propio).
 - Facturación de la suscripción.
 
-## 4. Stack recomendado
+## 4. Stack y arquitectura
 
-> A debatir en detalle más adelante. Esto es el punto de partida.
-
-| Capa | Elección | Por qué |
-|---|---|---|
-| App (panel + público) | **Next.js 16, App Router** | Una sola app para panel (dinámico) y páginas públicas (cacheadas por negocio). Server Components y Server Actions simplifican formularios y mutaciones. El repo ya está creado con esto. |
-| Landing de marketing | Next.js (misma app) o **Astro** aparte | Si el marketing crece (blog, SEO, muchos rubros), Astro es más liviano. Arrancamos en la misma app y separamos si hace falta. |
-| Base de datos y auth | **Supabase** (Postgres) | Multi-tenant con **RLS por `business_id`**, Auth (email mágico, Google), Realtime para la grilla, Storage para imágenes, `pg_cron` y Edge Functions para recordatorios y vencimiento de señas. |
-| Anti-doble-reserva | Postgres `tstzrange` + `EXCLUDE USING gist` | La base garantiza que un profesional/recurso no tenga dos turnos superpuestos, aunque lleguen dos reservas a la vez. |
-| Hosting | **Vercel** | Wildcard de subdominios y dominios custom por negocio, previews por PR. |
-| DNS / edge | **Cloudflare** | DNS, Turnstile anti-bots, opcional R2 para imágenes. |
-| Pagos | **Mercado Pago** (AR) | Señas con webhook. Stripe a futuro. |
-| Email | **Resend** + React Email | Plantillas con la marca del negocio. |
-| WhatsApp | WhatsApp Cloud API (fase 2) | Recordatorios con confirmación. |
-| UI | **Tailwind v4** + tokens del design system como CSS variables | Tematizable por negocio en runtime (el acento y la tipografía cambian por tenant). |
-| Calidad | TypeScript estricto, Biome, Vitest + Playwright | Ya configurado TS estricto y Biome. |
-| Fechas | Temporal / `date-fns-tz` | Todo en UTC en la base, zona horaria por negocio (`America/Argentina/Buenos_Aires` por defecto). |
-
-### Arquitectura de rutas (alto nivel)
-- `agenditas.app` → marketing.
-- `panel.agenditas.app` → login, registro, alta y panel del negocio (autenticado).
-- `{negocio}.agenditas.app` o dominio propio → página pública y flujo de reserva (reescritura por host en el proxy/middleware de Next).
-- `agenditas.app/t/{token}` → gestión del turno por el cliente (reprogramar, cancelar, pagar seña).
-
-El inventario completo de rutas y vistas va en `docs/RUTAS.md` (paso 4).
+Las decisiones técnicas (librerías, Supabase, capa de datos, entornos y hosting) viven en [`docs/ARQUITECTURA.md`](ARQUITECTURA.md). Las rutas y vistas, en [`docs/RUTAS.md`](RUTAS.md).
 
 ## 5. Modelo de datos inicial
 
