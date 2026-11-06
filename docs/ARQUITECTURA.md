@@ -63,9 +63,9 @@ Regla: no se agrega una librería para lo que resuelven unas pocas líneas o la 
 ### 3.3 Clientes (`src/lib/supabase/`)
 
 - `server.ts`: `createServerClient` con `cookies: { getAll, setAll }` para Server Components, Server Actions y Route Handlers. En Server Components, `setAll` va en try/catch.
-- `client.ts`: `createBrowserClient`, solo para Realtime de la grilla.
+- `client.ts`: `createBrowserClient`, solo para Realtime de la grilla. Se crea en la rebanada 7.
 - `admin.ts`: cliente con la clave secreta. Lleva `import "server-only"` y solo lo usan los webhooks y los cron.
-- `types.ts`: generado con `supabase gen types typescript --local`. No se edita a mano.
+- `types.ts`: generado con `pnpm db:types` después de cada migración. No se edita a mano.
 
 ### 3.4 Auth
 

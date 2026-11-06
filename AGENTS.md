@@ -62,6 +62,7 @@ Supabase (CLI fijada como devDependency, necesita Docker abierto):
 pnpm supabase start           # base local; `pnpm supabase status` da URLs y claves
 pnpm supabase stop            # la frena sin borrar datos
 pnpm supabase test db         # tests pgTAP (desde la rebanada 2)
+pnpm db:types                 # regenera src/lib/supabase/types.ts después de cada migración
 ```
 
 Studio en `:54323` y los mails de Auth en Mailpit, `:54324`.
