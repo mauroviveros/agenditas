@@ -20,20 +20,20 @@
 
 ## 2. Librerías
 
-| Para | Librería | Estado |
+| Para | Librería | Desde |
 |---|---|---|
-| UI | shadcn/ui (Radix) + Tailwind v4, tokens de `src/app/globals.css` | F0 |
+| UI | shadcn/ui (Radix) + Tailwind v4, tokens de `src/app/globals.css` | Instalada (F0) |
 | Íconos | `lucide-react` | Instalada |
-| Base de datos, auth, realtime, storage | `@supabase/supabase-js` + `@supabase/ssr` | F1 |
-| Validación | `zod` (entrada de Server Actions y RPC, esquema compartido cliente/servidor) | F1 |
+| Base de datos, auth, realtime, storage | `@supabase/supabase-js` + `@supabase/ssr` | Rebanada 1 |
+| Validación | `zod` (entrada de Server Actions y RPC, esquema compartido cliente/servidor) | Rebanada 2 |
 | Formularios | `useActionState` de React. Sin react-hook-form | Ya en uso |
 | Fechas | `Intl` con la zona del negocio + `tstzrange` en Postgres. Sin librería | Ya en uso |
-| Emails | `resend` + `@react-email/components` | F4 |
-| Pagos | Mercado Pago (Checkout Pro + webhook) | F4 |
-| Anti-spam | Cloudflare Turnstile en la reserva | F4 |
+| Emails | `resend` + `@react-email/components` | Rebanada 11 |
+| Pagos | Mercado Pago (Checkout Pro + webhook) | Rebanada 12 |
+| Anti-spam | Cloudflare Turnstile en la reserva | Rebanada 6 |
 | Tests de lógica | `node:test` (sin Vitest hasta que haga falta testear componentes) | Ya en uso |
-| Tests e2e | `@playwright/test` | F1 |
-| Tests de base | pgTAP vía `supabase test db` | F1 |
+| Tests e2e | `@playwright/test` | Rebanada 6 |
+| Tests de base | pgTAP vía `supabase test db` | Rebanada 2 |
 | Lint y formato | Biome | Ya en uso |
 
 Regla: no se agrega una librería para lo que resuelven unas pocas líneas o la plataforma. Cada librería nueva entra con su fila en esta tabla.
@@ -97,9 +97,9 @@ Regla: no se agrega una librería para lo que resuelven unas pocas líneas o la 
 
 ### 3.7 Otros servicios de Supabase
 
-- **Realtime:** la grilla escucha `appointments` del negocio activo (F2).
-- **Storage:** logo, portada y fotos del equipo (F3), con políticas por negocio.
-- **`pg_cron`:** recordatorios y vencimiento de señas (F4).
+- **Realtime:** la grilla escucha `appointments` del negocio activo (rebanada 7).
+- **Storage:** logo, portada y fotos del equipo (rebanada 13), con políticas por negocio.
+- **`pg_cron`:** recordatorios y vencimiento de señas (rebanadas 11 y 12).
 
 ## 4. Capa de datos (`src/lib/data/`)
 
@@ -123,7 +123,7 @@ Regla: no se agrega una librería para lo que resuelven unas pocas líneas o la 
 
 ## 7. Hosting
 
-- **Vercel**: un proyecto con `agenditas.app`, `panel.agenditas.app` y el comodín `*.agenditas.app`. Los dominios propios se agregan por API en F2.
+- **Vercel**: un proyecto con `agenditas.app`, `panel.agenditas.app` y el comodín `*.agenditas.app`. Los dominios propios se agregan por API después del MVP.
 - **Cloudflare**: DNS y Turnstile.
 - Variables de entorno por entorno (local, preview, producción) en Vercel.
 

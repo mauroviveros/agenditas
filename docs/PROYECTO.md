@@ -114,23 +114,9 @@ holidays          (fecha, país, nombre)
 
 La disponibilidad ofrecida al cliente se calcula como: horario base ± excepciones − bloqueos − turnos − buffers, cortado por el intervalo de grilla y la anticipación permitida. Se implementa como función en Postgres (o en el servidor) y se cachea por día/profesional.
 
-## 6. Hoja de ruta de diseño y desarrollo
+## 6. Hoja de ruta
 
-1. **Idea y stack** — este documento. ✅
-2. **Exploración de estilos** — canvas con 5 estilos nuevos × 4 pantallas (agenda del día del equipo, reserva pública móvil, página pública del negocio, panel móvil del profesional). Elegido: **Calma operativa**. ✅
-3. **Design system completo** — rondas de preguntas (marca, tono, densidad, accesibilidad, modo oscuro, tematización por negocio, grilla, estados, iconos, motion, móvil, emails) y canvas del sistema. ✅ (`docs/DESIGN_SYSTEM.md`)
-4. **Documentación** — `docs/DESIGN_SYSTEM.md` (tokens, tipografía, componentes, reglas) y `docs/RUTAS.md` (todas las vistas y rutas).
-5. **Vista por vista** — para cada ruta: artboard → aprobación → implementación.
-
-### MVP técnico (en paralelo a partir del paso 4)
-1. Esquema Supabase + RLS + seeds de un negocio demo.
-2. Auth + onboarding.
-3. Servicios, equipo, disponibilidad.
-4. Grilla del día/semana.
-5. Página pública + reserva sin seña.
-6. Emails de confirmación y recordatorio.
-7. Señas con Mercado Pago.
-8. Personalización y subdominios.
+El orden de trabajo (fases, branches y bloques) vive en [`docs/ROADMAP.md`](ROADMAP.md).
 
 ## 7. Antecedentes de diseño
 

@@ -56,7 +56,7 @@ pnpm tsc --noEmit             # tipos
 node --test src/lib/*.test.ts # tests de lógica pura
 ```
 
-Desde la F1 del roadmap: `supabase start` (base local en Docker) y `supabase test db` (pgTAP).
+Desde la rebanada 1 del roadmap: `supabase start` (base local en Docker) y `supabase test db` (pgTAP).
 
 ## Skills
 
@@ -77,7 +77,7 @@ Desde la F1 del roadmap: `supabase start` (base local en Docker) y `supabase tes
 
 Las skills del proyecto viven en `.claude/skills/` y se fijan en `skills-lock.json`. Se restauran con `npx skills experimental_install`.
 
-**Para su fase** (todavía sin instalar): `currents-dev/playwright-best-practices-skill@playwright-best-practices` (F1, e2e), `resend/resend-skills@resend` y `resend/react-email@react-email` (F4, emails), `mercadopago/mercadopago-claude-marketplace@mp-integrate` y `@mp-webhooks` (F4, señas; oficiales pero con pocas instalaciones, revisarlas antes).
+**Para su fase** (todavía sin instalar): `currents-dev/playwright-best-practices-skill@playwright-best-practices` (rebanada 6, e2e), `resend/resend-skills@resend` y `resend/react-email@react-email` (rebanada 11, emails), `mercadopago/mercadopago-claude-marketplace@mp-integrate` y `@mp-webhooks` (rebanada 12, señas; oficiales pero con pocas instalaciones, revisarlas antes).
 
 <!-- BEGIN:nextjs-agent-rules -->
 
