@@ -1,6 +1,6 @@
 # Agenditas · Design system "Calma operativa"
 
-> Versión 1.0 · 2026-10-21. Fuente de verdad del look & feel. Los tokens viven en código en `src/app/globals.css`; el canvas visual está en "Agenditas · Design system".
+> Versión 1.1 · 2026-11-06. Comportamiento de la UI: voz, estados de turno, grilla, componentes de dominio, móvil y emails. **Los tokens y las reglas visuales (colores, tipografía, radios, sombras) mandan en [`docs/DESIGN.md`](DESIGN.md)**; los valores viven en `src/app/globals.css` y los componentes se ven en `/dev/componentes`.
 
 ## 1. Principios
 
@@ -31,29 +31,12 @@
 
 ### 3.1 Neutros (claro / oscuro)
 
-| Token | Rol | Claro | Oscuro |
-|---|---|---|---|
-| `--background` | Lienzo de la app | `#F5F4F1` | `#151514` |
-| `--card` | Tarjetas, grilla, paneles | `#FFFFFF` | `#1C1C1B` |
-| `--popover` | Menús, modales | `#FFFFFF` | `#232321` |
-| `--sunken` | Campos, huecos, fuera de horario | `#EFEEEA` | `#232321` |
-| `--muted` | Segmentados, hover | `#ECEBE7` | `#2A2A28` |
-| `--border` | Borde por defecto | `#E3E1DB` | `#33322F` |
-| `--border-strong` | Borde punteado de cancelado, hover | `#CFCBC2` | `#46443F` |
-| `--foreground` | Títulos y cuerpo principal | `#1C1C1A` | `#EDECE8` |
-| `--foreground-2` | Cuerpo secundario | `#55534E` | `#B4B1A9` |
-| `--muted-foreground` | Metadatos, etiquetas | `#6E6B65` | `#8F8C85` |
-
-Todas las combinaciones de texto sobre `--card` y `--background` cumplen 4,5:1.
+Valores y nombres en [`docs/DESIGN.md` → Colors](DESIGN.md#colors).
 
 ### 3.2 Acento
 
-- Acento por defecto de Agenditas: **verde pino `#1F6F5C`** (texto blanco encima: 6,0:1). En oscuro: `#23806A` (4,8:1).
-- `--primary`: el acento. `--primary-foreground`: blanco o tinta, según el contraste.
-- `--primary-soft`: el acento al 9 % sobre la tarjeta (chips, selección, turno confirmado).
-- `--primary-border`: el acento al 30 %.
-- `--primary-text`: el acento usado como texto sobre la tarjeta (en oscuro se aclara a `#5CC4A6`).
-- **Una sola acción con relleno de acento por vista.** El resto de los botones son secundarios (borde) o fantasma.
+- Acento por defecto, derivados (`--primary-soft`, `--primary-border`, `--primary-text`) y valores: [`docs/DESIGN.md` → Colors](DESIGN.md#colors).
+- **Una sola acción con relleno de acento por vista.** El resto de los botones son con borde o fantasma.
 
 #### El acento del negocio
 
@@ -92,22 +75,7 @@ Otros colores funcionales:
 
 ## 4. Tipografía
 
-- **Geist** (interfaz) + **Geist Mono** (horas, precios, duraciones, códigos), cargadas con `next/font`.
-- Números siempre con `font-variant-numeric: tabular-nums`.
-- Base de texto: **14 px en el panel**, **16 px en lo público y en los campos de formulario móviles** (evita el zoom de iOS).
-
-| Token | Panel | Público | Peso | Uso |
-|---|---|---|---|---|
-| `text-xs` | 11 / 16 | 12 / 16 | 500–600 | Etiquetas, estado en turnos |
-| `text-sm` | 13 / 18 | 14 / 20 | 400–500 | Metadatos, secundarios |
-| `text-base` | 14 / 20 | 16 / 24 | 400 | Cuerpo |
-| `text-md` | 16 / 22 | 18 / 26 | 600 | Títulos de tarjeta |
-| `text-lg` | 20 / 26 | 22 / 28 | 600 | Título de página del panel |
-| `text-xl` | 24 / 30 | 28 / 34 | 600 | Nombre en detalle de turno |
-| `text-2xl` | 28 / 32 (mono) | 40 / 44 | 500–600 | Hora destacada / hero |
-| `text-display` | — | 52 / 54 | 600 | Hero público |
-
-Tracking: −0,01 em de 20 px en adelante, −0,03 em en el display.
+Familias, jerarquía y tamaños: [`docs/DESIGN.md` → Typography](DESIGN.md#typography). Base de texto: 14 px en el panel, 16 px en lo público y en campos de formulario móviles (evita el zoom de iOS).
 
 ### Pares tipográficos curados para lo público (el negocio elige uno)
 
@@ -123,12 +91,7 @@ La hora y los precios siempre van en Geist Mono, sin importar el par.
 
 ## 5. Forma, espacio y elevación
 
-- **Radios:** `--radius-xs` 6 · `--radius-sm` 8 (campos, botones, turnos) · `--radius-md` 10 · `--radius-lg` 14 (tarjetas, paneles) · `--radius-pill` 999 (chips, filtros). Lo público puede subir un escalón si el negocio elige "redondeado".
-- **Espaciado:** base 4. Escala: 4, 8, 12, 16, 20, 24, 32, 48, 64.
-- **Elevación: primero el borde.** Tarjetas con borde de 1 px y sin sombra. La sombra queda solo para lo que flota:
-  - `--shadow-float`: menús, popovers, modales y panel lateral en móvil.
-  - `--shadow-drag`: el turno mientras se arrastra.
-- **Objetivos táctiles:** 44 × 44 px mínimo en móvil; 40 px de alto para los controles del panel en escritorio.
+Radios, escala de espaciado y sombras: [`docs/DESIGN.md`](DESIGN.md) (Layout, Elevation & Depth, Shapes). Objetivos táctiles: 44 × 44 px en móvil; controles de 40 px en el panel de escritorio.
 
 ## 6. Íconos e imágenes
 
@@ -162,9 +125,9 @@ Base: **shadcn/ui + Radix**, con el código en el repo (`src/components/ui`), te
 
 | Componente | Notas |
 |---|---|
-| Button | Variantes: `primary` (una por vista), `secondary` (borde), `ghost`, `destructive`. Tamaños: `sm` 32, `md` 40, `lg` 44/52 (público). Ícono a la izquierda. |
+| Button | Variantes: `default` (acento, una por vista), `outline` (borde), `ghost`, `destructive`, `link`. Tamaños: `sm` 32, `default` 40, `lg` 44, `xl` 52 (público). Ícono a la izquierda. |
 | Input, Textarea, Select, Combobox | Fondo `--card`, borde `--border`, foco con anillo de 2 px `--ring`. Etiqueta siempre visible arriba. |
-| Segmented | Fondo `--muted`; la opción activa es una "pastilla" `--card` con sombra mínima. Para Día / Semana / Mes / Lista. |
+| Segmented | `ToggleGroup variant="segmented"`: fondo `--muted`; la opción activa es una "pastilla" `--card` con sombra mínima. Para Día / Semana / Mes / Lista. |
 | Switch, Checkbox, Radio | Activo en `--primary`. |
 | Chip / Badge | Píldora. Estado = color + ícono + texto. |
 | Avatar | Foto o iniciales sobre `--muted`. |
