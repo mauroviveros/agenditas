@@ -61,7 +61,7 @@ Primera rebanada: deja Supabase andando de punta a punta con lo mínimo que tien
 ## 5 · Página pública · `feat/pagina-publica`
 
 1. **DB** · Columna `publicado` en `businesses`. Políticas `TO anon` de solo lectura para negocios publicados (negocio, servicios activos, equipo, horarios) con sus `GRANT`. pgTAP: `anon` no ve negocios sin publicar ni datos privados.
-2. **Backend** · `src/lib/data/publico.ts` con `"use cache"` + `cacheTag(\`business:${id}\`)`, y `revalidateTag` desde las acciones de las rebanadas 2–4. Metadatos, imagen OG y `LocalBusiness`.
+2. **Backend** · `src/lib/data/publico.ts` con `"use cache"` + ``cacheTag(`business:${id}`)``, y `revalidateTag` desde las acciones de las rebanadas 2–4. Metadatos, imagen OG y `LocalBusiness`.
 3. **Vista** · `/[slug]` portado de la branch estacionada a componentes shadcn y datos reales. 404 de negocio inexistente ("¿Es tuyo? Crealo"). Botón "Publicar" en el panel.
 4. **Auditoría** · incluye el recorrido de impeccable (`/impeccable critique` o `audit`) sobre la página.
 

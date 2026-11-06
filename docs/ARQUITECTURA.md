@@ -104,7 +104,7 @@ Regla: no se agrega una librería para lo que resuelven unas pocas líneas o la 
 ## 4. Capa de datos (`src/lib/data/`)
 
 - Solo servidor (`import "server-only"`). Las páginas no llaman a Supabase directo.
-- **Lo público** (negocio, servicios, equipo, horarios) usa `"use cache"` + `cacheLife("hours")` + `cacheTag(\`business:${id}\`)`, y al editar desde el panel, `revalidateTag`.
+- **Lo público** (negocio, servicios, equipo, horarios) usa `"use cache"` + `cacheLife("hours")` + ``cacheTag(`business:${id}`)``, y al editar desde el panel, `revalidateTag`.
 - **La disponibilidad** no se cachea: va dentro de `<Suspense>`, como ya está en la página pública.
 - **Lo del panel** lee la sesión dentro de `<Suspense>`. Los datos que dependen de la sesión se cachean pasando el `userId` o el `businessId` como argumento, nunca leyendo `cookies()` dentro de `"use cache"`.
 - En claves y tags de cache van identificadores, nunca datos personales.
