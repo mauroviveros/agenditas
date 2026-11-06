@@ -1,7 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
-// Solo refresca la sesión. La autorización real va en el servidor y en la RLS.
+// shortcut: lista de rutas del panel a mano, cambiarla por el host `panel.` en la rebanada 14.
+const PANEL = ["/agenda"];
+
+// Refresca la sesión y hace el chequeo optimista del panel.
+// La autorización real va en el servidor (getUsuario) y en la RLS.
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -31,9 +35,32 @@ export async function proxy(request: NextRequest) {
   );
 
   // Nada entre crear el cliente y getClaims(): el refresco tiene que pasar acá.
-  await supabase.auth.getClaims();
+  const { data } = await supabase.auth.getClaims();
+  const { pathname } = request.nextUrl;
 
+  if (
+    !data?.claims &&
+    PANEL.some((r) => pathname === r || pathname.startsWith(`${r}/`))
+  ) {
+    return redirigir(request, response, "/ingresar");
+  }
+  if (data?.claims && pathname === "/ingresar") {
+    return redirigir(request, response, "/agenda");
+  }
   return response;
+}
+
+// La redirección tiene que llevar las cookies y headers que dejó setAll, o se pierde la sesión.
+function redirigir(request: NextRequest, response: NextResponse, ruta: string) {
+  const redireccion = NextResponse.redirect(new URL(ruta, request.url));
+  for (const cookie of response.cookies.getAll()) {
+    redireccion.cookies.set(cookie);
+  }
+  for (const header of ["cache-control", "expires", "pragma"]) {
+    const valor = response.headers.get(header);
+    if (valor) redireccion.headers.set(header, valor);
+  }
+  return redireccion;
 }
 
 export const config = {

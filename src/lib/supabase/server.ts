@@ -1,9 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import type { Database } from "./types";
 
 // Uno nuevo por request: los headers de no-cache llegan solo en la primera escritura de cookies.
 export async function createClient() {
+  // El cliente lee Date.now() al crearse; con Cache Components eso tiene que ser en el request.
+  await connection();
   const cookieStore = await cookies();
 
   return createServerClient<Database>(
