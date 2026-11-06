@@ -4,7 +4,7 @@
 
 ## Cómo se lee
 
-- **Rebanada** = una funcionalidad de punta a punta con datos reales. Cada rebanada es **una branch y una PR**.
+- **Rebanada** = una funcionalidad de punta a punta con datos reales. Cada rebanada es **una branch**. Mientras no haya CI se integra a `main` con `git merge --ff-only` después de la auditoría; desde la rebanada 14 (CI) cada rebanada entra por PR.
 - Dentro de cada branch, **bloques** numerados que se hacen en orden y uno por vez: **DB** (tablas, RLS, `GRANT`, funciones y sus tests pgTAP) → **Backend** (capa de datos y Server Actions con `zod`) → **Vista** (pantallas con componentes de `src/components/ui`) → **Auditoría**.
 - Cada bloque termina con la prueba que lo cierra y los comandos de commit. El último bloque de cada branch es siempre la auditoría (`/ponytail-audit` o `/code-review`) más el recorrido en el navegador.
 - Una rebanada crea solo las tablas y columnas que sus vistas usan. El modelo completo de `docs/PROYECTO.md` §5 se va completando rebanada a rebanada.
@@ -27,7 +27,7 @@ La UI de la página pública y la reserva ya existe en la branch `feat/pagina-pu
 
 ---
 
-## 1 · Base de Supabase e ingreso · `feat/ingresar` ▶
+## 1 · Base de Supabase e ingreso · `feat/ingresar` ✅
 
 Primera rebanada: deja Supabase andando de punta a punta con lo mínimo que tiene vista, que es ingresar al panel.
 
