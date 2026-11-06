@@ -2,7 +2,6 @@
 const mensajes: Record<string, string> = {
   email_invalido: "Revisá el email, parece que tiene un error.",
   email_address_invalid: "Revisá el email, parece que tiene un error.",
-  validation_failed: "Revisá el email, parece que tiene un error.",
   over_email_send_rate_limit:
     "Ya te mandamos un link. Esperá un minuto antes de pedir otro.",
   over_request_rate_limit: "Hubo muchos intentos. Probá de nuevo en un rato.",

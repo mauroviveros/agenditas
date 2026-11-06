@@ -9,7 +9,7 @@
     "lint": "biome check",
     "format": "biome format --write",
     "test": "node --test",
-    "db:types": "supabase gen types typescript --schema public --log-level none > src/lib/supabase/types.ts && biome format --write src/lib/supabase/types.ts"
+    "db:types": "supabase gen types typescript --schema public --log-level none > src/lib/supabase/types.ts.tmp && mv src/lib/supabase/types.ts.tmp src/lib/supabase/types.ts && biome format --write src/lib/supabase/types.ts || (rm -f src/lib/supabase/types.ts.tmp; exit 1)"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

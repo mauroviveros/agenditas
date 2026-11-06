@@ -39,7 +39,11 @@ export function FormularioIngresar() {
             required
           />
           {email.error && (
-            <p id="email-error" className="text-destructive text-sm">
+            <p
+              id="email-error"
+              role="alert"
+              className="text-destructive text-sm"
+            >
               {email.error}
             </p>
           )}

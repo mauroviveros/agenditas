@@ -18,8 +18,17 @@ export default function PanelLayout({
         </Suspense>
       </header>
       <main className="flex flex-1 flex-col">{children}</main>
+      {/* La guardia del panel no depende del encabezado. Las páginas que leen datos llaman a getUsuario igual. */}
+      <Suspense>
+        <ExigirSesion />
+      </Suspense>
     </>
   );
+}
+
+async function ExigirSesion() {
+  await getUsuario();
+  return null;
 }
 
 async function Cuenta() {

@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
+import { cookieOptions } from "@/lib/supabase/server";
 
 // shortcut: lista de rutas del panel a mano, cambiarla por el host `panel.` en la rebanada 14.
 const PANEL = ["/agenda"];
@@ -13,6 +14,7 @@ export async function proxy(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL as string,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY as string,
     {
+      cookieOptions,
       cookies: {
         getAll() {
           return request.cookies.getAll();

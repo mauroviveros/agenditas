@@ -9,11 +9,6 @@ export type EstadoIngresar = { error: string | null; email: string };
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-async function callbackUrl() {
-  const origin = (await headers()).get("origin") ?? "http://localhost:3000";
-  return `${origin}/auth/callback`;
-}
-
 export async function ingresarConEmail(
   _prev: EstadoIngresar,
   formData: FormData,
@@ -26,10 +21,8 @@ export async function ingresarConEmail(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: { emailRedirectTo: await callbackUrl() },
-  });
+  // Sin emailRedirectTo: la plantilla arma el link con el site_url del proyecto.
+  const { error } = await supabase.auth.signInWithOtp({ email });
   if (error) return { error: mensajeDeError(error.code), email };
 
   redirect("/ingresar/revisa-tu-mail");
@@ -51,10 +44,14 @@ export async function ingresarConGoogle(): Promise<EstadoIngresar> {
     return { error: mensajeDeError("google_apagado"), email: "" };
   }
 
+  // El navegador siempre manda Origin en una Server Action; sin él no hay a dónde volver.
+  const origin = (await headers()).get("origin");
+  if (!origin) return { error: mensajeDeError(null), email: "" };
+
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: await callbackUrl() },
+    options: { redirectTo: `${origin}/auth/callback` },
   });
   if (error) return { error: mensajeDeError(error.code), email: "" };
 

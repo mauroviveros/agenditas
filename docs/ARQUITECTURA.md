@@ -63,7 +63,7 @@ Regla: no se agrega una librería para lo que resuelven unas pocas líneas o la 
 ### 3.3 Clientes (`src/lib/supabase/`)
 
 - `server.ts`: `createServerClient` con `cookies: { getAll, setAll }` para Server Components, Server Actions y Route Handlers. En Server Components, `setAll` va en try/catch.
-- `client.ts`: `createBrowserClient`, solo para Realtime de la grilla. Se crea en la rebanada 7.
+- `client.ts`: `createBrowserClient`, solo para Realtime de la grilla. Se crea en la rebanada 7. Las cookies de sesión son `httpOnly` (`cookieOptions` en `server.ts`, que usa también el proxy), así que ese cliente recibe el token desde el servidor en vez de leer la cookie.
 - `admin.ts`: cliente con la clave secreta. Lleva `import "server-only"` y solo lo usan los webhooks y los cron.
 - `types.ts`: generado con `pnpm db:types` después de cada migración. No se edita a mano.
 
@@ -72,7 +72,7 @@ Regla: no se agrega una librería para lo que resuelven unas pocas líneas o la 
 - Link mágico por email + Google. La sesión vive en cookies de `panel.agenditas.app`.
 - El link mágico usa `token_hash` (plantilla `supabase/templates/magic_link.html`, también para el alta) y no PKCE, para que ande aunque se abra en otro dispositivo. Google usa PKCE (`code`). Los dos vuelven a `/auth/callback`. La plantilla hay que cargarla también en los proyectos hosteados (rebanada 14).
 - El proxy refresca la sesión con `supabase.auth.getClaims()` y devuelve la respuesta que armó `setAll`.
-- Para proteger páginas y datos: `getClaims()`. `getUser()` solo cuando hace falta el registro fresco del servidor de Auth. **Nunca** `getSession()` en el servidor.
+- Para proteger páginas y datos: `getClaims()`, a través de `getUsuario()` (`src/lib/auth/usuario.ts`, con `cache()` de React). El layout del panel lo llama como guardia y cada página que lee datos lo vuelve a llamar. `getUser()` solo cuando hace falta el registro fresco del servidor de Auth. **Nunca** `getSession()` en el servidor.
 - Cada Server Action y Route Handler vuelve a verificar la sesión y el rol cerca del dato.
 - Los roles y permisos viven en tablas (`memberships`), nunca en `user_metadata`, que el usuario puede editar.
 
