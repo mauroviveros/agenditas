@@ -131,7 +131,7 @@ Base: **shadcn/ui + Radix**, con el código en el repo (`src/components/ui`), te
 | Switch, Checkbox, Radio | Activo en `--primary`. |
 | Chip / Badge | Píldora. Estado = color + ícono + texto. |
 | Avatar | Foto o iniciales sobre `--muted`. |
-| Tooltip, Popover, DropdownMenu | `--popover` + `--shadow-float`. |
+| Tooltip, Popover, DropdownMenu | `--popover` + `shadow-(--elev-float)`. |
 | Sheet (panel lateral) | **Patrón de edición principal.** A la derecha en escritorio (360–420 px), hoja desde abajo en móvil. |
 | Dialog | Solo para acciones con plata o aviso al cliente, y para flujos que lo justifiquen. |
 | Toast | Abajo al centro, 6 s. Siempre con **Deshacer** cuando la acción lo permite. |
@@ -155,7 +155,7 @@ Base: **shadcn/ui + Radix**, con el código en el repo (`src/components/ui`), te
 
 ### Interacciones de la grilla (MVP)
 
-- **Arrastrar para mover** (de hora o de profesional) con un fantasma `--shadow-drag`. Al soltar sobre un conflicto, rebota y explica por qué.
+- **Arrastrar para mover** (de hora o de profesional) con un fantasma `shadow-(--elev-drag)`. Al soltar sobre un conflicto, rebota y explica por qué.
 - **Estirar el borde inferior** para cambiar la duración, de a 5, 10, 15 o 30 min según la configuración.
 - **Clic en un hueco** abre "Nuevo turno" en el panel lateral, ya con la hora y el profesional.
 - **Teclado:** `N` nuevo turno · `B` bloquear · `←` `→` día anterior o siguiente · `T` hoy · `D` `W` `M` `L` para día, semana, mes y lista · `1`–`9` filtrar profesional · `A` marcar atendido · `R` reprogramar o mover · `⌘K` paleta · `Esc` cerrar. Los atajos se pueden ver con `?`.
