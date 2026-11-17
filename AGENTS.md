@@ -34,10 +34,14 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
   propósito antes de darlo por bueno.
 - **Comandos que crean o instalan cosas** (apps, paquetes, herramientas) los corre Mauro,
   de a uno: el agente da el comando exacto con su versión, espera y revisa el resultado.
-- **Pantallas**: diseño con impeccable dentro de [`DESIGN.md`](./docs/DESIGN.md); estados
-  de vacío, carga y error; e2e al terminarla.
-- **Auditoría al cerrar la rebanada**: `code-reviewer` + `security-reviewer`; Mauro elige
-  qué se arregla.
+- **Pantallas: diseño antes que código**, dentro de [`DESIGN.md`](./docs/DESIGN.md) y en
+  este orden: `/impeccable shape` (brief, sin código) → esqueleto de la ruta con datos
+  reales → `/impeccable live` sobre el dev server (o `/impeccable generate` para variantes
+  de un elemento) → Mauro elige la variante → recién ahí estados de vacío, carga y error,
+  tests y e2e. Si la pantalla es compleja, se diseña por partes (un elemento por vez).
+- **Auditoría al cerrar la rebanada**: `code-reviewer` + `security-reviewer`, y por cada
+  pantalla `/impeccable critique`, `/impeccable audit` y `/impeccable polish` (más
+  `harden`, `clarify` o `adapt` si hacen falta). Mauro elige qué se arregla.
 - **Si algo contradice los documentos, se pregunta.** No se decide en el código.
 
 ## Una rebanada está lista cuando

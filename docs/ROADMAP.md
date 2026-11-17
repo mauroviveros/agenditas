@@ -13,7 +13,10 @@
 - **Cierre de bloque:** test primero → checks en verde → chequeo de seguridad si toca
   auth, inputs, claves o la reserva (🔒) → el agente abre la vista y deja 2 o 3 cosas
   para probar → **OK de Mauro** → el agente commitea el bloque.
-- **Cierre de rebanada:** auditoría (code-reviewer + security-reviewer) → PR con CI
+- **Pantallas:** `/impeccable shape` → esqueleto → `/impeccable live` → Mauro elige la
+  variante → estados, tests y e2e (ver AGENTS.md).
+- **Cierre de rebanada:** auditoría (code-reviewer + security-reviewer, y por pantalla
+  `/impeccable critique`, `audit` y `polish`) → PR con CI
   verde → **el merge lo hace Mauro**. Se pasa al HISTORIAL y se borra de acá.
 - Los comandos que crean o instalan cosas los corre Mauro, de a uno.
 
@@ -58,6 +61,16 @@ producción; publicar la app y pedir la verificación.
 - Vistas con `security_invoker = true` (el guard de RLS no mira vistas).
 - Sacar `graphql_public` de `api.schemas` si no se usa.
 - Un esquema nuevo (p. ej. `private`) repite los revokes de la migración de fundaciones.
+
+**Para la auditoría de cierre** (revisión de SQL del bloque 5a; Mauro elige):
+
+- MEDIUM: `create_business` traduce errores por los nombres automáticos de los
+  constraints; darles nombre explícito en `businesses` y testear cada código.
+- MEDIUM: `create_business` no traduce `not_null_violation` (nombre o slug nulos).
+- LOW: `is_slug_available` sin rate limit (los slugs son públicos; costo: una búsqueda
+  por índice por consulta).
+- LOW: un test pgTAP que recorra los grants de `public` para anon y authenticated, por
+  si algo se crea fuera de las migraciones.
 
 ## R2 · Horarios
 
