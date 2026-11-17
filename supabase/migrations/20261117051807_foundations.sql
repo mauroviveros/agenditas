@@ -8,6 +8,8 @@ create extension if not exists btree_gist with schema extensions;
 -- crea en `public`, y Postgres da EXECUTE a PUBLIC en toda función nueva. Se revoca
 -- para que cada permiso sea un GRANT explícito y revisable en una migración.
 -- service_role queda igual: es solo de servidor y no pasa por la RLS.
+-- Solo cubre lo que crea `postgres` (las migraciones); un objeto de otro dueño, como
+-- los de supabase_admin, conserva los defaults de Supabase (lo chequea el test).
 alter default privileges in schema public
   revoke all on tables from anon, authenticated;
 alter default privileges in schema public
@@ -15,6 +17,7 @@ alter default privileges in schema public
 alter default privileges in schema public
   revoke all on functions from anon, authenticated;
 
--- El default de PUBLIC es global (no se puede quitar por esquema).
+-- El default de PUBLIC es global (no se puede quitar por esquema). Consecuencia: una
+-- función de una extensión instalada después necesita su GRANT explícito.
 alter default privileges
   revoke execute on functions from public;
