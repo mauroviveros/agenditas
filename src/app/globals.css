@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+/* Tokens del estilo Mate. Fuente de verdad: docs/DESIGN.md. Fuera de acá no hay colores sueltos. */
+@theme {
+  --color-*: initial;
+  --color-fondo: #f2f4ee;
+  --color-superficie: #ffffff;
+  --color-tinta: #17261e;
+  --color-tinta-suave: #536158;
+  --color-acento: #1e5b3f;
+  --color-resalte: #f2c230;
+  --color-bloque: #dde5d6;
+  --color-linea: #b9c4b4;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --font-titulo: var(--font-bricolage), sans-serif;
+  --font-texto: var(--font-figtree), sans-serif;
+
+  --radius-control: 14px;
+  --radius-tarjeta: 18px;
+  --radius-panel: 22px;
+
+  --shadow-flotante: 0 6px 24px rgb(23 38 30 / 0.14);
+}
+
+body {
+  background: var(--color-fondo);
+  color: var(--color-tinta);
+  font-family: var(--font-texto);
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--color-resalte);
+  color: var(--color-tinta);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-tinta);
+  outline-offset: 2px;
+}
