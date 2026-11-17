@@ -1,0 +1,25 @@
+# dependencias
+node_modules/
+
+# builds y caches
+dist/
+.astro/
+.wrangler/
+coverage/
+*.tsbuildinfo
+
+# entorno (se commitea solo el ejemplo)
+.env*
+!.env.example
+.dev.vars*
+!.dev.vars.example
+
+# varios
+.DS_Store
+*.pem
+*.log
+
+# herramientas
+/.playwright-mcp/
+/.impeccable/mocks/
+/.impeccable/review/
