@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BottomNav } from "../components/BottomNav";
 import { Button } from "../components/Button";
 import { CloseDaysForm } from "../components/CloseDaysForm";
@@ -39,6 +39,14 @@ function ClosedDaysPage() {
   const overrides = useQuery(overridesQuery);
   const holidays = useQuery(holidaysQuery(Number(today.slice(0, 4))));
   const [adding, setAdding] = useState(false);
+  const addButton = useRef<HTMLButtonElement>(null);
+  const wasAdding = useRef(false);
+
+  // Al cerrar el formulario el foco vuelve al botón que lo abrió.
+  useEffect(() => {
+    if (wasAdding.current && !adding) addButton.current?.focus();
+    wasAdding.current = adding;
+  }, [adding]);
 
   const refresh = () =>
     queryClient.invalidateQueries({ queryKey: overridesQuery.queryKey });
@@ -116,10 +124,11 @@ function ClosedDaysPage() {
                     <Toggle
                       label={`Abro el ${holiday.name}`}
                       checked={open}
-                      disabled={toggleHoliday.isPending || overrides.isPending}
-                      onChange={(next) =>
-                        toggleHoliday.mutate({ holiday, open: next })
-                      }
+                      disabled={overrides.isPending}
+                      onChange={(next) => {
+                        if (!toggleHoliday.isPending)
+                          toggleHoliday.mutate({ holiday, open: next });
+                      }}
                     />
                   </span>
                 </li>
@@ -184,6 +193,7 @@ function ClosedDaysPage() {
           />
         ) : (
           <Button
+            ref={addButton}
             variant="secondary"
             className="mt-3"
             onClick={() => setAdding(true)}

@@ -62,6 +62,9 @@ test("un nombre repetido avisa y un servicio archivado sale de la lista", async 
   await expect(page.getByText("30 min · Consultar")).toBeVisible();
   await page.getByRole("link", { name: /Corte/ }).click();
   await page.getByRole("button", { name: "Archivar servicio" }).click();
+  await expect(
+    page.getByRole("group", { name: "Confirmar archivo" }),
+  ).toBeFocused();
   await page.getByRole("button", { name: "Archivar", exact: true }).click();
   await expect(page.getByText("Cargá tu primer servicio")).toBeVisible();
 });
@@ -108,6 +111,7 @@ test("abre un feriado, cierra unas vacaciones y los quita", async ({
   ).toBeChecked();
 
   await page.getByRole("button", { name: "Cerrar un día" }).click();
+  await expect(page.getByLabel("Desde")).toBeFocused();
   await page.getByLabel("Desde").fill(isoDaysFromToday(20));
   await page.getByLabel("Hasta (opcional)").fill(isoDaysFromToday(22));
   await page.getByLabel("Motivo (opcional)").fill("Vacaciones");

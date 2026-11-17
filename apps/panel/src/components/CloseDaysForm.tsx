@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { datesBetween } from "../lib/dates";
 import { scheduleErrorMessage } from "../lib/errors";
 import { addOverrides, overridesQuery } from "../lib/overrides";
@@ -26,6 +26,12 @@ export function CloseDaysForm({
   const [to, setTo] = useState("");
   const [note, setNote] = useState("");
   const [problem, setProblem] = useState<string | null>(null);
+  const form = useRef<HTMLFormElement>(null);
+
+  // El botón que lo abrió desaparece: el foco pasa al primer campo.
+  useEffect(() => {
+    form.current?.querySelector("input")?.focus();
+  }, []);
 
   const add = useMutation({
     mutationFn: (dates: string[]) =>
@@ -62,6 +68,7 @@ export function CloseDaysForm({
 
   return (
     <form
+      ref={form}
       onSubmit={handleSubmit}
       className="mt-3 space-y-4 rounded-lg border border-border bg-surface p-4"
     >

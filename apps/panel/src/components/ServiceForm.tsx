@@ -1,7 +1,7 @@
 import { formatDuration } from "@agenditas/db";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { serviceErrorMessage } from "../lib/errors";
 import {
   archiveService,
@@ -92,7 +92,6 @@ export function ServiceForm({ businessId, service }: ServiceFormProps) {
             type="button"
             aria-label="Restar 5 minutos"
             className={STEP_BUTTON}
-            disabled={minutes <= MIN_MINUTES}
             onClick={() => setMinutes(clampMinutes(minutes - STEP_MINUTES))}
           >
             −
@@ -107,7 +106,6 @@ export function ServiceForm({ businessId, service }: ServiceFormProps) {
             type="button"
             aria-label="Sumar 5 minutos"
             className={STEP_BUTTON}
-            disabled={minutes >= MAX_MINUTES}
             onClick={() => setMinutes(clampMinutes(minutes + STEP_MINUTES))}
           >
             +
@@ -180,9 +178,22 @@ function ArchiveBlock({
   onCancel,
   onConfirm,
 }: ArchiveBlockProps) {
+  const trigger = useRef<HTMLButtonElement>(null);
+  const confirmBox = useRef<HTMLFieldSetElement>(null);
+  const mounted = useRef(false);
+
+  // El botón y la confirmación se reemplazan: el foco acompaña al que aparece.
+  useEffect(() => {
+    if (mounted.current) {
+      (confirming ? confirmBox : trigger).current?.focus();
+    }
+    mounted.current = true;
+  }, [confirming]);
+
   if (!confirming) {
     return (
       <Button
+        ref={trigger}
         variant="secondary"
         className="border-destructive text-destructive"
         onClick={onAsk}
@@ -192,7 +203,12 @@ function ArchiveBlock({
     );
   }
   return (
-    <div className="rounded-lg border border-destructive bg-surface p-4">
+    <fieldset
+      ref={confirmBox}
+      tabIndex={-1}
+      className="min-w-0 rounded-lg border border-destructive bg-surface p-4 focus-visible:outline-2 focus-visible:outline-primary"
+    >
+      <legend className="sr-only">Confirmar archivo</legend>
       <p>
         ¿Archivar «{serviceName}»? Tus clientes dejan de verlo y no se pueden
         sacar turnos nuevos.
@@ -214,6 +230,6 @@ function ArchiveBlock({
           {pending ? "Archivando…" : "Archivar"}
         </Button>
       </div>
-    </div>
+    </fieldset>
   );
 }
