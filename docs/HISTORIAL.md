@@ -54,9 +54,13 @@ cuelgan de «Más», con pantalla propia cada uno. Mauro confirmó la estructura
 pública (R3). Los feriados que lee el navegador no los ve la base → decidir antes de R4
 (ver Estacionado). Sin «copiar horario a otros días» → sumarlo si los pilotos lo piden.
 
-**Pendiente:** accesibilidad con lector de pantalla real y con `/accessibility` (no hay
-axe instalado; se probó con roles y etiquetas en Playwright). Mapeo de errores de
-`no_business` hacia el ingreso.
+**Accesibilidad:** `/accessibility` sobre las pantallas de R2: el foco acompaña cuando un
+botón se reemplaza (cerrar un día, archivar) y ningún botón se deshabilita con el foco
+puesto; los e2e lo verifican. Sin axe instalado: el resto se revisó leyendo roles,
+etiquetas y destinos táctiles.
+
+**Pendiente:** lector de pantalla real. El panel no mueve el foco al título al navegar
+entre pantallas (viene de R1). Mapeo de `no_business` hacia el ingreso.
 
 ---
 
