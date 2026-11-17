@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Agenditas
 
-## Getting Started
+Tus clientes reservan solos desde tu página. Agenda, horarios, clientes y caja para
+solistas (barberías, lashistas, psicólogas, tatuadores, entrenadores), hecho para
+Argentina.
 
-First, run the development server:
+Qué es y para quién: [docs/PRODUCT.md](docs/PRODUCT.md). Cómo está armado:
+[docs/ARQUITECTURA.md](docs/ARQUITECTURA.md). Qué sigue: [docs/ROADMAP.md](docs/ROADMAP.md).
+
+## Arrancar
+
+Necesitás Node 26, pnpm y Docker (para Supabase local).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+pnpm exec supabase start
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+La app queda en http://localhost:3000 y el estilo en http://localhost:3000/dev/tokens.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Comando | Qué hace |
+|---|---|
+| `pnpm check` | Lint, colores, tipos y tests unitarios |
+| `pnpm test:db` | Tests de la base (pgTAP) |
+| `pnpm test:e2e` | Build de producción + Playwright |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Cómo se construye
 
-## Learn More
+Agenditas se construye con Claude Code, con un método que no se negocia:
 
-To learn more about Next.js, take a look at the following resources:
+1. **Primero la estructura, no el código.** La IA propone arquitectura y diseño (qué
+   partes tiene el proyecto y cómo se conectan) y se revisa que tenga sentido antes de
+   escribir una línea.
+2. **Bloques pequeños.** Una función, un componente, un endpoint a la vez, en
+   rebanadas verticales con datos reales. Nunca "la app completa" de una vez.
+3. **Cada bloque se prueba antes de seguir.** Test primero, checks en verde y una
+   prueba a mano en la vista. Solo con el OK humano se commitea.
+4. **Seguridad antes de conectar nada sensible.** Claves y variables de entorno,
+   validación de inputs, permisos en la base y rate limiting.
+5. **Auditoría al cerrar cada rebanada.** Una segunda revisión de todo lo construido
+   siempre encuentra algo que se pasó.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Las decisiones son humanas; la IA propone, escribe y verifica. Nada llega a `main` sin
+un PR con CI en verde y el merge de una persona.

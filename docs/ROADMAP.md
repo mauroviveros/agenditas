@@ -29,34 +29,21 @@ Nada existe hasta que alguien lo carga:
 
 ---
 
-## F0 · Fundaciones ▶
-
-Branch `chore/fundaciones`. Esqueleto, calidad y estilo general antes de la primera
-pantalla real.
-
-1. **Documentos base:** PRODUCT, ARQUITECTURA, ROADMAP e HISTORIAL.
-   *Listo cuando* Mauro los aprueba.
-2. **Esqueleto Next** (lo corre Mauro) y `.claude/launch.json`.
-   *Listo cuando* `pnpm dev` muestra la página en el browser del app.
-3. **Lint, typecheck y Vitest** con un script `pnpm check`.
-   *Listo cuando* `pnpm check` pasa y falla con un error a propósito.
-4. **Supabase local:** `supabase init`, primera migración (`btree_gist`, privilegios
-   por defecto cerrados) y un test pgTAP que falla si una tabla no tiene RLS. 🔒
-   *Listo cuando* `supabase test db` pasa.
-5. **Estilo general:** canvas con 3 a 5 direcciones sobre la agenda del día y la página
-   de reserva. Mauro elige una e impeccable la fija en `DESIGN.md`, con los tokens en
-   Tailwind y una página `/dev/tokens` para verlos.
-   *Listo cuando* Mauro eligió y ve los tokens aplicados.
-6. **CI + protección de `main`** (con el OK de Mauro): lint, typecheck, Vitest, pgTAP y
-   un smoke de Playwright, más el check de colores fuera de los tokens.
-   *Listo cuando* el PR muestra el CI en verde.
-7. **AGENTS.md** (con CLAUDE.md como symlink), `.claude/settings.json` y README con
-   "Cómo se construye". *Listo cuando* la auditoría de F0 no deja nada alto.
-
-## R1 · Entrar y crear el negocio
+## R1 · Entrar y crear el negocio ▶
 
 El solista entra con Google y crea su negocio (nombre, rubro, slug).
-Mauro arranca en F0 la verificación de marca de Google, porque tarda días.
+Requisito: la verificación de marca de Google (la arranca Mauro, tarda días). Los bloques
+se detallan al empezar la rebanada.
+
+**Seguridad pendiente de la auditoría de F0** (cada punto, un caso borde o un check):
+
+- `config.toml`: apagar el provider email, activar Google con `env()` y fijar
+  `site_url` / `additional_redirect_urls` a los dominios reales (sacar `https://127.0.0.1`).
+- Toda RPC `security definer` con `set search_path = ''`.
+- Cada RPC pública: `grant execute` explícito, validación con Zod y rate limit.
+- Vistas con `security_invoker = true` (el guard de RLS no mira vistas).
+- Sacar `graphql_public` de `api.schemas` si no se usa.
+- Un esquema nuevo (p. ej. `private`) repite los revokes de la migración de fundaciones.
 
 ## R2 · Horarios
 
