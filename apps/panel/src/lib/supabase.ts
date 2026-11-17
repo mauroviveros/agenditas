@@ -16,7 +16,11 @@ export function getSupabase(): SupabaseClient {
       import.meta.env,
       ENV_NAMES,
     );
-    client = createClient(url, publishableKey);
+    client = createClient(url, publishableKey, {
+      // El link mágico trae `token_hash` y lo canjea /auth/confirm a mano; así
+      // anda también cuando se abre en otro dispositivo (no hay PKCE).
+      auth: { detectSessionInUrl: false },
+    });
   }
   return client;
 }
