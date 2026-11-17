@@ -149,9 +149,16 @@ amable para leer al paso.
 
 Una columna para el celu (390 px de referencia) con 16 a 20 px de margen lateral.
 Listas con 6 px entre turnos; secciones separadas por 12 a 20 px. Las acciones
-principales viven abajo, al alcance del pulgar, en una barra pill flotante. En la PC
-el contenido se centra con un ancho máximo; el layout de escritorio se define cuando
-aparezca la primera vista que lo necesite.
+principales viven abajo, al alcance del pulgar, en una barra pill flotante.
+
+**Escritorio** (desde `md`, 768 px), definido en R1 con la pantalla de crear el negocio:
+contenido centrado hasta 1024 px; formularios en dos columnas, el formulario a la
+izquierda (hasta 26rem) y a la derecha una vista previa en Superficie (radio de 22 px)
+de lo que se está armando. El título sube a Display (40 px) y la acción principal va
+debajo del formulario, no fija abajo. Cada pantalla se diseña para los dos tamaños.
+
+**Controles de texto** (`Input`, `InputGroup` de shadcn): 50 px de alto, Superficie,
+borde de 1 px en Tinta suave (contraste 3:1) y radio de 14 px.
 
 ## Elevation & Depth
 

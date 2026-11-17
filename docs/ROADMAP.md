@@ -75,6 +75,8 @@ producción; publicar la app y pedir la verificación.
   parent segment prevented the page from rendering" (validación de instant navigation,
   solo en desarrollo; el build y los e2e pasan). Entender y arreglar o marcar
   `instant = false` con su porqué.
+- Crear negocio: si se escribe el nombre antes de que hidrate la página, el campo
+  muestra el texto pero el link no lo toma (queda en `tu-negocio`).
 
 ## R2 · Horarios
 
