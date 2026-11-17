@@ -7,7 +7,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@agenditas/db": "workspace:*",
@@ -21,6 +22,7 @@
     "react-dom": "19.3.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.65.1",
     "@tailwindcss/vite": "^4.3.5",
     "@tanstack/router-plugin": "^1.169.0",
     "@types/react": "^19.3.0",

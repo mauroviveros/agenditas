@@ -12,7 +12,8 @@
     "format": "biome format --write",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",
-    "db:types": "pnpm --filter @agenditas/db generate"
+    "db:types": "pnpm --filter @agenditas/db generate",
+    "e2e": "pnpm --filter @agenditas/panel e2e"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.8",

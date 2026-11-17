@@ -7,6 +7,8 @@ dist/
 .wrangler/
 worker-configuration.d.ts
 coverage/
+test-results/
+playwright-report/
 *.tsbuildinfo
 
 # entorno (se commitea solo el ejemplo)
