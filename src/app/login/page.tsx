@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { signInWithGoogle } from "./actions";
-import { GoogleButton } from "./google-button";
+import { SubmitButton } from "@/components/submit-button";
 
 export const metadata: Metadata = {
   title: "Entrar · Agenditas",
@@ -30,7 +30,13 @@ export default function LoginPage({ searchParams }: PageProps<"/login">) {
       </Suspense>
 
       <form action={signInWithGoogle} className="mt-8">
-        <GoogleButton />
+        <SubmitButton
+          pendingLabel="Abriendo Google…"
+          // oxlint-disable-next-line nextjs/no-img-element -- svg estático de 16 px, sin optimizar
+          icon={<img src="/google-g.svg" alt="" width={16} height={16} />}
+        >
+          Entrar con Google
+        </SubmitButton>
       </form>
     </main>
   );
