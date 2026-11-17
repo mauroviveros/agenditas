@@ -121,3 +121,10 @@ no vino, cancela y avisa al cliente con un WhatsApp prearmado.
   teléfono del cliente), Sentry en el panel y Supabase Pro en producción.
 - OG por negocio: con el editor de apariencia, si entra en el límite del Worker.
 - Realtime en la agenda: cuando haya equipo (varias personas tocando la misma agenda).
+- **Revisar `apps/web` y Cloudflare** (anotado en F0):
+  - Recursos del adaptador: `session: false` e `imageService: "passthrough"` evitan que
+    el deploy cree un KV y un binding de Images. Volver a mirarlo en R3 (logo y portada
+    del negocio) y si alguna vez hacen falta sesiones.
+  - Archivos `.astro` sin lint ni typecheck: Biome no ve la plantilla y
+    `@astrojs/check` no soporta TypeScript 7. Volver a mirarlo cuando haya componentes
+    `.astro` con lógica (R3) o cuando salga un `@astrojs/check` compatible.
