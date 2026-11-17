@@ -9,13 +9,75 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never;
+      businesses: {
+        Row: {
+          category: string;
+          created_at: string;
+          id: string;
+          name: string;
+          published_at: string | null;
+          slug: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          category: string;
+          created_at?: string;
+          id?: string;
+          name: string;
+          published_at?: string | null;
+          slug: string;
+        };
+        Update: {
+          category?: string;
+          created_at?: string;
+          id?: string;
+          name?: string;
+          published_at?: string | null;
+          slug?: string;
+        };
+        Relationships: [];
+      };
+      memberships: {
+        Row: {
+          business_id: string;
+          created_at: string;
+          role: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          business_id: string;
+          created_at?: string;
+          role?: string;
+          user_id: string;
+        };
+        Update: {
+          business_id?: string;
+          created_at?: string;
+          role?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "memberships_business_id_fkey";
+            columns: ["business_id"];
+            isOneToOne: false;
+            referencedRelation: "businesses";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      create_business: {
+        Args: { p_category: string; p_name: string; p_slug: string };
+        Returns: string;
+      };
+      is_valid_slug: { Args: { p_slug: string }; Returns: boolean };
+      slug_available: { Args: { p_slug: string }; Returns: boolean };
     };
     Enums: {
       [_ in never]: never;

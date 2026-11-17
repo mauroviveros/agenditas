@@ -21,8 +21,9 @@ select is_empty(
      join pg_namespace n on n.oid = p.pronamespace
      where n.nspname in ('public', 'private')
        and (has_function_privilege('anon', p.oid, 'execute')
-         or has_function_privilege('authenticated', p.oid, 'execute')) $$,
-  'anon and authenticated can execute no function in public or private'
+         or (has_function_privilege('authenticated', p.oid, 'execute')
+             and n.nspname || '.' || p.proname <> all (array['public.create_business', 'public.slug_available', 'public.is_valid_slug']))) $$,
+  'anon executes no function; authenticated only the reviewed list'
 );
 
 -- Los privilegios por defecto solo cubren lo que crea `postgres` (las migraciones).
@@ -66,6 +67,7 @@ select ok(
   'authenticated cannot execute a new function'
 );
 
+-- Lista de las funciones que `authenticated` puede ejecutar: cada rebanada la amplía a propósito.
 -- Los detectores de arriba tienen que poder fallar: si no, el check no vale nada.
 select isnt_empty(
   $$ select c.relname
@@ -82,7 +84,8 @@ select isnt_empty(
      join pg_namespace n on n.oid = p.pronamespace
      where n.nspname in ('public', 'private')
        and (has_function_privilege('anon', p.oid, 'execute')
-         or has_function_privilege('authenticated', p.oid, 'execute')) $$,
+         or (has_function_privilege('authenticated', p.oid, 'execute')
+             and n.nspname || '.' || p.proname <> all (array['public.create_business', 'public.slug_available', 'public.is_valid_slug']))) $$,
   'the function check flags a function granted to anon'
 );
 
