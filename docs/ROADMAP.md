@@ -71,6 +71,10 @@ producción; publicar la app y pedir la verificación.
   por índice por consulta).
 - LOW: un test pgTAP que recorra los grants de `public` para anon y authenticated, por
   si algo se crea fuera de las migraciones.
+- `/login` en `next dev`: "Could not validate `instant` because a Client Component in a
+  parent segment prevented the page from rendering" (validación de instant navigation,
+  solo en desarrollo; el build y los e2e pasan). Entender y arreglar o marcar
+  `instant = false` con su porqué.
 
 ## R2 · Horarios
 
