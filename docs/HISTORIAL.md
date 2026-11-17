@@ -80,6 +80,14 @@ CI todavía no.
   lockfile la arrastraba.
 - Acciones de GitHub fijadas por SHA: un tag se puede reapuntar a código malicioso
   (como pasó con `tj-actions/changed-files` en 2025) y la CI va a tener secretos.
+- Protección de `main` (2026-11-17): PR obligatorio con 0 aprobaciones (GitHub no deja
+  aprobar el PR propio), checks `check` y `database` obligatorios y al día con `main`,
+  `enforce_admins` para que valga también para Mauro, sin force push ni borrado.
+  Funciona en el repo privado con plan personal. No se probó un push directo: la
+  regla `deny` de `.claude/settings.json` le impide al agente intentarlo.
+- `Workers Builds: agenditas` aparece como check en los PR: el Worker `agenditas` de
+  Cloudflare está conectado a este repo y compila en cada push. No es parte de la CI
+  del repo ni se exige en la protección; decidir si se desconecta o se reconfigura.
 
 ## Antes del reinicio · Next.js + Supabase — 2026-10-21 a 2026-11-16
 
