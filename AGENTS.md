@@ -56,14 +56,15 @@ Si dos se contradicen, decide el de la tabla y el otro se corrige en el mismo ca
 
 - **Copy:** voseo, oraciones cortas, verbo primero en botones, formato es-AR (`15:30`,
   `$19.500`). Ver `docs/PRODUCT.md`.
-- **Colores y radios** solo en `packages/ui/src/styles/tokens.css`. La CI lo chequea
-  (`scripts/check-colors.sh`).
+- **Colores** solo en `packages/ui/src/styles/tokens.css` (los radios, por
+  convención). La CI chequea los colores (`scripts/check-colors.sh`).
 - **La base es el único guardia.** RLS en toda tabla y cada permiso como `GRANT`
-  explícito en una migración. Reservar, mover y cancelar solo por RPC, y `anon` no
+  explícito en una migración (una función de una extensión instalada después también
+  lo necesita: el default de `PUBLIC` está revocado). Reservar, mover y cancelar solo por RPC, y `anon` no
   ejecuta la de reservar. Detalle en `docs/ARQUITECTURA.md`.
 - **Tipos de la base:** `pnpm db:types` después de cada migración. No se editan a mano.
 - **Claves:** el navegador solo recibe la clave publicable; `readSupabaseConfig` rechaza
-  una `sb_secret_…`. Ninguna clave va en el código.
+  una `sb_secret_…` o un JWT `service_role`. Ninguna clave va en el código.
 - **Dependencias:** se respeta la antigüedad mínima de `pnpm` (no se excluyen versiones
   nuevas); las CLIs van con versión exacta. Las acciones de GitHub, fijadas por SHA.
 - **Los `.astro` no pasan por Biome ni por el typecheck** (ver ROADMAP, Estacionado).

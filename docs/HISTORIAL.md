@@ -24,12 +24,15 @@ Branch `feat/<rebanada>` · PR <link>
 
 ---
 
-## F0 · Fundaciones — en curso (kickoff 2026-11-16)
+## F0 · Fundaciones — 2026-11-17
 
-Branch `chore/fundaciones`
+Branch `chore/fundaciones` · PR #1 (kickoff 2026-11-16)
 
-**Qué quedó:** `PRODUCT`, `ARQUITECTURA`, `ROADMAP` y este historial. El esqueleto y
-CI todavía no.
+**Qué quedó:** documentos, monorepo (`apps/web`, `apps/panel`, `packages/ui`,
+`packages/db`), Supabase local con la migración de fundaciones y pgTAP, CI con
+`check` y `database`, `main` protegida, `AGENTS.md` y README. Auditoría propia: se
+rechaza también la clave `service_role` en JWT, el pgTAP exige dueño `postgres` y
+cubre `authenticated`, la CI no persiste credenciales y hay Dependabot.
 
 **Decisiones**
 - Reiniciar desde cero en el mismo repo, porque el producto estaba bien definido pero

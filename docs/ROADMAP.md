@@ -26,28 +26,7 @@ Nada existe hasta que alguien lo carga:
 
 ---
 
-## F0 · Fundaciones ▶
-
-Branch `chore/fundaciones`. Se planea con `/ecc:plan` antes de tocar código.
-
-- Borrar el código de Next (queda en el tag `legacy-next`) y los docs viejos
-  (`PROYECTO`, `RUTAS`, `DESIGN_SYSTEM`, `DESIGN`).
-- Monorepo pnpm: `apps/web` (Astro + Cloudflare), `apps/panel` (Vite + React +
-  TanStack Router), `packages/ui` (tokens + shadcn), `packages/db`.
-- `supabase init` con la CLI fijada como devDependency y la primera migración:
-  `btree_gist`, revocar los privilegios por defecto de tablas y funciones, y el pgTAP
-  que exige RLS y lista qué funciones ejecuta `anon`.
-- Panel: `_headers` con la CSP y fallback de SPA (`not_found_handling`). Web: una
-  página de prueba en `/s/{slug}` (SSR).
-- Biome, `typecheck`, Vitest, CI de GitHub Actions y los checks de ARQUITECTURA
-  ("Calidad y CI").
-- `.claude/launch.json` con los dos dev servers, `.claude/settings.json`, `AGENTS.md`
-  + symlink `CLAUDE.md`, README con "Cómo se construye".
-- Protección de `main` en GitHub (con OK de Mauro).
-
-*Listo cuando* `pnpm dev` levanta web y panel y la CI pasa en el PR.
-
-## R1 · Ingreso y alta del negocio
+## R1 · Ingreso y alta del negocio ▶
 
 El solista entra con link mágico o Google, crea su negocio (nombre, rubro, slug) y ve
 su panel vacío con el nombre del negocio.
@@ -136,3 +115,11 @@ no vino, cancela y avisa al cliente con un WhatsApp prearmado.
   - Archivos `.astro` sin lint ni typecheck: Biome no ve la plantilla y
     `@astrojs/check` no soporta TypeScript 7. Volver a mirarlo cuando haya componentes
     `.astro` con lógica (R3) o cuando salga un `@astrojs/check` compatible.
+- **Anotado en la auditoría de F0** (2026-11-17):
+  - Borrar `getSupabase` (panel) y `createServerSupabase` (web) si R1 no los usa
+    enseguida: hoy no los importa nadie, solo los cubre el typecheck.
+  - Worker `agenditas` de Cloudflare conectado al repo (check `Workers Builds`): decidir
+    si se desconecta o se reconfigura.
+  - README "Cómo se construye": reescribirlo con las palabras de Mauro.
+  - Sin verificar en real: `style-src 'self'` de la CSP con Radix/shadcn (R1) y los
+    privilegios por defecto de `supabase_admin` en el proyecto hosteado.
