@@ -45,6 +45,7 @@ herramienta. Producto: SaaS de turnos para pymes que venden tiempo, en voseo es-
 | Documento | Decide sobre |
 |---|---|
 | [`docs/PRODUCT.md`](./docs/PRODUCT.md) | Usuarios, voz y textos |
+| [`DESIGN.md`](./DESIGN.md) | Sistema visual (tokens en `packages/ui`) |
 | [`docs/ARQUITECTURA.md`](./docs/ARQUITECTURA.md) | Decisiones técnicas |
 | [`docs/ROADMAP.md`](./docs/ROADMAP.md) | Qué se hace ahora |
 | [`docs/HISTORIAL.md`](./docs/HISTORIAL.md) | Qué se hizo y por qué |

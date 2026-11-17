@@ -8,7 +8,7 @@ export function WeekStrip({ days }: { days: WeekDay[] }) {
         <li
           key={day.weekday}
           aria-current={day.isToday ? "date" : undefined}
-          className={`flex h-[68px] flex-1 flex-col items-center justify-center rounded-lg text-[13px] ${
+          className={`flex h-[68px] flex-1 flex-col items-center justify-center rounded-lg text-sm ${
             day.isToday ? "bg-foreground text-surface" : "text-muted-foreground"
           }`}
         >
