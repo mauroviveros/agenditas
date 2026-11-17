@@ -9,6 +9,7 @@
     "lint": "oxlint --deny-warnings",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
+    "test:db": "supabase test db",
     "check": "pnpm lint && pnpm typecheck && pnpm test"
   },
   "dependencies": {
@@ -22,6 +23,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "oxlint": "1.94.0",
+    "supabase": "3.2.0",
     "tailwindcss": "4.3.3",
     "typescript": "^5",
     "vitest": "5.1.0"
