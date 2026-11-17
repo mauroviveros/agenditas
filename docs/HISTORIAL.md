@@ -24,6 +24,44 @@ Branch `feat/<rebanada>` · PR <link>
 
 ---
 
+## R1 · Ingreso y alta del negocio — 2026-11-17
+
+Branch `feat/ingreso-negocio` · PR #2
+
+**Qué quedó:** alguien entra con un link al mail, crea su negocio (nombre, rubro y
+dirección `agenditas.app/s/…` con aviso de disponibilidad) y ve su panel vacío; desde
+«Más» sale. En la base: `businesses` y `memberships` con RLS y la RPC `create_business`.
+
+**Decisiones**
+- Un negocio por usuario y el alta solo por RPC atómica (negocio + membresía de dueño),
+  con claves de error estables (`slug_taken`, `slug_invalid`…) para que la vista elija
+  el texto. Descartado: INSERT directo con policy (dos pasos que pueden quedar a medias).
+- Las reglas del slug viven en `is_valid_slug` (minúsculas, 3 a 40, reservados) y las
+  usan el CHECK y las RPC; el slug queda fijo una vez publicado (trigger).
+- Link mágico con `token_hash` canjeado a mano en `/auth/confirm`, no PKCE, para que
+  ande abierto en otro dispositivo. Un `useQuery` deduplica el canje (el token es de un
+  solo uso y StrictMode monta dos veces).
+- Dirección visual «La agenda en calma» del legacy (papel cálido, verde pino, hora en
+  Geist Mono), simplificada para el MVP solista. Se mostraron cuatro manos de
+  alternativas y Mauro eligió la del legacy a partir de una captura. Documentada en
+  `DESIGN.md`. Descartado: mundos temáticos (casete, reloj, subte…), que se leían como
+  disfraz sobre una pantalla de trabajo.
+- Contorno de controles a 3,5:1 (`--control-border`), no el borde suave de tarjeta,
+  por WCAG 1.4.11; título de página por pantalla.
+- Fuentes autoalojadas con `@fontsource-variable` (Geist y Geist Mono): sin pedidos a
+  Google y la CSP no cambia. Playwright para el e2e, en un job aparte de la CI.
+
+**Diseño elegido:** «La agenda en calma», mismas pantallas que el boceto aprobado
+(ingreso, revisá tu mail, alta del negocio, panel vacío) más «Más» para salir.
+
+**Atajos:** solo modo claro → sumar el oscuro cuando haya pilotos que lo pidan.
+«Cargar servicios» deshabilitado → se habilita en R2. Hay un negocio por usuario
+(`unique (user_id)`) → sacarlo cuando haya equipo.
+
+**Pendiente:** Google (falta el cliente OAuth), SMTP propio y `site_url` hosteado, y
+los hallazgos del `/code-review` anotados en el ROADMAP (dueño huérfano, `slug_taken`
+en UPDATE, enumeración de slugs, límite de ritmo).
+
 ## F0 · Fundaciones — 2026-11-17
 
 Branch `chore/fundaciones` · PR #1 (kickoff 2026-11-16)
