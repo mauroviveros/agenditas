@@ -1,0 +1,21 @@
+---
+// Página pública del negocio. En R3 lee el negocio de la base y publica su marca;
+// por ahora solo prueba que la ruta se renderiza en el servidor.
+// biome-ignore lint/correctness/noUnusedVariables: Biome no ve la plantilla, y slug se usa abajo
+const { slug } = Astro.params;
+---
+
+<html lang="es-AR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>{slug} · Agenditas</title>
+  </head>
+  <body>
+    <main>
+      <h1>{slug}</h1>
+      <p>Esta página todavía no tiene datos.</p>
+    </main>
+  </body>
+</html>

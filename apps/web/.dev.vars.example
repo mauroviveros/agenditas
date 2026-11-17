@@ -1,0 +1,7 @@
+# Copiá este archivo a .dev.vars. En local, los valores salen de `pnpm supabase status`.
+# En Cloudflare se cargan con `wrangler secret put` (la clave secret nunca va acá).
+
+# URL de la API de Supabase
+SUPABASE_URL=http://127.0.0.1:54321
+# Clave publicable (sb_publishable_…)
+SUPABASE_PUBLISHABLE_KEY=
