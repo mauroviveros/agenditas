@@ -26,48 +26,7 @@ Nada existe hasta que alguien lo carga:
 
 ---
 
-## R2 · Servicios y horarios ▶
-
-El solista carga sus servicios (duración y precio opcional) y su horario semanal con
-almuerzo, y marca días cerrados y qué feriados nacionales abre.
-
-**Casos borde** (se vuelven tests antes del código):
-
-- Servicios, horarios y excepciones son solo del dueño: otro usuario no los ve ni los
-  edita, y `anon` no lee nada todavía (la página pública llega en R3).
-- Servicio: nombre de 1 a 80 letras, único por negocio sin distinguir mayúsculas entre
-  los activos; duración de 5 a 480 minutos en pasos de 5; precio en pesos enteros, de 0
-  en adelante, o sin precio («Consultar»).
-- Un servicio no se borra, se archiva: los turnos futuros (R4) lo van a referenciar. Uno
-  archivado no se ofrece y su nombre se puede reusar.
-- Horario semanal: cada día está cerrado (sin fila) o abre y cierra con la apertura
-  antes del cierre, en pasos de 15 minutos; un solo tramo por día.
-- Almuerzo opcional: empieza y termina dentro del horario, y no toca la apertura ni el
-  cierre (si no, es un horario más corto).
-- La zona horaria es del negocio (`America/Argentina/Buenos_Aires` por defecto) y debe
-  existir en Postgres.
-- Excepciones por fecha: una fila por día y negocio, ya sea «cerrado» (vacaciones) o
-  «abro» (un feriado). Los feriados nacionales no se guardan: el panel los lee de la
-  API de feriados de Argentina (argentinadatos) y el negocio queda cerrado en ellos salvo
-  que marque «abro». Si la API falla, el panel lo dice y deja cargar días cerrados a mano.
-- No se cargan excepciones en fechas pasadas.
-- Guardar el horario no deja a medias: un día mal cargado no pisa los demás.
-
-1. **Datos.** Migración con `services`, `weekly_hours`, `day_overrides`,
-   y `businesses.time_zone`; RLS y `GRANT` explícitos. Una RPC, `save_weekly_hours`,
-   para guardar la semana entera sin dejarla a medias. pgTAP de los casos borde
-   y helpers de formato es-AR (`$19.500`, «1 h 30 min»).
-   *Listo cuando* los tests pasan y `/code-review` no deja nada alto.
-2. **Diseño.** Hereda «La agenda en calma» (sin torneo de mundos): lista de servicios
-   con vacío y alta/edición, editor de la semana con almuerzo, y días cerrados con los
-   próximos feriados. Mauro confirma la estructura.
-   *Listo cuando* Mauro confirmó las pantallas.
-3. **Vista.** Esas pantallas con carga, error y vacío, y el paso 2 y 3 de «Armá tu
-   agenda» del panel vacío. Se habilita «Cargar servicios».
-   *Listo cuando* el e2e «cargar servicios → elegir horarios → ver los pasos
-   completos» pasa y Mauro la revisó.
-
-## R3 · Página pública
+## R3 · Página pública ▶
 
 El solista publica y su página `agenditas.app/s/{slug}` muestra marca, servicios y
 horarios, con su imagen OG.
@@ -128,8 +87,7 @@ no vino, cancela y avisa al cliente con un WhatsApp prearmado.
   - Google en el ingreso: crear el cliente OAuth, activar `[auth.external.google]` y
     `VITE_GOOGLE_ENABLED=true`; hoy el botón no se muestra.
   - SMTP propio (Resend) y `site_url` del proyecto hosteado apuntando al panel.
-  - Habilitar «Cargar servicios» del panel vacío (R2) y los estados de carga del
-    alta con conexión lenta.
+  - Estados de carga del alta con conexión lenta.
   - Sin verificar en real: `style-src 'self'` de la CSP con Radix/shadcn (R1) y los
     privilegios por defecto de `supabase_admin` en el proyecto hosteado.
 - **Anotado en el /code-review de R1:**

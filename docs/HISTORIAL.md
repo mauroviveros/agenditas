@@ -24,6 +24,42 @@ Branch `feat/<rebanada>` · PR <link>
 
 ---
 
+## R2 · Servicios y horarios — 2026-11-17
+
+Branch `feat/servicios-horarios` · PR #3
+
+**Qué quedó:** el solista carga sus servicios (nombre, duración de a 5 minutos y precio
+opcional), edita y archiva; elige su horario semanal con almuerzo; ve los próximos
+feriados, marca cuáles abre y cierra días o tramos (vacaciones). «Armá tu agenda» avanza
+sola según lo cargado. En la base: `services`, `weekly_hours`, `day_overrides`,
+`businesses.time_zone` y la RPC `save_weekly_hours`.
+
+**Decisiones**
+- Un tramo por día con almuerzo adentro, porque es como piensa su día el solista; la RPC
+  de disponibilidad (R4) resta el almuerzo. Descartado: dos tramos por día (más pantalla
+  para el caso poco común).
+- Los feriados no se guardan: el panel los lee de la API argentinadatos y el negocio
+  queda cerrado salvo «Abro». Descartado: tabla sembrada a mano (Mauro: no cargar
+  feriados a mano; se desactualiza).
+- Guardar la semana va por la RPC `save_weekly_hours` (borra y reinserta en una
+  transacción), porque un día mal cargado no puede dejar la semana a medias.
+- Un servicio se archiva, no se borra, porque los turnos (R4) lo van a referenciar.
+- Días cerrados: una fila por fecha, todas o ninguna por tanda; el tramo se arma al
+  mostrar (`groupClosedDays`). «Hoy» se mide en la zona del negocio, también en la base.
+
+**Diseño elegido:** hereda «La agenda en calma»; Servicios, Horarios y Días cerrados
+cuelgan de «Más», con pantalla propia cada uno. Mauro confirmó la estructura.
+
+**Atajos:** el paso «Compartí tu link» queda deshabilitado → se habilita con la página
+pública (R3). Los feriados que lee el navegador no los ve la base → decidir antes de R4
+(ver Estacionado). Sin «copiar horario a otros días» → sumarlo si los pilotos lo piden.
+
+**Pendiente:** accesibilidad con lector de pantalla real y con `/accessibility` (no hay
+axe instalado; se probó con roles y etiquetas en Playwright). Mapeo de errores de
+`no_business` hacia el ingreso.
+
+---
+
 ## R1 · Ingreso y alta del negocio — 2026-11-17
 
 Branch `feat/ingreso-negocio` · PR #2
