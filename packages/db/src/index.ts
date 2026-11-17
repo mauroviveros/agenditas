@@ -1,6 +1,7 @@
 // Tipos generados de Supabase (`types.ts`, con `pnpm db:types`) y validación
 // compartida entre panel y web. Los esquemas zod llegan con R1.
 
+export { slugify, slugWithSuffix } from "./slug";
 export {
   readSupabaseConfig,
   type SupabaseConfig,
