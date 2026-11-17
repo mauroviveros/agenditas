@@ -26,41 +26,7 @@ Nada existe hasta que alguien lo carga:
 
 ---
 
-## R1 · Ingreso y alta del negocio ▶
-
-El solista entra con link mágico o Google, crea su negocio (nombre, rubro, slug) y ve
-su panel vacío con el nombre del negocio.
-
-**Casos borde** (se vuelven tests antes del código):
-
-- Un usuario no ve ni edita el negocio de otro.
-- El slug se normaliza (minúsculas, sin tildes, guiones) y la base rechaza los
-  reservados (`www`, `panel`, `api`, `app`, `admin`…) y los tomados, sin distinguir
-  mayúsculas. Entre 3 y 40 caracteres.
-- El alta propone el slug desde el nombre ("Barbería Ceibo" → `barberia-ceibo`),
-  editable y con aviso de disponibilidad en vivo; si está tomado, sugiere `-2`.
-- El slug no se puede cambiar una vez publicado el negocio.
-- Crear el negocio es atómico (negocio + membresía de dueño); un doble envío no crea
-  dos.
-- Un usuario tiene un solo negocio en el MVP.
-- Sin negocio, el panel lleva al alta; con negocio, el alta lleva al panel.
-- El link mágico abierto en otro dispositivo funciona (`token_hash`); vencido, avisa y
-  deja pedir otro.
-- Toda tabla nueva tiene RLS (el check de F0 lo garantiza).
-
-1. **Datos.** Auth en `config.toml` (link mágico con Mailpit local, Google),
-   plantilla `token_hash` del mail, SMTP propio (Resend) en `agenditas-dev` y URLs de
-   redirección por entorno. `businesses` y `memberships` con RLS y `GRANT`. RPC
-   `create_business`. pgTAP de los casos borde.
-   *Listo cuando* los tests pasan y `/code-review` no deja nada alto.
-2. **Diseño.** Ingreso, "revisá tu mail", alta del negocio y panel vacío. Primera
-   pantalla: `/impeccable init` para `DESIGN.md`.
-   *Listo cuando* Mauro eligió una alternativa.
-3. **Vista.** Esas pantallas con estados de carga, error y vacío, splash del panel,
-   salir.
-   *Listo cuando* el e2e "entrar → crear negocio → ver panel" pasa y Mauro la revisó.
-
-## R2 · Servicios y horarios
+## R2 · Servicios y horarios ▶
 
 El solista carga sus servicios (duración, precio) y su horario semanal con almuerzo,
 días cerrados y feriados AR.
@@ -119,6 +85,11 @@ no vino, cancela y avisa al cliente con un WhatsApp prearmado.
   - Borrar `getSupabase` (panel) y `createServerSupabase` (web) si R1 no los usa
     enseguida: hoy no los importa nadie, solo los cubre el typecheck.
   - README "Cómo se construye": reescribirlo con las palabras de Mauro.
+  - Google en el ingreso: crear el cliente OAuth, activar `[auth.external.google]` y
+    `VITE_GOOGLE_ENABLED=true`; hoy el botón no se muestra.
+  - SMTP propio (Resend) y `site_url` del proyecto hosteado apuntando al panel.
+  - Habilitar «Cargar servicios» del panel vacío (R2) y los estados de carga del
+    alta con conexión lenta.
   - Sin verificar en real: `style-src 'self'` de la CSP con Radix/shadcn (R1) y los
     privilegios por defecto de `supabase_admin` en el proyecto hosteado.
 - **Anotado en el /code-review de R1:**
