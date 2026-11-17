@@ -3,5 +3,9 @@ packages:
   - packages/*
 
 allowBuilds:
-  sharp: false
-  unrs-resolver: false
+  esbuild: true
+  workerd: true
+
+minimumReleaseAgeExclude:
+  - miniflare@5.20261116.0-beta
+  - wrangler@4.163.0
