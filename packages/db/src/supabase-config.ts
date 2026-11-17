@@ -18,6 +18,30 @@ function readString(env: object, name: string): string | undefined {
     : undefined;
 }
 
+// Las claves legacy (`supabase status` las imprime) son JWT: la secreta lleva
+// `role: service_role` en el payload y no empieza con `sb_secret_`.
+function jwtRole(value: string): unknown {
+  const [, payloadPart] = value.split(".");
+  if (!payloadPart) return undefined;
+  try {
+    const base64 = payloadPart.replace(/-/g, "+").replace(/_/g, "/");
+    const payload: unknown = JSON.parse(
+      atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, "=")),
+    );
+    return typeof payload === "object" && payload !== null
+      ? (payload as { role?: unknown }).role
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function isSecretKey(value: string): boolean {
+  return (
+    value.startsWith(SECRET_KEY_PREFIX) || jwtRole(value) === "service_role"
+  );
+}
+
 function isHttpUrl(value: string): boolean {
   try {
     const { protocol } = new URL(value);
@@ -47,9 +71,9 @@ export function readSupabaseConfig(
   if (!isHttpUrl(url)) {
     throw new Error(`${names.url} tiene que ser una URL http o https`);
   }
-  if (publishableKey.startsWith(SECRET_KEY_PREFIX)) {
+  if (isSecretKey(publishableKey)) {
     throw new Error(
-      `${names.publishableKey} es una clave secret: usá la publishable`,
+      `${names.publishableKey} es una clave secret (service_role): usá la publishable`,
     );
   }
 
