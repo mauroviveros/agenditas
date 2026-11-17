@@ -6,6 +6,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
+    "generate": "supabase gen types typescript --schema public --log-level none > src/types.ts.tmp && mv src/types.ts.tmp src/types.ts && biome format --write src/types.ts || (rm -f src/types.ts.tmp; exit 1)",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
