@@ -3,6 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { AuthLayout } from "../../components/AuthLayout";
 import { confirmMagicLink } from "../../lib/auth";
+import { usePageTitle } from "../../lib/page-title";
 
 export const Route = createFileRoute("/auth/confirm")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/auth/confirm")({
 
 // El token se canjea una sola vez: useQuery lo deduplica aunque StrictMode monte dos veces.
 function ConfirmPage() {
+  usePageTitle("Entrando");
   const { token_hash: tokenHash } = Route.useSearch();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -45,7 +47,7 @@ function ConfirmPage() {
         </p>
         <Link
           to="/ingresar"
-          className="mt-7 grid h-12 place-items-center rounded-md bg-primary text-[15px] font-semibold text-primary-foreground"
+          className="mt-7 grid h-12 place-items-center rounded-md bg-primary text-[15px] font-semibold text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         >
           Pedir otro link
         </Link>

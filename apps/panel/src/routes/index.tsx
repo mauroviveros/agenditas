@@ -3,6 +3,7 @@ import { BottomNav } from "../components/BottomNav";
 import { Button } from "../components/Button";
 import { WeekStrip } from "../components/WeekStrip";
 import { requireBusiness } from "../lib/guards";
+import { usePageTitle } from "../lib/page-title";
 import { monthName, weekOf } from "../lib/week";
 
 const TIME_ZONE = "America/Argentina/Buenos_Aires";
@@ -21,6 +22,7 @@ const STEPS = [
 function HomePage() {
   const { business } = Route.useRouteContext();
   const now = new Date();
+  usePageTitle(`Agenda de ${business.name}`);
 
   return (
     <div className="mx-auto min-h-dvh max-w-md pb-24">

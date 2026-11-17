@@ -8,6 +8,7 @@ import { Field } from "../components/Field";
 import { businessQuery, createBusiness, slugAvailable } from "../lib/business";
 import { businessErrorMessage } from "../lib/errors";
 import { requireSessionWithoutBusiness } from "../lib/guards";
+import { usePageTitle } from "../lib/page-title";
 import { findFreeSlug } from "../lib/slug-search";
 import { useDebounced } from "../lib/use-debounced";
 
@@ -32,6 +33,7 @@ function isAlreadyCreated(error: unknown): boolean {
 }
 
 function CreateBusinessPage() {
+  usePageTitle("Creá tu agenda");
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
@@ -86,7 +88,11 @@ function CreateBusinessPage() {
       return "Usá de 3 a 40 letras, números o guiones.";
     if (!canCheck || availability.isPending) return "Mirando si está libre…";
     if (available)
-      return <span className="font-semibold text-primary">✓ Disponible</span>;
+      return (
+        <span className="font-semibold text-primary">
+          <span aria-hidden="true">✓ </span>Disponible
+        </span>
+      );
     return undefined;
   })();
 
@@ -121,7 +127,7 @@ function CreateBusinessPage() {
                   onChange={() => setCategory(option)}
                   className="peer sr-only"
                 />
-                <span className="flex h-11 cursor-pointer items-center rounded-full border border-border-strong bg-surface px-4 font-medium peer-checked:border-foreground peer-checked:bg-foreground peer-checked:text-surface peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary">
+                <span className="flex h-11 cursor-pointer items-center rounded-full border border-control bg-surface px-4 font-medium peer-checked:border-foreground peer-checked:bg-foreground peer-checked:text-surface peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary">
                   {option}
                 </span>
               </label>
