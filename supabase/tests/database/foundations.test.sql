@@ -22,7 +22,7 @@ select is_empty(
      where n.nspname in ('public', 'private')
        and (has_function_privilege('anon', p.oid, 'execute')
          or (has_function_privilege('authenticated', p.oid, 'execute')
-             and n.nspname || '.' || p.proname <> all (array['public.create_business', 'public.slug_available', 'public.is_valid_slug']))) $$,
+             and n.nspname || '.' || p.proname <> all (array['public.create_business', 'public.slug_available', 'public.is_valid_slug', 'public.is_valid_time_zone', 'public.save_weekly_hours']))) $$,
   'anon executes no function; authenticated only the reviewed list'
 );
 
@@ -85,7 +85,7 @@ select isnt_empty(
      where n.nspname in ('public', 'private')
        and (has_function_privilege('anon', p.oid, 'execute')
          or (has_function_privilege('authenticated', p.oid, 'execute')
-             and n.nspname || '.' || p.proname <> all (array['public.create_business', 'public.slug_available', 'public.is_valid_slug']))) $$,
+             and n.nspname || '.' || p.proname <> all (array['public.create_business', 'public.slug_available', 'public.is_valid_slug', 'public.is_valid_time_zone', 'public.save_weekly_hours']))) $$,
   'the function check flags a function granted to anon'
 );
 

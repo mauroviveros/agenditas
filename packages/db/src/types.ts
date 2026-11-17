@@ -17,6 +17,7 @@ export type Database = {
           name: string;
           published_at: string | null;
           slug: string;
+          time_zone: string;
         };
         ComputedFields: never;
         Insert: {
@@ -26,6 +27,7 @@ export type Database = {
           name: string;
           published_at?: string | null;
           slug: string;
+          time_zone?: string;
         };
         Update: {
           category?: string;
@@ -34,8 +36,42 @@ export type Database = {
           name?: string;
           published_at?: string | null;
           slug?: string;
+          time_zone?: string;
         };
         Relationships: [];
+      };
+      day_overrides: {
+        Row: {
+          business_id: string;
+          created_at: string;
+          kind: string;
+          note: string | null;
+          on_date: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          business_id: string;
+          created_at?: string;
+          kind: string;
+          note?: string | null;
+          on_date: string;
+        };
+        Update: {
+          business_id?: string;
+          created_at?: string;
+          kind?: string;
+          note?: string | null;
+          on_date?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "day_overrides_business_id_fkey";
+            columns: ["business_id"];
+            isOneToOne: false;
+            referencedRelation: "businesses";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       memberships: {
         Row: {
@@ -67,6 +103,81 @@ export type Database = {
           },
         ];
       };
+      services: {
+        Row: {
+          archived_at: string | null;
+          business_id: string;
+          created_at: string;
+          duration_minutes: number;
+          id: string;
+          name: string;
+          price_ars: number | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          archived_at?: string | null;
+          business_id: string;
+          created_at?: string;
+          duration_minutes: number;
+          id?: string;
+          name: string;
+          price_ars?: number | null;
+        };
+        Update: {
+          archived_at?: string | null;
+          business_id?: string;
+          created_at?: string;
+          duration_minutes?: number;
+          id?: string;
+          name?: string;
+          price_ars?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "services_business_id_fkey";
+            columns: ["business_id"];
+            isOneToOne: false;
+            referencedRelation: "businesses";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      weekly_hours: {
+        Row: {
+          business_id: string;
+          closes: string;
+          lunch_ends: string | null;
+          lunch_starts: string | null;
+          opens: string;
+          weekday: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          business_id: string;
+          closes: string;
+          lunch_ends?: string | null;
+          lunch_starts?: string | null;
+          opens: string;
+          weekday: number;
+        };
+        Update: {
+          business_id?: string;
+          closes?: string;
+          lunch_ends?: string | null;
+          lunch_starts?: string | null;
+          opens?: string;
+          weekday?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "weekly_hours_business_id_fkey";
+            columns: ["business_id"];
+            isOneToOne: false;
+            referencedRelation: "businesses";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -77,6 +188,8 @@ export type Database = {
         Returns: string;
       };
       is_valid_slug: { Args: { p_slug: string }; Returns: boolean };
+      is_valid_time_zone: { Args: { p_zone: string }; Returns: boolean };
+      save_weekly_hours: { Args: { p_hours: Json }; Returns: undefined };
       slug_available: { Args: { p_slug: string }; Returns: boolean };
     };
     Enums: {
