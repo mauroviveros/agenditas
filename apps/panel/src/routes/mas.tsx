@@ -4,6 +4,7 @@ import { BottomNav } from "../components/BottomNav";
 import { Button } from "../components/Button";
 import { signOut } from "../lib/auth";
 import { requireBusiness } from "../lib/guards";
+import { usePageTitle } from "../lib/page-title";
 
 export const Route = createFileRoute("/mas")({
   beforeLoad: ({ context }) => requireBusiness(context.queryClient),
@@ -11,6 +12,7 @@ export const Route = createFileRoute("/mas")({
 });
 
 function MorePage() {
+  usePageTitle("Más");
   const { business, session } = Route.useRouteContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();

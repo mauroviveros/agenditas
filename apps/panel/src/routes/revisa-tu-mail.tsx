@@ -6,6 +6,7 @@ import { Button } from "../components/Button";
 import { sendMagicLink } from "../lib/auth";
 import { signInErrorMessage } from "../lib/errors";
 import { redirectIfSignedIn } from "../lib/guards";
+import { usePageTitle } from "../lib/page-title";
 
 const RESEND_WAIT_SECONDS = 60;
 const SECONDS_PER_MINUTE = 60;
@@ -28,6 +29,7 @@ function formatWait(seconds: number): string {
 }
 
 function CheckEmailPage() {
+  usePageTitle("Revisá tu mail");
   const { email } = Route.useSearch();
   const [wait, setWait] = useState(RESEND_WAIT_SECONDS);
   const resend = useMutation({
@@ -80,7 +82,7 @@ function CheckEmailPage() {
         ) : null}
         <Link
           to="/ingresar"
-          className="block py-3 text-center font-medium text-muted-foreground"
+          className="block py-3 text-center font-medium text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         >
           Usar otro mail
         </Link>

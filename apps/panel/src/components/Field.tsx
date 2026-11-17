@@ -26,7 +26,7 @@ export function Field({
       </label>
       <div
         className={`flex h-12 items-center overflow-hidden rounded-md border bg-surface text-base focus-within:outline-2 focus-within:outline-primary ${
-          error ? "border-destructive" : "border-border-strong"
+          error ? "border-destructive" : "border-control"
         }`}
       >
         {prefix ? (
@@ -48,6 +48,7 @@ export function Field({
         <p
           id={messageId}
           role={error ? "alert" : undefined}
+          aria-live={error ? undefined : "polite"}
           className={`mt-2 text-sm ${error ? "text-destructive" : "text-muted-foreground"}`}
         >
           {error ?? hint}

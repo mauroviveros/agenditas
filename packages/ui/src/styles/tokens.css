@@ -10,6 +10,8 @@
   --sunken: #efeeea;
   --border: #e3e1db;
   --border-strong: #cfcbc2;
+  /* Contorno de campos y botones: 3:1 contra el fondo y la superficie (WCAG 1.4.11). */
+  --control-border: #85817a;
   --foreground: #1c1c1a;
   --muted-foreground: #55534e;
   --subtle-foreground: #6e6b65;
@@ -29,6 +31,7 @@
   --color-sunken: var(--sunken);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
+  --color-control: var(--control-border);
   --color-foreground: var(--foreground);
   --color-muted-foreground: var(--muted-foreground);
   --color-subtle-foreground: var(--subtle-foreground);

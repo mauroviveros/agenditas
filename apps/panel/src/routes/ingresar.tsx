@@ -7,6 +7,7 @@ import { Field } from "../components/Field";
 import { GOOGLE_ENABLED, sendMagicLink, signInWithGoogle } from "../lib/auth";
 import { signInErrorMessage } from "../lib/errors";
 import { redirectIfSignedIn } from "../lib/guards";
+import { usePageTitle } from "../lib/page-title";
 
 export const Route = createFileRoute("/ingresar")({
   beforeLoad: redirectIfSignedIn,
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/ingresar")({
 });
 
 function SignInPage() {
+  usePageTitle("Entrá a tu agenda");
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const send = useMutation({
