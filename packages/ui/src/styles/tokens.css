@@ -1,0 +1,17 @@
+/*
+ * Tokens de diseño. Es el único lugar donde viven los colores y radios (el CI
+ * rechaza hex y colores de Tailwind fuera de este archivo).
+ * Placeholder neutro: se reemplaza en R1 · Diseño con la dirección que elija Mauro.
+ */
+:root {
+  --background: oklch(0.99 0 0);
+  --foreground: oklch(0.2 0 0);
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.45 0 0);
+  --primary: oklch(0.25 0 0);
+  --primary-foreground: oklch(0.99 0 0);
+  --destructive: oklch(0.55 0.2 27);
+  --border: oklch(0.9 0 0);
+  --ring: oklch(0.6 0 0);
+  --radius: 0.5rem;
+}
