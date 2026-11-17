@@ -90,7 +90,8 @@ cubre `authenticated`, la CI no persiste credenciales y hay Dependabot.
   regla `deny` de `.claude/settings.json` le impide al agente intentarlo.
 - `Workers Builds: agenditas` aparece como check en los PR: el Worker `agenditas` de
   Cloudflare está conectado a este repo y compila en cada push. No es parte de la CI
-  del repo ni se exige en la protección; decidir si se desconecta o se reconfigura.
+  del repo ni se exige en la protección. Compilaba `main` (la app vieja de Next) y fallaba; Mauro
+  lo desconectó el 2026-11-17.
 
 ## Antes del reinicio · Next.js + Supabase — 2026-10-21 a 2026-11-16
 

@@ -118,8 +118,6 @@ no vino, cancela y avisa al cliente con un WhatsApp prearmado.
 - **Anotado en la auditoría de F0** (2026-11-17):
   - Borrar `getSupabase` (panel) y `createServerSupabase` (web) si R1 no los usa
     enseguida: hoy no los importa nadie, solo los cubre el typecheck.
-  - Worker `agenditas` de Cloudflare conectado al repo (check `Workers Builds`): decidir
-    si se desconecta o se reconfigura.
   - README "Cómo se construye": reescribirlo con las palabras de Mauro.
   - Sin verificar en real: `style-src 'self'` de la CSP con Radix/shadcn (R1) y los
     privilegios por defecto de `supabase_admin` en el proyecto hosteado.
