@@ -1,7 +1,7 @@
 -- Fundaciones de la base: lo que vale para toda tabla y función futura.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(6);
+select plan(8);
 
 -- btree_gist hace posible el exclusion constraint (dos turnos no se pisan).
 select has_extension('btree_gist', 'btree_gist está instalada');
@@ -15,12 +15,16 @@ select is_empty(
 );
 
 -- Privilegios por defecto cerrados: una tabla nueva no abre nada a anon ni authenticated.
-create table public.sonda (id int);
+create table public.sonda (id int generated always as identity);
 alter table public.sonda enable row level security;
 select table_privs_are('public', 'sonda', 'anon', array[]::text[],
   'una tabla nueva no da privilegios a anon');
 select table_privs_are('public', 'sonda', 'authenticated', array[]::text[],
   'una tabla nueva no da privilegios a authenticated');
+select sequence_privs_are('public', 'sonda_id_seq', 'anon', array[]::text[],
+  'una secuencia nueva no da privilegios a anon');
+select sequence_privs_are('public', 'sonda_id_seq', 'authenticated', array[]::text[],
+  'una secuencia nueva no da privilegios a authenticated');
 
 -- Lo mismo para funciones: ejecutarlas se concede a mano, una por una.
 create function public.sonda_fn() returns int language sql as 'select 1';

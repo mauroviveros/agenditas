@@ -10,7 +10,8 @@ permissions:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  # En un PR, un push nuevo cancela el CI viejo; en main, cada corrida termina.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 # Las acciones van fijadas por SHA (con su versión al lado) para que nadie las cambie por debajo.
 jobs:

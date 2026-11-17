@@ -5,6 +5,8 @@ create extension if not exists btree_gist with schema extensions;
 
 -- Nada nuevo queda abierto a anon ni a authenticated: cada GRANT se da a mano,
 -- junto con su política de RLS, en la migración de esa tabla o función.
+-- Regla: todo objeto va en `public` y lo crea `postgres` (rol de las migraciones).
+-- Un esquema nuevo necesita repetir estos revokes para sus tablas y secuencias.
 alter default privileges for role postgres in schema public
   revoke all on tables from anon, authenticated;
 alter default privileges for role postgres in schema public
