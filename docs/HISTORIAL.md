@@ -69,6 +69,17 @@ CI todavía no.
 - Revisión de `ecc:architect`: la RPC de reservar no la ejecuta `anon` (si no,
   Turnstile se saltea llamando a la Data API); la llama el Worker con la clave
   secreta. SMTP propio para el link mágico. Sin Realtime ni OG por negocio en el MVP.
+- Previews de Cloudflare fuera de F0, porque no hay nada que mirar más que páginas de
+  esqueleto y piden un token de API en los secretos del repo. Costo aceptado: la CSP y
+  el fallback de SPA del panel, el adaptador de Astro y la migración en el proyecto
+  hosteado siguen sin verificarse en Cloudflare hasta el primer deploy (ver ROADMAP).
+  Hallazgo para cuando se haga: `wrangler preview` no exige un deploy previo a
+  producción; `wrangler versions upload` sí.
+- Versiones fijadas bajo la regla de antigüedad de pnpm (`supabase` 3.1.0, `wrangler`
+  4.162.0): se había colado `wrangler` 4.163.0 por una exclusión automática y el
+  lockfile la arrastraba.
+- Acciones de GitHub fijadas por SHA: un tag se puede reapuntar a código malicioso
+  (como pasó con `tj-actions/changed-files` en 2025) y la CI va a tener secretos.
 
 ## Antes del reinicio · Next.js + Supabase — 2026-10-21 a 2026-11-16
 

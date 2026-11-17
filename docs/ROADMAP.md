@@ -41,14 +41,11 @@ Branch `chore/fundaciones`. Se planea con `/ecc:plan` antes de tocar código.
   página de prueba en `/s/{slug}` (SSR).
 - Biome, `typecheck`, Vitest, CI de GitHub Actions y los checks de ARQUITECTURA
   ("Calidad y CI").
-- Deploy de preview de las dos apps en Cloudflare (`*.workers.dev`) para validar el
-  adaptador de Astro desde el día uno.
 - `.claude/launch.json` con los dos dev servers, `.claude/settings.json`, `AGENTS.md`
   + symlink `CLAUDE.md`, README con "Cómo se construye".
 - Protección de `main` en GitHub (con OK de Mauro).
 
-*Listo cuando* `pnpm dev` levanta web y panel, CI pasa en el PR y las dos previews
-responden en Cloudflare.
+*Listo cuando* `pnpm dev` levanta web y panel y la CI pasa en el PR.
 
 ## R1 · Ingreso y alta del negocio
 
@@ -121,6 +118,17 @@ no vino, cancela y avisa al cliente con un WhatsApp prearmado.
   teléfono del cliente), Sentry en el panel y Supabase Pro en producción.
 - OG por negocio: con el editor de apariencia, si entra en el límite del Worker.
 - Realtime en la agenda: cuando haya equipo (varias personas tocando la misma agenda).
+- **Deploy y previews en Cloudflare** (se dejó afuera de F0 porque aún no hay nada que
+  mirar). Hacerlo **antes de publicar la primera página real (R3)**:
+  - Hasta entonces quedan sin verificar en Cloudflare de verdad: la CSP y el fallback
+    de SPA del panel (probados solo en `wrangler dev`), el adaptador de Astro y que la
+    migración se aplique en el proyecto hosteado.
+  - Plan: `wrangler preview` (no exige deploy a producción; `wrangler` ≥ 4.135 y el
+    Worker `agenditas-panel` / `agenditas-web`), con `CLOUDFLARE_API_TOKEN` y
+    `CLOUDFLARE_ACCOUNT_ID` como secretos del repo y un workflow que comenta la URL en
+    el PR. Sin verificar: que ande con el Worker de solo assets y con el de Astro.
+  - Las previews son públicas por defecto: activar Access antes de que haya datos
+    reales.
 - **Revisar `apps/web` y Cloudflare** (anotado en F0):
   - Recursos del adaptador: `session: false` e `imageService: "passthrough"` evitan que
     el deploy cree un KV y un binding de Images. Volver a mirarlo en R3 (logo y portada

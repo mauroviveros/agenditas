@@ -90,7 +90,7 @@ supabase/     migraciones, RLS, RPC, pgTAP, plantillas de Auth
 | Entorno | Base | Apps |
 |---|---|---|
 | Local | `supabase start` (Docker); `db reset` aplica migraciones + `seed.sql` | `pnpm dev` levanta web y panel |
-| Preview | Proyecto Supabase `agenditas-dev` | Versión de preview de Cloudflare por PR (`*.workers.dev`) |
+| Preview | Proyecto Supabase `agenditas-dev` | Previews de Cloudflare por PR (`wrangler preview`). Todavía no: ver ROADMAP, Estacionado |
 | Producción | Proyecto Supabase `agenditas` (plan Pro: el gratis se pausa a los 7 días sin uso) | Deploy desde `main` |
 
 - Claves en `.env` (local) y en los secretos de Cloudflare y GitHub. Ninguna en el
