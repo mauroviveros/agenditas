@@ -47,14 +47,15 @@ almuerzo, y marca días cerrados y qué feriados nacionales abre.
 - La zona horaria es del negocio (`America/Argentina/Buenos_Aires` por defecto) y debe
   existir en Postgres.
 - Excepciones por fecha: una fila por día y negocio, ya sea «cerrado» (vacaciones) o
-  «abro» (un feriado). Los feriados nacionales vienen cargados (2026 y 2027, solo los
-  decretados) y el negocio queda cerrado en ellos salvo que marque «abro».
+  «abro» (un feriado). Los feriados nacionales no se guardan: el panel los lee de la
+  API de feriados de Argentina (argentinadatos) y el negocio queda cerrado en ellos salvo
+  que marque «abro». Si la API falla, el panel lo dice y deja cargar días cerrados a mano.
 - No se cargan excepciones en fechas pasadas.
 - Guardar el horario no deja a medias: un día mal cargado no pisa los demás.
 
 1. **Datos.** Migración con `services`, `weekly_hours`, `day_overrides`,
-   `public_holidays` (con los feriados) y `businesses.time_zone`; RLS y `GRANT`
-   explícitos, sin RPC porque no hay invariantes entre filas. pgTAP de los casos borde
+   y `businesses.time_zone`; RLS y `GRANT` explícitos. Una RPC, `save_weekly_hours`,
+   para guardar la semana entera sin dejarla a medias. pgTAP de los casos borde
    y helpers de formato es-AR (`$19.500`, «1 h 30 min»).
    *Listo cuando* los tests pasan y `/code-review` no deja nada alto.
 2. **Diseño.** Hereda «La agenda en calma» (sin torneo de mundos): lista de servicios
@@ -83,6 +84,10 @@ no vino, cancela y avisa al cliente con un WhatsApp prearmado.
 
 ## ⏸ Estacionado
 
+- **Feriados y disponibilidad (decidir en R4):** los feriados los lee el panel de la API,
+  pero la RPC de disponibilidad corre en la base y no los ve. Opciones: que el panel
+  grabe el cierre como excepción «cerrado» al elegir, o que un job traiga los feriados a
+  la base. Hay que resolverlo antes de que el público reserve.
 - Subdominios `{slug}.agenditas.app` (dirección base de todos los planes) y dominio
   propio (premium): después del MVP. `/s/{slug}` queda como respaldo y redirige a la
   dirección canónica.
