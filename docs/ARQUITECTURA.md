@@ -57,8 +57,9 @@ supabase/     migraciones, RLS, RPC, pgTAP, plantillas de Auth
 - **La base es el único guardia.** La clave publicable es pública y la Data API se
   puede llamar sin la app, así que todo permiso vive en Postgres:
   - RLS en todas las tablas. La primera migración revoca los privilegios por defecto
-    de tablas y funciones a `anon`, `authenticated` y `PUBLIC`; cada `GRANT` es
-    explícito.
+    de tablas, secuencias y funciones a `anon` y `authenticated` (y el de funciones a
+    `PUBLIC`); cada `GRANT` es explícito. Solo cubre lo que crea `postgres`: un test
+    exige que todo en `public` sea suyo.
   - **Panel:** `TO authenticated` + pertenencia al negocio. UPDATE con `USING` y
     `WITH CHECK`.
   - **Público:** `anon` lee solo las columnas que muestra la página y solo de negocios
