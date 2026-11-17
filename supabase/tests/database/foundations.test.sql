@@ -1,5 +1,5 @@
 begin;
-select plan(10);
+select plan(12);
 
 -- Estado real del esquema: estas tres pruebas corren antes de crear nada.
 select has_extension(
@@ -20,8 +20,25 @@ select is_empty(
      from pg_proc p
      join pg_namespace n on n.oid = p.pronamespace
      where n.nspname in ('public', 'private')
-       and has_function_privilege('anon', p.oid, 'execute') $$,
-  'anon can execute no function in public or private'
+       and (has_function_privilege('anon', p.oid, 'execute')
+         or has_function_privilege('authenticated', p.oid, 'execute')) $$,
+  'anon and authenticated can execute no function in public or private'
+);
+
+-- Los privilegios por defecto solo cubren lo que crea `postgres` (las migraciones).
+-- Un objeto de otro dueño (por ejemplo supabase_admin) conservaría los defaults de Supabase.
+select is_empty(
+  $$ select c.relname
+     from pg_class c
+     join pg_namespace n on n.oid = c.relnamespace
+     where n.nspname = 'public' and c.relkind in ('r', 'p', 'S', 'v')
+       and c.relowner <> 'postgres'::regrole
+     union all
+     select p.proname
+     from pg_proc p
+     join pg_namespace n on n.oid = p.pronamespace
+     where n.nspname = 'public' and p.proowner <> 'postgres'::regrole $$,
+  'every object in public is owned by postgres'
 );
 
 -- Defaults: lo que se crea de acá en adelante no queda expuesto por la Data API.
@@ -64,8 +81,22 @@ select isnt_empty(
      from pg_proc p
      join pg_namespace n on n.oid = p.pronamespace
      where n.nspname in ('public', 'private')
-       and has_function_privilege('anon', p.oid, 'execute') $$,
-  'the anon check flags a function granted to anon'
+       and (has_function_privilege('anon', p.oid, 'execute')
+         or has_function_privilege('authenticated', p.oid, 'execute')) $$,
+  'the function check flags a function granted to anon'
+);
+
+create role zz_probe_owner;
+grant zz_probe_owner to postgres;
+grant create on schema public to zz_probe_owner;
+alter table public.zz_probe_table owner to zz_probe_owner;
+select isnt_empty(
+  $$ select c.relname
+     from pg_class c
+     join pg_namespace n on n.oid = c.relnamespace
+     where n.nspname = 'public' and c.relkind in ('r', 'p', 'S', 'v')
+       and c.relowner <> 'postgres'::regrole $$,
+  'the owner check flags a table owned by another role'
 );
 
 select * from finish();
