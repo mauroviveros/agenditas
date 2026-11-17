@@ -51,7 +51,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - Una branch por rebanada (`feat/<rebanada>`); `main` está protegida por el ruleset
   `main protegida`: PR, CI en verde, commits firmados e historia lineal.
-- Skill **`mviveros:commit`**: Conventional Commits con gitmoji en shortcode, en inglés.
+- Skill **`mviveros:commit`**: Conventional Commits con gitmoji en shortcode, en inglés. El
+  título del PR también en inglés (con el squash pasa a ser el commit en `main`); la
+  descripción, en español.
 - El agente commitea cada bloque aprobado con rutas exactas (nunca `git add .` ni `-A`),
   pushea la branch y abre el PR. **El merge (squash) lo hace Mauro.**
 
@@ -69,8 +71,11 @@ Si dos se contradicen, decide el de la tabla y el otro se corrige en el mismo ca
 
 ## Convenciones
 
-- **Idioma**: UI en español rioplatense con voseo; código de dominio en español
-  (`formatearHora`, `turnos`); commits y PR en inglés.
+- **Idioma**: todo lo técnico en inglés (tablas, columnas, RPC, nombres en
+  TypeScript: `businesses`, `create_business`); español rioplatense con voseo en la UI,
+  las URLs que ve el usuario, la documentación (`.md`), los comentarios del código y
+  la descripción de los PR. Los commits y el título del PR, en inglés. Lo viejo en español (`formatearHora`) se renombra
+  cuando se toca el archivo.
 - **Hora**: se guarda en `timestamptz` y se muestra con `src/lib/hora.ts`
   (`America/Argentina/Buenos_Aires`). Nunca `toLocaleString` suelto.
 - **Datos**: la lógica de turnos vive en Postgres (RPC). Lecturas en Server Components;

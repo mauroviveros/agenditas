@@ -31,14 +31,28 @@ Nada existe hasta que alguien lo carga:
 
 ## R1 · Entrar y crear el negocio ▶
 
-El solista entra con Google y crea su negocio (nombre, rubro, slug).
-Requisito: la verificación de marca de Google (la arranca Mauro, tarda días). Los bloques
-se detallan al empezar la rebanada.
+El solista entra con Google y crea su negocio (nombre y slug). Rutas: `/login`,
+`/panel`; la página pública queda en `/reservar/{slug}` (el prefijo evita choques con
+las rutas de la app; subdominio o dominio propio, después del MVP). El rubro queda
+afuera hasta que algo lo use.
+
+Bloques: 0 dependencias · 1 🔒 tabla `businesses` · 2 🔒 RPC `create_business` ·
+3 🔒 auth (config, clientes, proxy, callback) · 4 pantalla `/login` · 5 🔒 pantalla para
+crear el negocio · 6 guardas de `/panel`.
+
+**Google, pendiente para producción** (lo hace Mauro; la verificación tarda días):
+el cliente OAuth `Agenditas local` ya existe en modo Testing. Falta: verificar
+`agenditas.app` en Search Console; publicar una home y una política de privacidad en
+`agenditas.app` (Google las revisa); cargar Branding (logo, home, privacidad,
+dominio autorizado); crear el cliente `Agenditas prod` con el callback de Supabase de
+producción; publicar la app y pedir la verificación.
 
 **Seguridad pendiente de la auditoría de F0** (cada punto, un caso borde o un check):
 
-- `config.toml`: apagar el provider email, activar Google con `env()` y fijar
-  `site_url` / `additional_redirect_urls` a los dominios reales (sacar `https://127.0.0.1`).
+- `config.toml`: activar Google con `env()` y fijar `site_url` /
+  `additional_redirect_urls` (sacar `https://127.0.0.1`). El provider email queda
+  prendido solo en local, para que Playwright pueda entrar; en producción se usa solo
+  Google (se configura en el dashboard).
 - Toda RPC `security definer` con `set search_path = ''`.
 - Cada RPC pública: `grant execute` explícito, validación con Zod y rate limit.
 - Vistas con `security_invoker = true` (el guard de RLS no mira vistas).
