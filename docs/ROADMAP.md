@@ -28,8 +28,43 @@ Nada existe hasta que alguien lo carga:
 
 ## R2 · Servicios y horarios ▶
 
-El solista carga sus servicios (duración, precio) y su horario semanal con almuerzo,
-días cerrados y feriados AR.
+El solista carga sus servicios (duración y precio opcional) y su horario semanal con
+almuerzo, y marca días cerrados y qué feriados nacionales abre.
+
+**Casos borde** (se vuelven tests antes del código):
+
+- Servicios, horarios y excepciones son solo del dueño: otro usuario no los ve ni los
+  edita, y `anon` no lee nada todavía (la página pública llega en R3).
+- Servicio: nombre de 1 a 80 letras, único por negocio sin distinguir mayúsculas entre
+  los activos; duración de 5 a 480 minutos en pasos de 5; precio en pesos enteros, de 0
+  en adelante, o sin precio («Consultar»).
+- Un servicio no se borra, se archiva: los turnos futuros (R4) lo van a referenciar. Uno
+  archivado no se ofrece y su nombre se puede reusar.
+- Horario semanal: cada día está cerrado (sin fila) o abre y cierra con la apertura
+  antes del cierre, en pasos de 15 minutos; un solo tramo por día.
+- Almuerzo opcional: empieza y termina dentro del horario, y no toca la apertura ni el
+  cierre (si no, es un horario más corto).
+- La zona horaria es del negocio (`America/Argentina/Buenos_Aires` por defecto) y debe
+  existir en Postgres.
+- Excepciones por fecha: una fila por día y negocio, ya sea «cerrado» (vacaciones) o
+  «abro» (un feriado). Los feriados nacionales vienen cargados (2026 y 2027, solo los
+  decretados) y el negocio queda cerrado en ellos salvo que marque «abro».
+- No se cargan excepciones en fechas pasadas.
+- Guardar el horario no deja a medias: un día mal cargado no pisa los demás.
+
+1. **Datos.** Migración con `services`, `weekly_hours`, `day_overrides`,
+   `public_holidays` (con los feriados) y `businesses.time_zone`; RLS y `GRANT`
+   explícitos, sin RPC porque no hay invariantes entre filas. pgTAP de los casos borde
+   y helpers de formato es-AR (`$19.500`, «1 h 30 min»).
+   *Listo cuando* los tests pasan y `/code-review` no deja nada alto.
+2. **Diseño.** Hereda «La agenda en calma» (sin torneo de mundos): lista de servicios
+   con vacío y alta/edición, editor de la semana con almuerzo, y días cerrados con los
+   próximos feriados. Mauro confirma la estructura.
+   *Listo cuando* Mauro confirmó las pantallas.
+3. **Vista.** Esas pantallas con carga, error y vacío, y el paso 2 y 3 de «Armá tu
+   agenda» del panel vacío. Se habilita «Cargar servicios».
+   *Listo cuando* el e2e «cargar servicios → elegir horarios → ver los pasos
+   completos» pasa y Mauro la revisó.
 
 ## R3 · Página pública
 

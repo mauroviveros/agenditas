@@ -72,8 +72,9 @@ supabase/     migraciones, RLS, RPC, pgTAP, plantillas de Auth
   base además limita reservas activas por teléfono y por negocio (el abuso real es
   ocupar horarios, no el spam).
 - **Sin superposición:** `EXCLUDE USING gist` con `btree_gist`, que ignora los turnos
-  cancelados. Almuerzos y bloqueos ("salgo 30 min") viven en la misma tabla que los
-  turnos para que el `EXCLUDE` los vea.
+  cancelados. Los bloqueos puntuales ("salgo 30 min") viven en la misma tabla que los
+  turnos para que el `EXCLUDE` los vea. El almuerzo es parte del horario semanal (un
+  tramo por día, no una fila por fecha) y la RPC de disponibilidad lo resta.
 - **Panel:** lee y escribe con `supabase-js` desde el navegador, a través de TanStack
   Query. Sin Realtime en el MVP: refetch al volver a la pestaña o reconectar, y cada
   60 s. La sesión vive en el navegador → CSP estricta en `_headers` (`connect-src` con
