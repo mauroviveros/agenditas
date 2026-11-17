@@ -6,6 +6,7 @@ export interface Business {
   name: string;
   slug: string;
   category: string;
+  time_zone: string;
 }
 
 export interface NewBusiness {
@@ -20,7 +21,7 @@ export const businessQuery = queryOptions({
   queryFn: async (): Promise<Business | null> => {
     const { data, error } = await getSupabase()
       .from("businesses")
-      .select("id, name, slug, category")
+      .select("id, name, slug, category, time_zone")
       .maybeSingle();
     if (error) throw error;
     return data;

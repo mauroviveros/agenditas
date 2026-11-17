@@ -1,10 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { BottomNav } from "../components/BottomNav";
 import { Button } from "../components/Button";
 import { signOut } from "../lib/auth";
 import { requireBusiness } from "../lib/guards";
 import { usePageTitle } from "../lib/page-title";
+
+const SECTIONS = [
+  { to: "/servicios", label: "Servicios" },
+  { to: "/horarios", label: "Horarios" },
+  { to: "/dias-cerrados", label: "Días cerrados" },
+] as const;
 
 export const Route = createFileRoute("/mas")({
   beforeLoad: ({ context }) => requireBusiness(context.queryClient),
@@ -31,6 +37,23 @@ function MorePage() {
           Más
         </h1>
       </header>
+      <nav
+        aria-label="Tu negocio"
+        className="mx-5 mb-4 divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface"
+      >
+        {SECTIONS.map((section) => (
+          <Link
+            key={section.to}
+            to={section.to}
+            className="flex min-h-14 items-center justify-between px-5 font-semibold focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
+          >
+            {section.label}
+            <span aria-hidden="true" className="text-subtle-foreground">
+              ›
+            </span>
+          </Link>
+        ))}
+      </nav>
       <section className="mx-5 rounded-lg border border-border bg-surface p-5">
         <p className="font-semibold">{business.name}</p>
         <p className="mt-1 break-all text-muted-foreground">

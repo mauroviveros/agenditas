@@ -11,10 +11,15 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CrearNegocioRouteImport } from './routes/crear-negocio'
+import { Route as DiasCerradosRouteImport } from './routes/dias-cerrados'
+import { Route as HorariosRouteImport } from './routes/horarios'
 import { Route as IngresarRouteImport } from './routes/ingresar'
 import { Route as MasRouteImport } from './routes/mas'
 import { Route as RevisaTuMailRouteImport } from './routes/revisa-tu-mail'
 import { Route as AuthConfirmRouteImport } from './routes/auth/confirm'
+import { Route as ServiciosIndexRouteImport } from './routes/servicios/index'
+import { Route as ServiciosIdRouteImport } from './routes/servicios/$id'
+import { Route as ServiciosNuevoRouteImport } from './routes/servicios/nuevo'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -24,6 +29,16 @@ const IndexRoute = IndexRouteImport.update({
 const CrearNegocioRoute = CrearNegocioRouteImport.update({
   id: '/crear-negocio',
   path: '/crear-negocio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiasCerradosRoute = DiasCerradosRouteImport.update({
+  id: '/dias-cerrados',
+  path: '/dias-cerrados',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HorariosRoute = HorariosRouteImport.update({
+  id: '/horarios',
+  path: '/horarios',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IngresarRoute = IngresarRouteImport.update({
@@ -46,66 +61,116 @@ const AuthConfirmRoute = AuthConfirmRouteImport.update({
   path: '/auth/confirm',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServiciosIndexRoute = ServiciosIndexRouteImport.update({
+  id: '/servicios/',
+  path: '/servicios/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServiciosIdRoute = ServiciosIdRouteImport.update({
+  id: '/servicios/$id',
+  path: '/servicios/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServiciosNuevoRoute = ServiciosNuevoRouteImport.update({
+  id: '/servicios/nuevo',
+  path: '/servicios/nuevo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/crear-negocio': typeof CrearNegocioRoute
+  '/dias-cerrados': typeof DiasCerradosRoute
+  '/horarios': typeof HorariosRoute
   '/ingresar': typeof IngresarRoute
   '/mas': typeof MasRoute
   '/revisa-tu-mail': typeof RevisaTuMailRoute
   '/auth/confirm': typeof AuthConfirmRoute
+  '/servicios/$id': typeof ServiciosIdRoute
+  '/servicios/nuevo': typeof ServiciosNuevoRoute
+  '/servicios/': typeof ServiciosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/crear-negocio': typeof CrearNegocioRoute
+  '/dias-cerrados': typeof DiasCerradosRoute
+  '/horarios': typeof HorariosRoute
   '/ingresar': typeof IngresarRoute
   '/mas': typeof MasRoute
   '/revisa-tu-mail': typeof RevisaTuMailRoute
   '/auth/confirm': typeof AuthConfirmRoute
+  '/servicios/$id': typeof ServiciosIdRoute
+  '/servicios/nuevo': typeof ServiciosNuevoRoute
+  '/servicios': typeof ServiciosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/crear-negocio': typeof CrearNegocioRoute
+  '/dias-cerrados': typeof DiasCerradosRoute
+  '/horarios': typeof HorariosRoute
   '/ingresar': typeof IngresarRoute
   '/mas': typeof MasRoute
   '/revisa-tu-mail': typeof RevisaTuMailRoute
   '/auth/confirm': typeof AuthConfirmRoute
+  '/servicios/$id': typeof ServiciosIdRoute
+  '/servicios/nuevo': typeof ServiciosNuevoRoute
+  '/servicios/': typeof ServiciosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/crear-negocio'
+    | '/dias-cerrados'
+    | '/horarios'
     | '/ingresar'
     | '/mas'
     | '/revisa-tu-mail'
     | '/auth/confirm'
+    | '/servicios/$id'
+    | '/servicios/nuevo'
+    | '/servicios/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/crear-negocio'
+    | '/dias-cerrados'
+    | '/horarios'
     | '/ingresar'
     | '/mas'
     | '/revisa-tu-mail'
     | '/auth/confirm'
+    | '/servicios/$id'
+    | '/servicios/nuevo'
+    | '/servicios'
   id:
     | '__root__'
     | '/'
     | '/crear-negocio'
+    | '/dias-cerrados'
+    | '/horarios'
     | '/ingresar'
     | '/mas'
     | '/revisa-tu-mail'
     | '/auth/confirm'
+    | '/servicios/$id'
+    | '/servicios/nuevo'
+    | '/servicios/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CrearNegocioRoute: typeof CrearNegocioRoute
+  DiasCerradosRoute: typeof DiasCerradosRoute
+  HorariosRoute: typeof HorariosRoute
   IngresarRoute: typeof IngresarRoute
   MasRoute: typeof MasRoute
   RevisaTuMailRoute: typeof RevisaTuMailRoute
   AuthConfirmRoute: typeof AuthConfirmRoute
+  ServiciosIdRoute: typeof ServiciosIdRoute
+  ServiciosNuevoRoute: typeof ServiciosNuevoRoute
+  ServiciosIndexRoute: typeof ServiciosIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -122,6 +187,20 @@ declare module '@tanstack/react-router' {
       path: '/crear-negocio'
       fullPath: '/crear-negocio'
       preLoaderRoute: typeof CrearNegocioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dias-cerrados': {
+      id: '/dias-cerrados'
+      path: '/dias-cerrados'
+      fullPath: '/dias-cerrados'
+      preLoaderRoute: typeof DiasCerradosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/horarios': {
+      id: '/horarios'
+      path: '/horarios'
+      fullPath: '/horarios'
+      preLoaderRoute: typeof HorariosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ingresar': {
@@ -152,16 +231,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthConfirmRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/servicios/': {
+      id: '/servicios/'
+      path: '/servicios'
+      fullPath: '/servicios/'
+      preLoaderRoute: typeof ServiciosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicios/$id': {
+      id: '/servicios/$id'
+      path: '/servicios/$id'
+      fullPath: '/servicios/$id'
+      preLoaderRoute: typeof ServiciosIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicios/nuevo': {
+      id: '/servicios/nuevo'
+      path: '/servicios/nuevo'
+      fullPath: '/servicios/nuevo'
+      preLoaderRoute: typeof ServiciosNuevoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CrearNegocioRoute: CrearNegocioRoute,
+  DiasCerradosRoute: DiasCerradosRoute,
+  HorariosRoute: HorariosRoute,
   IngresarRoute: IngresarRoute,
   MasRoute: MasRoute,
   RevisaTuMailRoute: RevisaTuMailRoute,
   AuthConfirmRoute: AuthConfirmRoute,
+  ServiciosIdRoute: ServiciosIdRoute,
+  ServiciosNuevoRoute: ServiciosNuevoRoute,
+  ServiciosIndexRoute: ServiciosIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

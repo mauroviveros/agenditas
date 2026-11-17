@@ -13,6 +13,14 @@ const VARIANTS: Record<Variant, string> = {
   secondary: "border border-control bg-surface text-foreground hover:bg-sunken",
 };
 
+/** Las clases del botón, para un `<Link>` que tiene que verse como botón. */
+export function buttonClasses(
+  variant: Variant = "primary",
+  extra = "",
+): string {
+  return `${BASE} ${VARIANTS[variant]} flex items-center justify-center ${extra}`.trim();
+}
+
 export function Button({
   variant = "primary",
   className = "",

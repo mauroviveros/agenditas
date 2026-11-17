@@ -39,3 +39,32 @@ export function signInErrorMessage(error: unknown): string {
   }
   return SEND_ERROR;
 }
+
+function errorField(error: unknown, field: "code" | "message"): string {
+  if (typeof error === "object" && error !== null && field in error) {
+    const value = (error as Record<string, unknown>)[field];
+    if (typeof value === "string") return value;
+  }
+  return "";
+}
+
+// Códigos de Postgres: 23505 = valor repetido, 23514 = no cumple una regla (CHECK).
+export function serviceErrorMessage(error: unknown): string {
+  const code = errorField(error, "code");
+  if (code === "23505") return "Ya tenés un servicio con ese nombre.";
+  if (code === "23514")
+    return "Revisá el nombre, la duración y el precio e intentá de nuevo.";
+  return DEFAULT_ERROR;
+}
+
+export function scheduleErrorMessage(error: unknown): string {
+  const code = errorField(error, "code");
+  if (errorField(error, "message") === "date_in_past")
+    return "Esa fecha ya pasó. Elegí una desde hoy.";
+  if (errorField(error, "message") === "no_business")
+    return "Tu sesión se venció. Entrá de nuevo.";
+  if (code === "23505") return "Ese día ya está cargado.";
+  if (code === "23514")
+    return "Revisá los horarios: tienen que ir de a 15 minutos y el cierre después de la apertura.";
+  return DEFAULT_ERROR;
+}
