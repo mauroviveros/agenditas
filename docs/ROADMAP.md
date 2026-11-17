@@ -121,3 +121,13 @@ no vino, cancela y avisa al cliente con un WhatsApp prearmado.
   - README "Cómo se construye": reescribirlo con las palabras de Mauro.
   - Sin verificar en real: `style-src 'self'` de la CSP con Radix/shadcn (R1) y los
     privilegios por defecto de `supabase_admin` en el proyecto hosteado.
+- **Anotado en el /code-review de R1:**
+  - Borrar un usuario deja su negocio sin dueño y con el slug tomado: resolverlo antes
+    de ofrecer "borrar mi cuenta".
+  - Cambiar el slug por UPDATE (antes de publicar) devuelve el 23505 crudo, no
+    `slug_taken`: pasarlo por una RPC cuando la vista de edición lo necesite.
+  - `slug_available` deja enumerar slugs a cualquier usuario con cuenta: sumar límite
+    de ritmo antes de abrir a desconocidos.
+  - `site_url` del proyecto hosteado tiene que apuntar al panel (la plantilla del link
+    mágico usa `{{ .SiteURL }}/auth/confirm`).
+  - `slugWithSuffix("")` da `-2` (inválido): la vista pide un slug si `slugify` queda vacío.
