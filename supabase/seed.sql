@@ -1,2 +1,0 @@
--- Datos de desarrollo para `supabase db reset`. Vacío hasta R1: se llena con lo que
--- cada rebanada necesite para verse en el navegador.
