@@ -5,6 +5,16 @@ const NAMES = { url: "APP_URL", publishableKey: "APP_KEY" };
 const VALID_URL = "http://127.0.0.1:54321";
 const VALID_KEY = "sb_publishable_abc123";
 
+// Un JWT sin firma alcanza: la validación solo lee el payload.
+function fakeJwt(payload: Record<string, unknown>): string {
+  const encode = (value: object) =>
+    btoa(JSON.stringify(value))
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+  return `${encode({ alg: "HS256", typ: "JWT" })}.${encode(payload)}.signature`;
+}
+
 describe("readSupabaseConfig", () => {
   test("returns the url and the publishable key under the given names", () => {
     const config = readSupabaseConfig(
@@ -35,6 +45,31 @@ describe("readSupabaseConfig", () => {
         NAMES,
       ),
     ).toThrow(/secret/i);
+  });
+
+  test("refuses a legacy service_role jwt", () => {
+    expect(() =>
+      readSupabaseConfig(
+        { APP_URL: VALID_URL, APP_KEY: fakeJwt({ role: "service_role" }) },
+        NAMES,
+      ),
+    ).toThrow(/service_role/);
+  });
+
+  test("accepts a legacy anon jwt, which local development prints", () => {
+    const anonKey = fakeJwt({ role: "anon" });
+
+    expect(
+      readSupabaseConfig({ APP_URL: VALID_URL, APP_KEY: anonKey }, NAMES)
+        .publishableKey,
+    ).toBe(anonKey);
+  });
+
+  test("does not choke on a dotted value that is not a jwt", () => {
+    expect(
+      readSupabaseConfig({ APP_URL: VALID_URL, APP_KEY: "a.b.c" }, NAMES)
+        .publishableKey,
+    ).toBe("a.b.c");
   });
 
   test("accepts an env object without an index signature", () => {
