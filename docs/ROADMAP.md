@@ -96,6 +96,15 @@ rendimiento.
 
 ## R7 · Caja
 
+## R8 · Rebranding
+
+Hasta acá la app se desarrolla con el diseño base de shadcn (neutral, Geist). Al final se
+decide la identidad: restaurar Mate (está en `main` en el commit `9afb39d`, ver
+`globals.css` y el `DESIGN.md` de esa fecha) o probar otras variantes. Como las pantallas
+usan solo tokens y componentes de shadcn, el cambio debería quedar en `globals.css` y en
+las fuentes de `layout.tsx`. Al empezar, resolver también lo pendiente de `DESIGN.md`:
+alto táctil de 44 px, contraste de bordes y foco, y modo oscuro.
+
 ## ⏸ Estacionado
 
 - **Equipos** (dueño, recepción, varios profesionales): después del MVP.

@@ -25,7 +25,9 @@ grises neutros, Geist y los tokens estándar (`background`, `card`, `primary`, `
 diseñar pantallas rápido; la identidad propia (color, tipografía, nombre del estilo) llega
 en una rebanada de rebranding que cambia esos valores y nada más.
 
-El estilo anterior ("Mate": verde yerba, Bricolage, pills y amarillo) se descartó.
+El estilo anterior ("Mate": verde yerba, Bricolage, pills y amarillo) está en `main` en el
+commit `9afb39d`. Se sigue con shadcn durante el desarrollo y, al final (R8 del ROADMAP),
+se decide si se restaura Mate o se prueban otras variantes.
 
 ## Reglas
 
