@@ -34,6 +34,7 @@ export function NavMenu() {
             <SidebarMenuItem key={href}>
               <SidebarMenuButton
                 isActive={isActive}
+                className="h-11 border border-transparent data-active:border-sidebar-border md:h-8"
                 tooltip={title}
                 render={
                   <Link href={href} aria-current={isActive ? "page" : undefined} />

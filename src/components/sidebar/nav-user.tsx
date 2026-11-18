@@ -35,14 +35,14 @@ export function NavUser({ user }: { user: CurrentUser }) {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent
-              className="w-auto min-w-56"
+              className="w-56 min-w-56"
               side={isMobile ? "bottom" : "right"}
               align="end"
               sideOffset={4}
             >
               <DropdownMenuGroup>
                 <DropdownMenuLabel className="p-0 font-normal">
-                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm text-foreground">
                     <UserSummary user={user} />
                   </div>
                 </DropdownMenuLabel>

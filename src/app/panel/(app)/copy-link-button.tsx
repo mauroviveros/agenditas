@@ -19,12 +19,12 @@ export function CopyLinkButton({ link }: { link: string }) {
   }
 
   return (
-    <div>
-      <Button type="button" variant="secondary" size="lg" onClick={copy}>
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+      <Button type="button" variant="secondary" size="xl" onClick={copy}>
         {state === "copied" ? <CheckIcon aria-hidden /> : <CopyIcon aria-hidden />}
         Copiar link
       </Button>
-      <p aria-live="polite" className="mt-2 min-h-5 text-sm font-semibold">
+      <p aria-live="polite" className="text-sm font-semibold">
         {state === "copied" ? "Copiado" : null}
         {state === "failed" ? "No pudimos copiarlo. Copialo a mano." : null}
       </p>

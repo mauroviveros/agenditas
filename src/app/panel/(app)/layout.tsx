@@ -29,12 +29,12 @@ async function Shell({ children }: { children: ReactNode }) {
     <SidebarProvider>
       <AppSidebar businessName={business.name} user={user} />
 
-      <SidebarInset className="bg-background">
-        <header>
-          <SidebarTrigger aria-label="Mostrar u ocultar el menú" />
+      <SidebarInset className="bg-card">
+        <header className="flex h-14 items-center border-b px-1.5 md:px-4">
+          <SidebarTrigger className="size-11 md:size-8" aria-label="Mostrar u ocultar el menú" />
         </header>
 
-        <main>{children}</main>
+        <main className="px-5 py-8 md:px-10">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );

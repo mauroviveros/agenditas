@@ -34,9 +34,9 @@ async function Welcome() {
         {business.name}
       </h1>
 
-      <section className="flex flex-col gap-3 rounded-panel bg-card p-5 md:p-6">
+      <section className="flex flex-col gap-3 rounded-panel bg-background p-5 md:p-6">
         <h2 className="text-lg font-bold">Tu link para reservas</h2>
-        <p className="rounded-full bg-background px-4 py-2 text-sm font-semibold break-all">{link}</p>
+        <p className="rounded-full bg-card px-4 py-2 text-sm font-semibold break-all">{link}</p>
         <CopyLinkButton link={`https://${link}`} />
       </section>
 
