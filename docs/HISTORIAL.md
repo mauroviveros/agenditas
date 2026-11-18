@@ -5,6 +5,45 @@
 
 ---
 
+## R2 · Horarios — 2026-11-18
+
+Branch `feat/r2-horarios` · PR pendiente (se abre con el push)
+
+**Qué quedó:** `/panel/horarios`, donde el solista carga su semana: un interruptor por
+día, hasta dos franjas y el almuerzo como el hueco entre ellas. Cada día muestra sus horas
+netas y el de hoy lleva una marca. Se puede copiar el horario de un día a lunes a viernes
+o a toda la semana (menú en escritorio, «Aplicar a» en la hoja del celu). Guardar y
+Descartar viven en el pie del panel y solo aparecen con cambios. Datos: tabla
+`business_hours`, `is_business_owner` y la RPC `set_business_hours`. 94 tests pgTAP, 75 de
+Vitest y 31 e2e. Los feriados quedaron para R2b.
+
+**Decisiones**
+- **El almuerzo no se guarda:** es el hueco entre dos franjas del mismo día. La pantalla
+  limita a dos franjas por día; la base solo exige que no se pisen (restricción de
+  exclusión con `btree_gist`).
+- **Guardar reemplaza la semana entera** con una sola RPC (`set_business_hours`), así no
+  quedan semanas a medias. El negocio sale de la sesión, nunca del navegador.
+- **`is_business_owner(business_id)`** en vez de comparar `owner_id` en cada política: el
+  día que haya varios dueños o roles se cambia en un solo lugar.
+- **Marco del panel con huecos:** `SidebarInset` pasó a `div` con header, `main` y
+  `footer`. Cada pantalla pone su título y sus acciones con `PanelHeader` y `PanelFooter`
+  (un contexto guarda los nodos y se dibuja con un portal). Como el botón Guardar queda
+  fuera del `<form>` en el DOM, se asocia con el atributo `form`.
+- **«Hoy» lo calcula el servidor** en hora de Buenos Aires (`weekdayIndex`), para que lo
+  que dibuja el servidor y el navegador coincidan.
+- **Copiar pisa los otros días** sin confirmar: el pie muestra «Cambios sin guardar» y
+  Descartar lo deshace.
+- **Diseño:** la fila del día sigue el canvas «Equipo y horarios» (sin equipos); el control
+  de copiar y el «Aplicar a» salieron de rondas de `/impeccable live`.
+
+**Pendiente**
+- La hora se ve en 12 h en un navegador en inglés; en es-AR debería ser 24 h y no se
+  verificó en un dispositivo real (ver «Antes de producción»).
+- No hay estado vacío propio: con la semana sin horarios se ve todo «No atiende» y la
+  frase de ayuda.
+
+---
+
 ## Base visual neutra — 2026-11-18
 
 Branch `chore/base-visual` · PR pendiente (se abre con el push)

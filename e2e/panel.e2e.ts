@@ -25,7 +25,7 @@ test("con negocio, el panel muestra su nombre y no deja crear otro", async ({ pa
 
   await page.goto("/panel");
   await expect(page.getByRole("heading", { name: nombre })).toBeVisible();
-  // SidebarInset ya es el <main>: no puede haber otro adentro.
+  // El <main> es el contenido del marco: no puede haber otro adentro.
   await expect(page.locator("main")).toHaveCount(1);
 
   await page.goto("/panel/nuevo-negocio");

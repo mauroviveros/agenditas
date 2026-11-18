@@ -11,3 +11,11 @@ const formatoHora = new Intl.DateTimeFormat("es-AR", {
 export function formatearHora(instante: Date): string {
   return formatoHora.format(instante);
 }
+
+const formatoDia = new Intl.DateTimeFormat("en-US", { timeZone: ZONA_HORARIA, weekday: "short" });
+const DIAS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+/** Día de la semana en Buenos Aires, contado desde el lunes: 0 = lunes … 6 = domingo. */
+export function weekdayIndex(instante: Date): number {
+  return DIAS.indexOf(formatoDia.format(instante));
+}

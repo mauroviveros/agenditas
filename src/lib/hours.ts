@@ -1,0 +1,68 @@
+import { z } from "zod";
+
+// Las mismas reglas que business_hours y set_business_hours: la pantalla avisa antes de
+// llegar a la base, y la base sigue siendo la última palabra. Las claves van en
+// snake_case porque son las de la RPC y pasan tal cual.
+const WEEKDAY_MIN = 1; // lunes
+const WEEKDAY_MAX = 7; // domingo
+// Una semana con varias franjas por día entra de sobra; es el tope de la RPC.
+export const MAX_RANGES = 70;
+const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+const timeSchema = z
+  .string()
+  .regex(TIME_PATTERN, "Poné la hora como HH:mm, por ejemplo 09:30.");
+
+const rangeSchema = z
+  .object({
+    weekday: z.number().int().min(WEEKDAY_MIN).max(WEEKDAY_MAX),
+    start_time: timeSchema,
+    end_time: timeSchema,
+  })
+  // "HH:mm" se ordena igual como texto que como hora.
+  .refine((range) => range.end_time > range.start_time, {
+    message: "El fin tiene que ser después del inicio.",
+    path: ["end_time"],
+  });
+
+export type HourRange = z.infer<typeof rangeSchema>;
+
+// La semana entera: una franja por tramo de atención. El almuerzo es el hueco entre dos.
+export const hoursSchema = z
+  .array(rangeSchema)
+  .max(MAX_RANGES, `Una semana puede tener hasta ${MAX_RANGES} franjas.`)
+  .superRefine((ranges, context) => {
+    const byStart = ranges
+      .map((range, index) => ({ range, index }))
+      .sort((a, b) => a.range.start_time.localeCompare(b.range.start_time));
+    const lastEnd = new Map<number, string>();
+    for (const { range, index } of byStart) {
+      const previousEnd = lastEnd.get(range.weekday);
+      // Pegadas (una termina donde arranca la otra) no se pisan.
+      if (previousEnd !== undefined && range.start_time < previousEnd) {
+        // Señala la que arranca más tarde: es la que entra en el tramo de la otra.
+        context.addIssue({
+          code: "custom",
+          message: "Hay dos franjas del mismo día que se pisan.",
+          path: [index, "start_time"],
+        });
+        return;
+      }
+      lastEnd.set(range.weekday, range.end_time);
+    }
+  });
+
+interface HourRow {
+  weekday: number;
+  start_time: string;
+  end_time: string;
+}
+
+// Postgres devuelve la hora con segundos ("09:00:00"); la pantalla trabaja con "09:00".
+export function toHourRange(row: HourRow): HourRange {
+  return {
+    weekday: row.weekday,
+    start_time: row.start_time.slice(0, 5),
+    end_time: row.end_time.slice(0, 5),
+  };
+}
