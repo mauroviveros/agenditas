@@ -37,5 +37,6 @@ export function slugify(name: string): string {
     .replace(/-+$/, "");
 }
 
-// Cómo se ve el link público de un negocio; la página llega en R5.
+// Link público en producción: es lo que se muestra antes de saber el dominio real
+// (ver usePublicLinkPrefix). La página llega en R5.
 export const PUBLIC_LINK_PREFIX = "agenditas.app/reservar/";

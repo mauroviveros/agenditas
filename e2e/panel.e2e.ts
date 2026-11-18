@@ -68,7 +68,7 @@ test.describe("escritorio", () => {
     await page.goto("/panel");
     await expect(page.getByRole("heading", { name: nombre })).toBeVisible();
     await expect(page.getByRole("link", { name: "Inicio" })).toBeVisible();
-    await expect(page.getByText(`agenditas.app/reservar/${slug}`)).toBeVisible();
+    await expect(page.getByText(`${new URL(page.url()).host}/reservar/${slug}`)).toBeVisible();
 
     await page.getByRole("button", { name: /@test\.local/ }).click();
     await page.getByRole("menuitem", { name: "Salir" }).click();
