@@ -135,3 +135,10 @@ export function copyDay(week: Week, from: number, to: readonly number[]): Week {
       : slots,
   );
 }
+
+// Lo que se le dice al solista después de copiar: de qué día y a cuáles.
+export function copyMessage(dayName: string, to: readonly number[]): string {
+  const target =
+    to.length === ALL_DAYS.length ? "toda la semana" : "lunes a viernes";
+  return `Copiamos el horario del ${dayName.toLowerCase()} a ${target}.`;
+}

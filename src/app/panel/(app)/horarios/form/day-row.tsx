@@ -76,6 +76,8 @@ export function DayRow({
       <Switch
         checked={isOpen}
         onCheckedChange={onToggle}
+        // Zona de toque de 44 px de alto (la base trae 34).
+        className="after:-inset-y-3.5"
         aria-label={`${dayName}: ${isOpen ? "atiende" : "no atiende"}`}
       />
 
