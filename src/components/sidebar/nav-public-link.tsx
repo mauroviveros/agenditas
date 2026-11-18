@@ -9,7 +9,7 @@ export async function NavPublicLink({ slug }: { slug: string }) {
   return (
     <div className="rounded-lg border border-sidebar-border bg-sidebar-accent px-3 py-2.5 group-data-[collapsible=icon]:hidden">
       <p className="text-xs text-muted-foreground">Tu página de reservas</p>
-      <p className="text-sm font-semibold break-all">
+      <p className="text-sm font-semibold break-words">
         {`${host}${PUBLIC_LINK_PATH}`}
         <wbr />
         {slug}
