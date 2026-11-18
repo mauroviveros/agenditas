@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { getUserId } from "@/lib/session";
-import { signInWithGoogle } from "./actions";
+import { signInWithGoogle } from "@/app/auth/actions";
 import { SubmitButton } from "@/components/submit-button";
 
 export const metadata: Metadata = {

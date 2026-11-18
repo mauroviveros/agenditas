@@ -26,3 +26,13 @@ export async function signInWithGoogle(): Promise<never> {
 
   redirect(data.url);
 }
+
+// Cierra la sesión. Aunque falle el aviso al servidor, se borran las cookies y se sale igual.
+export async function signOut(): Promise<never> {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.error("auth: sign out failed", error.message);
+  }
+  redirect("/login");
+}

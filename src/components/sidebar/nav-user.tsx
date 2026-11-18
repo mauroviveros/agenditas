@@ -1,5 +1,6 @@
 "use client";
 
+import { useTransition } from "react";
 import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -18,11 +19,13 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import type { CurrentUser } from "@/lib/session";
-import { signOut } from "@/app/panel/actions";
+import { signOut } from "@/app/auth/actions";
 
 // La cuenta de quien entró, con su menú (por ahora solo "Salir").
 export function NavUser({ user }: { user: CurrentUser }) {
   const { isMobile } = useSidebar();
+  // Sin <form>: el menú se cierra y desmonta al hacer clic, y un form desmontado no se envía bien.
+  const [isSigningOut, startSigningOut] = useTransition();
 
   return (
     <SidebarMenu>
@@ -50,16 +53,14 @@ export function NavUser({ user }: { user: CurrentUser }) {
 
               <DropdownMenuSeparator />
 
-              <form action={signOut}>
-                <DropdownMenuItem
-                  render={<button type="submit" className="w-full" />}
-                  variant="destructive"
-                  nativeButton
-                >
-                  <LogOutIcon aria-hidden />
-                  Salir
-                </DropdownMenuItem>
-              </form>
+              <DropdownMenuItem
+                variant="destructive"
+                disabled={isSigningOut}
+                onClick={() => startSigningOut(() => signOut())}
+              >
+                <LogOutIcon aria-hidden />
+                Salir
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </SidebarMenuItem>
