@@ -10,8 +10,9 @@ test("el link sale del nombre, avisa que está libre y crea el negocio", async (
   const host = new URL(page.url()).host;
 
   await page.getByLabel("Nombre del negocio").fill(`Barbería Tito ${id}`);
-  // El link se arma con el dominio del entorno (acá localhost), no con uno fijo.
-  await expect(page.getByText(`${host}/reservar/barberia-tito-${id}`).filter({ visible: true })).toBeVisible();
+  // Antes de crear el negocio el link se muestra como ruta, sin dominio.
+  await expect(page.getByText(`/reservar/barberia-tito-${id}`).filter({ visible: true })).toBeVisible();
+  await expect(page.getByText(host)).toHaveCount(0);
   await expect(page.getByText("Disponible")).toBeVisible();
   await page.getByRole("button", { name: "Crear mi negocio" }).click();
 
@@ -28,13 +29,12 @@ test("si el link está ocupado, propone sumarle la zona", async ({ page, context
 
   const solista = await signUpNewUser(context);
   await page.goto("/panel/nuevo-negocio");
-  const host = new URL(page.url()).host;
   await page.getByLabel("Nombre del negocio").fill(slug.replace("-", " "));
 
   await expect(page.getByText("Ya lo usa otro negocio")).toBeVisible();
   await page.getByRole("button", { name: "Cambiar link" }).click();
   // La base del link queda fija como prefijo: solo se le suma la zona.
-  await expect(page.getByText(`${host}/reservar/${slug}-`)).toBeVisible();
+  await expect(page.getByText(`/reservar/${slug}-`)).toBeVisible();
   const link = page.getByLabel("Tu link");
   await expect(link).toHaveValue("");
   await link.pressSequentially("palermo");

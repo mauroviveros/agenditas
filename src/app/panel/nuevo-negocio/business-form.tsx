@@ -19,8 +19,7 @@ import {
   InputGroupInput,
   InputGroupText,
 } from "@/components/ui/input-group";
-import { usePublicLinkPrefix } from "@/hooks/use-public-link-prefix";
-import { businessSchema, slugify } from "@/lib/business";
+import { businessSchema, PUBLIC_LINK_PATH as LINK_PREFIX, slugify } from "@/lib/business";
 import { checkSlugAvailability, createBusiness, type CreateBusinessState } from "./actions";
 
 const INITIAL_STATE: CreateBusinessState = {};
@@ -31,7 +30,6 @@ type Availability = "idle" | "checking" | "available" | "taken" | "unknown";
 
 // El link sale del nombre. Solo si está ocupado se ofrece cambiarlo a mano.
 export function BusinessForm({ heading }: { heading: ReactNode }) {
-  const LINK_PREFIX = usePublicLinkPrefix();
   const [state, formAction] = useActionState(createBusiness, INITIAL_STATE);
   const [name, setName] = useState("");
   // null = el link es el del nombre. Si está ocupado, solo se le puede sumar algo al
@@ -140,7 +138,6 @@ export function BusinessForm({ heading }: { heading: ReactNode }) {
 // Solo en escritorio: la página del negocio se va armando mientras escribe.
 // Repite lo que ya está en el formulario, por eso queda oculta para lectores de pantalla.
 function PagePreview({ name, slug }: { name: string; slug: string }) {
-  const LINK_PREFIX = usePublicLinkPrefix();
   return (
     <aside aria-hidden="true" className="hidden flex-col gap-6 rounded-panel bg-card p-10 md:flex">
       <p className="text-sm font-semibold text-muted-foreground">

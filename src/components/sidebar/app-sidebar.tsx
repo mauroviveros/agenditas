@@ -8,10 +8,12 @@ import { NavPublicLink } from "./nav-public-link";
 export function AppSidebar({
   businessName,
   businessSlug,
+  host,
   user,
 }: {
   businessName: string;
   businessSlug: string;
+  host: string;
   user: CurrentUser;
 }) {
   return (
@@ -25,7 +27,7 @@ export function AppSidebar({
       </SidebarContent>
 
       <SidebarFooter>
-        <NavPublicLink slug={businessSlug} />
+        <NavPublicLink host={host} slug={businessSlug} />
         <NavUser user={user} />
       </SidebarFooter>
 

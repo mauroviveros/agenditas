@@ -30,6 +30,19 @@ test("con negocio, el panel muestra su nombre y no deja crear otro", async ({ pa
   await expect(page).toHaveURL(/\/panel$/);
 });
 
+test("el link de reservas llega en el primer HTML, con el dominio del entorno", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  const slug = `html-${sufijo()}`;
+  await solista.rpc("create_business", { name: "Primer HTML", slug });
+
+  // Sin hidratar: lo que manda el servidor ya tiene el dominio correcto (no hay flash).
+  const respuesta = await page.request.get("/panel");
+  // <wbr> es el punto donde puede cortar la línea; no es parte del texto.
+  const html = (await respuesta.text()).replaceAll("<wbr/>", "");
+  expect(html).toContain(`localhost:3100/reservar/${slug}`);
+  expect(html).not.toContain("agenditas.app/reservar");
+});
+
 test("con sesión, /login lleva al panel", async ({ page, context }) => {
   await signUpNewUser(context);
   await page.goto("/login");
