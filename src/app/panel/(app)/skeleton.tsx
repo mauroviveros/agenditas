@@ -1,5 +1,5 @@
 import { AppHeaderSkeleton } from "@/components/app-header";
-import { SidebarSkeleton } from "@/components/sidebar/sidebar-skeleton";
+import { SidebarSkeleton } from "@/components/sidebar/skeleton";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 // Lo que se ve mientras llegan la sesión y el negocio: solo el marco del panel (sidebar y
