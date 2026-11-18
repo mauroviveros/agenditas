@@ -1,4 +1,6 @@
 import { cache } from "react";
+import { type HolidayRow } from "@/lib/holidays";
+import { fechaEnBuenosAires } from "@/lib/hora";
 import { type HourRange, toHourRange } from "@/lib/hours";
 import { createClient } from "@/lib/supabase/server";
 
@@ -66,4 +68,21 @@ export async function getMyHours(): Promise<HourRange[]> {
     throw new Error(`No pudimos leer los horarios: ${error.message}`);
   }
   return data.map(toHourRange);
+}
+
+const UPCOMING_HOLIDAYS = 5;
+
+// Los próximos feriados desde hoy (en Buenos Aires, hoy incluido). Lectura pública por RLS.
+export async function getUpcomingHolidays(): Promise<HolidayRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("holidays")
+    .select("date, name, kind")
+    .gte("date", fechaEnBuenosAires(new Date()))
+    .order("date")
+    .limit(UPCOMING_HOLIDAYS);
+  if (error) {
+    throw new Error(`No pudimos leer los feriados: ${error.message}`);
+  }
+  return data as HolidayRow[];
 }

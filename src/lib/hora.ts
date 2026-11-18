@@ -19,3 +19,25 @@ const DIAS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export function weekdayIndex(instante: Date): number {
   return DIAS.indexOf(formatoDia.format(instante));
 }
+
+// en-CA da AAAA-MM-DD.
+const formatoFechaIso = new Intl.DateTimeFormat("en-CA", { timeZone: ZONA_HORARIA });
+
+/** El día de un instante en Buenos Aires, como "AAAA-MM-DD". */
+export function fechaEnBuenosAires(instante: Date): string {
+  return formatoFechaIso.format(instante);
+}
+
+// Una fecha sin hora ("2026-05-25") se arma y se muestra en UTC para que ninguna zona
+// horaria la corra de día.
+const formatoFecha = new Intl.DateTimeFormat("es-AR", {
+  timeZone: "UTC",
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+});
+
+/** Una fecha "AAAA-MM-DD" como "lunes 25 de mayo". */
+export function formatearFecha(fecha: string): string {
+  return formatoFecha.format(new Date(`${fecha}T00:00:00Z`)).replace(",", "");
+}

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { formatearHora, weekdayIndex } from "./hora";
+import { fechaEnBuenosAires, formatearFecha, formatearHora, weekdayIndex } from "./hora";
 
 describe("formatearHora", () => {
   test("muestra la hora de Buenos Aires aunque el instante venga en UTC", () => {
@@ -33,5 +33,27 @@ describe("weekdayIndex", () => {
   test("usa el día de Buenos Aires, no el de UTC", () => {
     // 02:15 UTC del miércoles son las 23:15 del martes en Buenos Aires
     expect(weekdayIndex(new Date("2026-11-18T02:15:00Z"))).toBe(1);
+  });
+});
+
+describe("fechaEnBuenosAires", () => {
+  test("devuelve el día de Buenos Aires como AAAA-MM-DD", () => {
+    expect(fechaEnBuenosAires(new Date("2026-11-18T15:00:00Z"))).toBe("2026-11-18");
+  });
+
+  test("usa el día de Buenos Aires, no el de UTC", () => {
+    // 02:15 UTC del 18 son las 23:15 del 17 en Buenos Aires
+    expect(fechaEnBuenosAires(new Date("2026-11-18T02:15:00Z"))).toBe("2026-11-17");
+  });
+});
+
+describe("formatearFecha", () => {
+  test("muestra el día de la semana, el número y el mes en español", () => {
+    expect(formatearFecha("2026-05-25")).toBe("lunes 25 de mayo");
+    expect(formatearFecha("2026-12-08")).toBe("martes 8 de diciembre");
+  });
+
+  test("no corre el día por la zona horaria", () => {
+    expect(formatearFecha("2027-01-01")).toBe("viernes 1 de enero");
   });
 });
