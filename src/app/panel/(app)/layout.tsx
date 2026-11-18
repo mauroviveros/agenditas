@@ -31,7 +31,7 @@ async function Shell({ children }: { children: ReactNode }) {
 
       <SidebarInset className="bg-background">
         <header>
-          <SidebarTrigger />
+          <SidebarTrigger aria-label="Mostrar u ocultar el menú" />
         </header>
 
         <main>{children}</main>
