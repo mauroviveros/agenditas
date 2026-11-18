@@ -5,6 +5,29 @@
 
 ---
 
+## Base visual neutra — 2026-11-18
+
+Branch `chore/base-visual` · PR pendiente (se abre con el push)
+
+**Qué quedó:** el estilo Mate se reemplazó por una base casi shadcn: neutros cálidos, un
+acento verde (`#1F6F5C`), rojo de error y Geist. Botones y campos de 44 px con radio
+normal, sidebar `inset`, un `PageTitle` para todos los títulos, `DESIGN.md` y
+`/dev/tokens` reescritos. Sin cambios de datos ni de lógica.
+
+**Decisiones**
+- **Por qué:** el canvas de diseño de "Equipo y horarios" se veía distinto a Mate y
+  diseñar sobre shadcn casi estándar es más rápido. El rebranding (nombre del estilo,
+  tipografía de marca, color) queda para una rebanada final que solo cambia los valores
+  de `globals.css`.
+- **Rojo:** `--destructive` ahora es rojo (`#B42318`); antes era Tinta. Un error nunca
+  va solo con color: lleva ícono y texto.
+- **Campo:** el borde de un campo tiene su propio token (`--color-campo`, 3:1) porque
+  Línea es demasiado claro para un control.
+- **Tokens que se fueron:** `--radius-tarjeta`, `--radius-panel` y `--shadow-flotante`;
+  los nombres Mate de colores se mantienen porque ya eran los nombres del sistema.
+
+---
+
 ## R1 · Entrar y crear el negocio — 2026-11-18
 
 Branch `feat/r1-login` · PR pendiente (se abre con el push)

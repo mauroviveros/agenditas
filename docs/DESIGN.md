@@ -28,8 +28,8 @@ typography:
     fontSize: "0.875rem"
     fontWeight: 500
 rounded:
-  control: "0.5rem"
-  card: "0.75rem"
+  control: "0.625rem"
+  card: "0.875rem"
 ---
 
 # Design System: Agenditas
@@ -45,7 +45,9 @@ Se reemplazó el estilo "Mate" (verde yerba, Bricolage, pills y amarillo).
 
 **Key Characteristics:**
 - Panel de escritorio con sidebar `inset`: el contenido es una tarjeta blanca sobre Fondo.
-- Hecho para celu y escritorio; objetivos táctiles de 44 px o más.
+- Hecho para celu y escritorio; los controles táctiles que importan (acción principal,
+  campos, ítems del menú en celu) miden 44 px. Los botones `default` (36 px) son para
+  acciones secundarias en escritorio.
 - Nada se distingue solo por color: el error y los estados llevan ícono y texto.
 
 ## Colors
@@ -56,7 +58,7 @@ Neutros cálidos (nunca gris frío) y un verde para lo accionable.
 - **Superficie** (#FFFFFF): tarjetas, el contenido del panel y los campos.
 - **Tinta** (#1C1C1A): texto principal y anillo de foco.
 - **Tinta suave** (#5F5C56): texto secundario. 6:1 sobre Fondo.
-- **Acento** (#1F6F5C): acción principal, links y selección. 5,6:1 sobre blanco.
+- **Acento** (#1F6F5C): acción principal, links y selección. 6:1 sobre blanco.
 - **Resalte** (#E3EFE9): selección de texto y fondo de lo marcado.
 - **Bloque** (#ECEBE7): hover, chips y tiempo no reservable (almuerzo).
 - **Línea** (#E3E1DB): divisores y bordes de tarjetas. Nunca para texto ni para campos.
@@ -93,7 +95,8 @@ salvo las propias de los componentes de shadcn (menús, diálogos, cajones).
 
 ## Shapes
 
-Radio `rounded-lg` (0.5 rem) en botones y controles, `rounded-xl` en tarjetas. Los
+Radio `rounded-lg` (10 px, el `--radius` de shadcn) en botones y controles, `rounded-xl`
+(14 px) en tarjetas. Los
 estados vacíos usan borde punteado de 1 px en Línea.
 
 ## Components

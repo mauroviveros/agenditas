@@ -70,10 +70,8 @@ verificación.
   muestra el texto pero el link no lo toma (queda en `tu-negocio`).
 
 **Para decidir con Mauro**
-- El panel pone el contenido en Superficie (blanco) y DESIGN.md dice que el fondo de
-  toda pantalla es Fondo hoja; el estado vacío usa borde punteado, que DESIGN.md reserva
-  para lo libre. Actualizar DESIGN.md con el look del panel, o volver atrás.
-- ¿"Desktop first" vale para toda la app? DESIGN.md sigue diciendo 390 px primero.
+- ¿"Desktop first" vale para toda la app? DESIGN.md ahora dice "celu y escritorio" sin
+  fijar cuál va primero.
 - Sin "Copiar link" ni compartir por WhatsApp, el link de reservas en celu solo se ve
   abriendo el cajón.
 
