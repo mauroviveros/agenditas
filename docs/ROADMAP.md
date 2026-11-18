@@ -78,9 +78,28 @@ muestran en 24 h (en un navegador en inglés se ven en 12 h).
 - Sin "Copiar link" ni compartir por WhatsApp, el link de reservas en celu solo se ve
   abriendo el cajón.
 
-## R3 · Servicios
+## ▶ R3 · Servicios
 
-Nombre, duración y precio.
+Nombre, duración y precio. Branch `feat/r3-servicios`.
+
+**Listo cuando:** en `/panel/servicios` el solista crea, edita y borra sus servicios, y
+la lista cubre vacío, carga y error.
+- Nombre de 1 a 60 caracteres, sin repetir en el negocio (sin distinguir mayúsculas).
+- Duración de 5 a 480 minutos, en pasos de 5.
+- Precio obligatorio, en centavos (`price_cents`); $0 vale (sin cargo), tope $10.000.000.
+- Hasta 50 servicios por negocio.
+
+**Bloques**
+1. Tabla `services` con RLS y grants.
+2. RPC `save_service` (crea o edita; tope 50, nombre repetido).
+3. RPC `delete_service`.
+4. `src/lib/services/`: esquema Zod, pesos ↔ centavos y `getMyServices`.
+5. Server Actions `saveService` y `deleteService`.
+6. Pantalla `/panel/servicios` (shape → live → estados) y "Servicios" en el menú.
+7. e2e y cierre.
+
+Borrar es borrado real; en R4, cuando los turnos apunten a servicios, se pasa a archivar
+y cada turno guarda su copia de nombre, duración y precio.
 
 ## R4 · Agenda del día
 

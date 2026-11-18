@@ -53,6 +53,26 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"services": {
+                  Row: {
+                    "business_id": string,"created_at": string,"duration_minutes": number,"id": string,"name": string,"price_cents": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "business_id": string,"created_at"?: string,"duration_minutes": number,"id"?: string,"name": string,"price_cents": number
+                  }
+                  Update: {
+                    "business_id"?: string,"created_at"?: string,"duration_minutes"?: number,"id"?: string,"name"?: string,"price_cents"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "services_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    }
+                  ]
                 }
           }
           Views: {
