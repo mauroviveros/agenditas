@@ -4,13 +4,13 @@ import { AppHeader } from "@/components/app-header";
 import { AppSidebar } from "@/components/sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getCurrentUser, getMyBusiness } from "@/lib/session";
-import { PanelFrameSkeleton } from "./skeleton";
+import { PanelSkeleton } from "./skeleton";
 
 // Marco del panel: sidebar que se achica a íconos; en celu se abre como cajón con el botón.
 // Cada rebanada suma su destino acá: hoy solo existe Inicio.
 export default function PanelLayout({ children }: { children: ReactNode }) {
   return (
-    <Suspense fallback={<PanelFrameSkeleton />}>
+    <Suspense fallback={<PanelSkeleton />}>
       <Shell>{children}</Shell>
     </Suspense>
   );

@@ -7,7 +7,6 @@ export default function Loading() {
     <div className="mx-auto flex max-w-3xl flex-col gap-8">
       <Skeleton className="h-9 w-2/3 md:h-11" />
       <Skeleton className="h-28" />
-      asdasd
     </div>
   );
 }
