@@ -41,7 +41,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
   tests y e2e. Si la pantalla es compleja, se diseña por partes (un elemento por vez).
 - **Componentes: primero shadcn.** Antes de armar un control (botón, input, campo,
   diálogo…), se busca el componente de shadcn que lo resuelve (p. ej. `InputGroup` con
-  `InputGroupAddon` para un link con prefijo) y se ajusta a los tokens de Mate. A mano
+  `InputGroupAddon` para un link con prefijo) y se ajusta a los tokens de `globals.css`. A mano
   solo si shadcn no lo tiene, y se dice por qué.
 - **Auditoría al cerrar la rebanada**: `code-reviewer` + `security-reviewer`, y por cada
   pantalla `/impeccable critique`, `/impeccable audit` y `/impeccable polish` (más
