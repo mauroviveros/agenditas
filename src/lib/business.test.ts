@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { businessSchema, slugify } from "./business";
+import { businessSchema, slugBaseForSuffix, slugify } from "./business";
 
 describe("slugify", () => {
   test("pasa el nombre a minúsculas con guiones", () => {
@@ -18,6 +18,20 @@ describe("slugify", () => {
     const slug = slugify("Centro de entrenamiento funcional del barrio de Palermo");
     expect(slug.length).toBeLessThanOrEqual(40);
     expect(slug.endsWith("-")).toBe(false);
+  });
+});
+
+describe("slugBaseForSuffix", () => {
+  test("deja igual una base corta", () => {
+    expect(slugBaseForSuffix("barberia-tito")).toBe("barberia-tito");
+  });
+
+  test("recorta una base larga para que quepa un sufijo de 12 letras con su guion", () => {
+    const base = slugify("Centro de entrenamiento funcional del barrio de Palermo Soho");
+    const recortada = slugBaseForSuffix(base);
+    expect(`${recortada}-${"x".repeat(12)}`.length).toBeLessThanOrEqual(40);
+    expect(recortada.endsWith("-")).toBe(false);
+    expect(base.startsWith(recortada)).toBe(true);
   });
 });
 

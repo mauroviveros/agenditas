@@ -19,7 +19,13 @@ import {
   InputGroupInput,
   InputGroupText,
 } from "@/components/ui/input-group";
-import { businessSchema, PUBLIC_LINK_PATH as LINK_PREFIX, slugify } from "@/lib/business";
+import {
+  businessSchema,
+  PUBLIC_LINK_PATH as LINK_PREFIX,
+  SLUG_MAX,
+  slugBaseForSuffix,
+  slugify,
+} from "@/lib/business";
 import { checkSlugAvailability, createBusiness, type CreateBusinessState } from "./actions";
 
 const INITIAL_STATE: CreateBusinessState = {};
@@ -28,13 +34,16 @@ const CHECK_DELAY_MS = 400;
 
 type Availability = "idle" | "checking" | "available" | "taken" | "unknown";
 
-// El link sale del nombre. Solo si está ocupado se ofrece cambiarlo a mano.
+// El link sale del nombre. Se ofrece cambiarlo a mano si está ocupado o si el servidor
+// lo rechazó (por ejemplo, un nombre que da un link muy corto).
 export function BusinessForm({ heading }: { heading: ReactNode }) {
   const [state, formAction] = useActionState(createBusiness, INITIAL_STATE);
   const [name, setName] = useState("");
-  // null = el link es el del nombre. Si está ocupado, solo se le puede sumar algo al
-  // final (la zona): la base sigue siendo el nombre, no se cambia por otro.
+  // null = el link es el del nombre. Al cambiarlo, solo se le puede sumar algo al final
+  // (la zona): la base sigue siendo el nombre, no se cambia por otro.
   const [slugSuffix, setSlugSuffix] = useState<string | null>(null);
+  // El link con el que se envió por última vez: un error del servidor solo vale para ese.
+  const [submittedSlug, setSubmittedSlug] = useState<string | null>(null);
   const nameId = useId();
   const slugId = useId();
   const prefixId = useId();
@@ -48,102 +57,120 @@ export function BusinessForm({ heading }: { heading: ReactNode }) {
     }
   }, [isEditingSlug]);
 
-  const suggestedSlug = slugify(name);
-  const slug = [suggestedSlug, slugSuffix].filter(Boolean).join("-");
+  const nameSlug = slugify(name);
+  // Al agregar algo, la base se recorta para que el link siga entrando en el máximo.
+  const slugBase = isEditingSlug ? slugBaseForSuffix(nameSlug) : nameSlug;
+  const slug = [slugBase, slugSuffix].filter(Boolean).join("-");
   const availability = useSlugAvailability(slug);
   const nameError = state.fieldErrors?.name;
-  const slugError = state.fieldErrors?.slug;
+  const slugError = submittedSlug === slug ? state.fieldErrors?.slug : undefined;
+  const canChangeSlug = availability === "taken" || Boolean(slugError);
+
+  function submit(formData: FormData) {
+    setSubmittedSlug(slug);
+    formAction(formData);
+  }
 
   return (
     <div className="flex flex-1 flex-col md:mt-12 md:grid md:flex-none md:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] md:items-center md:gap-16">
-    <div className="flex flex-1 flex-col">
-    {heading}
-    <form action={formAction} noValidate className="flex flex-1 flex-col">
-      <FieldGroup>
-        <Field data-invalid={Boolean(nameError)}>
-          <FieldLabel htmlFor={nameId}>Nombre del negocio</FieldLabel>
-          <Input
-            id={nameId}
-            name="name"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Barbería Tito"
-            autoComplete="organization"
-            aria-invalid={nameError ? true : undefined}
-          />
-          <FieldError>{nameError}</FieldError>
-        </Field>
-
-        <input type="hidden" name="slug" value={slug} />
-        {slugSuffix === null ? (
-          <div>
-            <p className="text-sm text-muted-foreground">Tu link</p>
-            <p className="font-semibold break-all">
-              {LINK_PREFIX}
-              {slug || "tu-negocio"}
-            </p>
-            <SlugStatus availability={availability} />
-            {availability === "taken" ? (
-              <Button type="button" variant="link" onClick={() => setSlugSuffix("")}>
-                Cambiar link
-              </Button>
-            ) : null}
-            <FieldError>{slugError}</FieldError>
-          </div>
-        ) : (
-          <Field data-invalid={Boolean(slugError)}>
-            <FieldLabel htmlFor={slugId}>Tu link</FieldLabel>
-            <InputGroup>
-              <InputGroupAddon align="block-start">
-                <InputGroupText id={prefixId} className="break-all">
-                  {LINK_PREFIX}
-                  {suggestedSlug ? `${suggestedSlug}-` : ""}
-                </InputGroupText>
-              </InputGroupAddon>
-              <InputGroupInput
-                ref={slugInputRef}
-                id={slugId}
-                value={slugSuffix}
-                onChange={(event) => setSlugSuffix(event.target.value)}
-                placeholder="palermo"
-                autoCapitalize="none"
-                autoComplete="off"
-                spellCheck={false}
-                aria-describedby={prefixId}
-                aria-invalid={slugError ? true : undefined}
+      <div className="flex flex-1 flex-col">
+        {heading}
+        <form action={submit} noValidate className="flex flex-1 flex-col">
+          <FieldGroup>
+            <Field data-invalid={Boolean(nameError)}>
+              <FieldLabel htmlFor={nameId}>Nombre del negocio</FieldLabel>
+              <Input
+                id={nameId}
+                name="name"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                placeholder="Barbería Tito"
+                autoComplete="organization"
+                aria-invalid={nameError ? true : undefined}
               />
-            </InputGroup>
-            <FieldDescription>Sumale tu barrio o ciudad, por ejemplo palermo.</FieldDescription>
-            <SlugStatus availability={availability} />
-            <FieldError>{slugError}</FieldError>
-          </Field>
-        )}
-      </FieldGroup>
+              <FieldError>{nameError}</FieldError>
+            </Field>
 
-      <div className="mt-auto pt-10 md:mt-10 md:pt-0">
-        {state.formError ? (
-          <p role="alert" className="mb-4 rounded-control bg-muted p-4 font-semibold">
-            {state.formError}
-          </p>
-        ) : null}
-        <SubmitButton pendingLabel="Creando tu negocio…">Crear mi negocio</SubmitButton>
+            <input type="hidden" name="slug" value={slug} />
+            {slugSuffix === null ? (
+              <div>
+                <p className="text-sm text-muted-foreground">Tu link</p>
+                <p className="font-semibold break-all">
+                  {LINK_PREFIX}
+                  {slug || "tu-negocio"}
+                </p>
+                <SlugStatus availability={availability} />
+                {canChangeSlug ? (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="mt-2 h-11"
+                    onClick={() => setSlugSuffix("")}
+                  >
+                    Cambiar link
+                  </Button>
+                ) : null}
+                <FieldError>{slugError}</FieldError>
+              </div>
+            ) : (
+              <Field data-invalid={Boolean(slugError)}>
+                <FieldLabel htmlFor={slugId}>Tu link</FieldLabel>
+                <InputGroup>
+                  <InputGroupAddon align="block-start">
+                    <InputGroupText id={prefixId} className="break-all">
+                      {LINK_PREFIX}
+                      {slugBase ? `${slugBase}-` : ""}
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    ref={slugInputRef}
+                    id={slugId}
+                    value={slugSuffix}
+                    onChange={(event) => setSlugSuffix(event.target.value)}
+                    maxLength={SLUG_MAX - (slugBase ? slugBase.length + 1 : 0)}
+                    placeholder="palermo"
+                    autoCapitalize="none"
+                    autoComplete="off"
+                    spellCheck={false}
+                    aria-describedby={prefixId}
+                    aria-invalid={slugError ? true : undefined}
+                  />
+                </InputGroup>
+                <FieldDescription>Sumale tu barrio o ciudad, por ejemplo palermo.</FieldDescription>
+                <SlugStatus availability={availability} />
+                <FieldError>{slugError}</FieldError>
+              </Field>
+            )}
+          </FieldGroup>
+
+          <div className="mt-auto pt-10 md:mt-10 md:pt-0">
+            {state.formError ? (
+              <p role="alert" className="mb-4 rounded-control bg-muted p-4 font-semibold">
+                {state.formError}
+              </p>
+            ) : null}
+            <SubmitButton pendingLabel="Creando tu negocio…">Crear mi negocio</SubmitButton>
+          </div>
+        </form>
       </div>
-    </form>
-    </div>
-    <PagePreview name={name} slug={slug} />
+      <PagePreview name={name} slug={slug} taken={availability === "taken"} />
     </div>
   );
 }
 
 // Solo en escritorio: la página del negocio se va armando mientras escribe.
 // Repite lo que ya está en el formulario, por eso queda oculta para lectores de pantalla.
-function PagePreview({ name, slug }: { name: string; slug: string }) {
+function PagePreview({ name, slug, taken }: { name: string; slug: string; taken: boolean }) {
   return (
     <aside aria-hidden="true" className="hidden flex-col gap-6 rounded-panel bg-card p-10 md:flex">
       <p className="text-sm font-semibold text-muted-foreground">
         Así te van a encontrar tus clientes
       </p>
-      <p className="w-fit max-w-full rounded-full bg-background px-4 py-2 text-sm font-semibold break-all">
+      <p
+        className={`w-fit max-w-full rounded-full bg-background px-4 py-2 text-sm font-semibold break-all ${
+          taken ? "text-muted-foreground line-through" : ""
+        }`}
+      >
         {LINK_PREFIX}
         {slug || "tu-negocio"}
       </p>
@@ -196,7 +223,8 @@ function useSlugAvailability(slug: string): Availability {
     }
     let cancelled = false;
     const timer = setTimeout(async () => {
-      const available = await checkSlugAvailability(slug);
+      // Si falla el pedido (sin red, error del servidor), no se afirma nada: "unknown".
+      const available = await checkSlugAvailability(slug).catch(() => null);
       if (!cancelled) {
         setResult({ slug, available });
       }

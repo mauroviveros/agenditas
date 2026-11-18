@@ -61,3 +61,33 @@ test("un link cambiado a mano con símbolos se marca en el campo", async ({ page
   await expect(page.getByLabel("Tu link")).toHaveAttribute("aria-invalid", "true");
   await expect(page.getByText("Usá solo minúsculas, números y guiones")).toBeVisible();
 });
+
+test("si el nombre da un link muy corto, se puede arreglar sumándole algo", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  await page.goto("/panel/nuevo-negocio");
+  await page.getByLabel("Nombre del negocio").fill("JB");
+  await page.getByRole("button", { name: "Crear mi negocio" }).click();
+
+  await expect(page.getByText("El link necesita al menos 3 caracteres")).toBeVisible();
+  await page.getByRole("button", { name: "Cambiar link" }).click();
+  await page.getByLabel("Tu link").pressSequentially(`palermo-${sufijo()}`);
+  await expect(page.getByText("Disponible")).toBeVisible();
+  // El error viejo era de otro link: ya no corresponde.
+  await expect(page.getByText("El link necesita al menos 3 caracteres")).toHaveCount(0);
+  await page.getByRole("button", { name: "Crear mi negocio" }).click();
+
+  await page.waitForURL("**/panel");
+  const { data } = await solista.from("businesses").select("name");
+  expect(data).toEqual([{ name: "JB" }]);
+});
+
+test("si se corta la red mientras revisa el link, deja de decir que está revisando", async ({ page, context }) => {
+  await signUpNewUser(context);
+  await page.goto("/panel/nuevo-negocio");
+  await page.route("**/panel/nuevo-negocio", (route) =>
+    route.request().method() === "POST" ? route.abort() : route.continue(),
+  );
+
+  await page.getByLabel("Nombre del negocio").fill(`Sin red ${sufijo()}`);
+  await expect(page.getByText("Revisando…")).toHaveCount(0, { timeout: 4000 });
+});

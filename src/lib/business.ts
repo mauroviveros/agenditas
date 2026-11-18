@@ -5,7 +5,9 @@ import { z } from "zod";
 const NAME_MIN = 2;
 const NAME_MAX = 60;
 const SLUG_MIN = 3;
-const SLUG_MAX = 40;
+export const SLUG_MAX = 40;
+// Lugar que se le deja a lo que el solista suma al link (la zona), con su guion.
+export const SLUG_SUFFIX_ROOM = 12;
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 export const businessSchema = z.object({
@@ -35,6 +37,12 @@ export function slugify(name: string): string {
     .replace(/^-+|-+$/g, "")
     .slice(0, SLUG_MAX)
     .replace(/-+$/, "");
+}
+
+// Base del link cuando se le va a sumar algo al final: se recorta para que, con un
+// agregado de hasta SLUG_SUFFIX_ROOM letras, el link siga entrando en SLUG_MAX.
+export function slugBaseForSuffix(base: string): string {
+  return base.slice(0, SLUG_MAX - SLUG_SUFFIX_ROOM - 1).replace(/-+$/, "");
 }
 
 // Ruta pública de un negocio, sin dominio (el dominio depende del entorno).
