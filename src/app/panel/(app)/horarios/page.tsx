@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { weekdayIndex } from "@/lib/hora";
 import { getMyHours, getUserId } from "@/lib/session";
 import { PanelHeader } from "../slots";
 import { HoursForm } from "./form";
+import { HolidaysCardSkeleton, UpcomingHolidays } from "./holidays-card";
 
 export const metadata: Metadata = {
   title: "Horarios · Agenditas",
@@ -29,6 +31,10 @@ export default async function HoursPage() {
       </p>
 
       <HoursForm initial={hours} today={weekdayIndex(new Date())} />
+
+      <Suspense fallback={<HolidaysCardSkeleton />}>
+        <UpcomingHolidays />
+      </Suspense>
     </div>
   );
 }

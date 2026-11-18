@@ -277,3 +277,20 @@ test("celu: el interruptor de cada día tiene una zona de toque de al menos 44 p
     });
   expect(alto).toBeGreaterThanOrEqual(44);
 });
+
+test("los próximos feriados aparecen bajo la semana, sin alerta de error", async ({
+  page,
+  context,
+}) => {
+  await negocioNuevo(context);
+  await page.goto("/panel/horarios");
+
+  const feriados = page.getByRole("region", { name: "Próximos feriados" });
+  await expect(feriados).toBeVisible();
+  // Con feriados cargados hay filas; sin cargar, el aviso de vacío. Nunca el de error: sería
+  // un problema de permisos al leer la tabla.
+  await expect(
+    feriados.getByRole("listitem").first().or(feriados.getByText("No hay feriados cargados.")),
+  ).toBeVisible();
+  await expect(feriados.getByRole("alert")).toHaveCount(0);
+});
