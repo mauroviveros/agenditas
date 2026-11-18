@@ -43,6 +43,15 @@ test("el link de reservas llega en el primer HTML, con el dominio del entorno", 
   expect(html).not.toContain("agenditas.app/reservar");
 });
 
+test("mientras carga la sesión, el panel manda un esqueleto y no una pantalla en blanco", async ({ page, context }) => {
+  await signUpNewUser(context);
+
+  // El fallback del <Suspense> viaja en el HTML inicial, antes de que lleguen la sesión y el negocio.
+  const html = await (await page.request.get("/panel")).text();
+  expect(html).toContain('data-slot="skeleton"');
+  expect(html).toContain("Cargando tu panel");
+});
+
 test("con sesión, /login lleva al panel", async ({ page, context }) => {
   await signUpNewUser(context);
   await page.goto("/login");
