@@ -29,10 +29,6 @@
   --font-texto: var(--font-geist), sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  --radius-tarjeta: 12px;
-  --radius-panel: 18px;
-
-  --shadow-flotante: 0 8px 24px rgb(28 28 26 / 0.12);
 }
 
 body {
