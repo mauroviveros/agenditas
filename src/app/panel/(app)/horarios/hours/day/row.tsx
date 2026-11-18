@@ -4,7 +4,7 @@ import { CircleAlertIcon, PlusIcon, XIcon } from "lucide-react";
 import { useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { DayName } from "./day-name";
+import { DayName } from "./name";
 import { SlotFields } from "./slot-fields";
 import {
   dayDuration,
@@ -13,7 +13,7 @@ import {
   type Slot,
   splitLunch,
   WEEKDAY_NAMES,
-} from "./week";
+} from "../week";
 
 interface DayRowProps {
   day: number;

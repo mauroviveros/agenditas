@@ -82,9 +82,9 @@ Si dos se contradicen, decide el de la tabla y el otro se corrige en el mismo ca
 - **Idioma**: todo lo técnico en inglés (tablas, columnas, RPC, nombres en
   TypeScript: `businesses`, `create_business`); español rioplatense con voseo en la UI,
   las URLs que ve el usuario, la documentación (`.md`), los comentarios del código y
-  la descripción de los PR. Los commits y el título del PR, en inglés. Lo viejo en español (`formatearHora`) se renombra
+  la descripción de los PR. Los commits y el título del PR, en inglés. Lo viejo en español se renombra
   cuando se toca el archivo.
-- **Hora**: se guarda en `timestamptz` y se muestra con `src/lib/hora.ts`
+- **Hora**: se guarda en `timestamptz` y se muestra con `src/lib/time.ts`
   (`America/Argentina/Buenos_Aires`). Nunca `toLocaleString` suelto.
 - **Datos**: la lógica de turnos vive en Postgres (RPC). Lecturas en Server Components;
   escrituras en Server Actions que validan con Zod y llaman a la RPC. Nunca se escribe
@@ -98,6 +98,29 @@ Un atajo con límite conocido lleva:
 ```ts
 // shortcut: <límite>, <cuándo cambiarlo>
 ```
+
+## Archivos y carpetas
+
+- **La carpeta dice qué es; el archivo, su rol.** `holidays/card.tsx`, `holidays/skeleton.tsx`.
+  Nombres en kebab-case, en inglés y de una palabra cuando se entienda (`copy-menu.tsx` solo si
+  hacen falta dos). Las URLs que ve el usuario son lo único en español.
+- **Carpeta desde 2 archivos que no sean tests.** Con uno solo, queda plano y con su nombre
+  (`submit-button.tsx`, `time.ts`).
+- **`index.tsx` solo si es el componente principal de la carpeta** (`holidays/index.tsx`). Nunca
+  un `index` que solo re-exporta: en Next arrastra código de servidor al cliente. Desde afuera
+  se importa la carpeta (`./holidays`); de sus archivos, solo las piezas públicas
+  (`./holidays/skeleton`), nunca los internos.
+- **Una sección de pantalla que lee datos** lleva `index.tsx` (arma el `Suspense`) y
+  `skeleton.tsx`. El loader (la función que lee) va dentro del `index.tsx` si es simple
+  (`hours/`) y en su propio `loader.tsx` si elige entre varios casos o tiene tests
+  (`holidays/`). Los casos que se resuelven con un aviso (vacío, error) van en `body.tsx`
+  junto a la lista. Si un error no se puede disimular (los horarios: una semana vacía invita
+  a pisar lo guardado), el loader no lo atrapa y sube a `error.tsx`.
+- **El test va al lado**, con el mismo nombre más `.test` (`body.test.tsx`).
+- **Los nombres especiales de Next no se tocan**: `page`, `layout`, `loading`, `error`, `route`.
+- **En `src/lib/`, una carpeta por tema** con el esquema o parser (`schema.ts`, `parse.ts`, sin
+  servidor: lo importan el cliente y los scripts) aparte de las lecturas (`queries.ts`, solo
+  servidor). `scripts/` importa solo archivos sin alias `@/`, con la extensión `.ts`.
 
 ## Comandos
 

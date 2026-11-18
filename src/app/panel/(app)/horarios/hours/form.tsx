@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleAlertIcon, CircleCheckIcon, CopyIcon } from "lucide-react";
+import { CopyIcon } from "lucide-react";
 import { type FormEvent, useId, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,18 +10,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
-import { type HourRange, hoursSchema } from "@/lib/hours";
-import { PanelFooter } from "../../slots";
+import { type HourRange, hoursSchema } from "@/lib/hours/schema";
 import { saveHours } from "../actions";
-import { CopyDayMenu } from "./copy-day-menu";
-import { DayListRow } from "./day-list-row";
-import { DayRow } from "./day-row";
-import { DaySheet } from "./day-sheet";
+import { CopyDayMenu } from "./day/copy-menu";
+import { DayRow } from "./day/row";
+import { DaySheet } from "./day/sheet";
+import { DaySummary } from "./day/summary";
+import { FormFooter, SAVED_MESSAGE } from "./footer";
+import { placeIssues } from "./issues";
 import {
   copyDay,
   copyMessage,
   rangesFromWeek,
+  replaceDay,
   type Slot,
   toggleDay,
   type Week,
@@ -32,34 +33,6 @@ import {
 
 type Status =
   { kind: "idle" } | { kind: "saved" } | { kind: "error"; message: string };
-
-const replaceDay = (week: Week, day: number, slots: readonly Slot[]): Week =>
-  week.map((current, index) => (index === day ? slots : current));
-
-// Avisos de la validación, ubicados en su franja (día y posición dentro del día). Los que
-// no son de una franja (por ejemplo, demasiadas) van aparte.
-function placeIssues(
-  week: Week,
-  issues: readonly { path: PropertyKey[]; message: string }[],
-) {
-  const positions = week.flatMap((slots, day) =>
-    slots.map((_, slot) => ({ day, slot })),
-  );
-  const byDay = new Map<number, Map<number, string>>();
-  const general: string[] = [];
-  for (const { path, message } of issues) {
-    const position =
-      typeof path[0] === "number" ? positions[path[0]] : undefined;
-    if (position) {
-      const slots = byDay.get(position.day) ?? new Map<number, string>();
-      slots.set(position.slot, slots.get(position.slot) ?? message);
-      byDay.set(position.day, slots);
-    } else {
-      general.push(message);
-    }
-  }
-  return { byDay, general };
-}
 
 const NO_ERRORS: ReadonlyMap<number, string> = new Map();
 
@@ -158,7 +131,7 @@ export function HoursForm({
   const liveMessage =
     notice ??
     (status.kind === "saved"
-      ? "Listo, guardamos tus horarios."
+      ? SAVED_MESSAGE
       : (lastCopy?.message ?? (isDirty ? "Cambios sin guardar" : "")));
 
   return (
@@ -224,7 +197,7 @@ export function HoursForm({
                   ) : null}
                 </div>
                 <div className="md:hidden">
-                  <DayListRow
+                  <DaySummary
                     day={day}
                     isToday={day === today}
                     slots={slots}
@@ -253,65 +226,17 @@ export function HoursForm({
       ) : null}
 
       {showBar ? (
-        <PanelFooter>
-          <div className="flex flex-col gap-3 md:flex-row md:items-center">
-            <p
-              aria-hidden
-              className="flex min-h-5 flex-1 items-center gap-1.5 text-sm font-semibold"
-            >
-              {notice ? (
-                <>
-                  <CircleAlertIcon aria-hidden className="size-4 shrink-0" />
-                  {notice}
-                </>
-              ) : status.kind === "saved" ? (
-                <>
-                  <CircleCheckIcon aria-hidden className="size-4 shrink-0" />
-                  Listo, guardamos tus horarios.
-                </>
-              ) : (
-                (lastCopy?.message ?? "Cambios sin guardar")
-              )}
-            </p>
-
-            <div className="flex gap-2">
-              {lastCopy ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="lg"
-                  className="h-11"
-                  disabled={isPending}
-                  onClick={undoCopy}
-                >
-                  Deshacer
-                </Button>
-              ) : null}
-              <Button
-                type="button"
-                variant="ghost"
-                size="lg"
-                className="h-11"
-                disabled={!isDirty || isPending}
-                onClick={() => edit(weekFromRanges(initial))}
-              >
-                Descartar
-              </Button>
-              <Button
-                type="submit"
-                // El botón vive en el pie del panel, fuera del <form> en el DOM.
-                form={formId}
-                size="lg"
-                className="h-11 flex-1"
-                disabled={!isDirty || !parsed.success || isPending}
-                aria-busy={isPending}
-              >
-                {isPending ? <Spinner aria-hidden /> : null}
-                {isPending ? "Guardando…" : "Guardar horarios"}
-              </Button>
-            </div>
-          </div>
-        </PanelFooter>
+        <FormFooter
+          formId={formId}
+          notice={notice}
+          saved={status.kind === "saved"}
+          copyMessage={lastCopy?.message ?? null}
+          isDirty={isDirty}
+          canSave={parsed.success}
+          isPending={isPending}
+          onUndo={undoCopy}
+          onDiscard={() => edit(weekFromRanges(initial))}
+        />
       ) : null}
     </form>
   );

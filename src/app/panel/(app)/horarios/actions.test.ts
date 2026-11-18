@@ -6,7 +6,7 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 
 const getMyBusiness = vi.fn();
-vi.mock("@/lib/session", () => ({ getMyBusiness }));
+vi.mock("@/lib/business/queries", () => ({ getMyBusiness }));
 
 const revalidatePath = vi.fn();
 vi.mock("next/cache", () => ({ revalidatePath }));

@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import type { Slot } from "./week";
+import type { Slot } from "../week";
 
 interface SlotFieldsProps {
   /** Cómo se anuncia al lector de pantalla: "Lunes", "Martes, tarde", etc. */

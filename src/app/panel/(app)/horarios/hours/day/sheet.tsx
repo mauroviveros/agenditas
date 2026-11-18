@@ -17,7 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { hoursSchema } from "@/lib/hours";
+import { hoursSchema } from "@/lib/hours/schema";
 import { SlotFields } from "./slot-fields";
 import {
   ALL_DAYS,
@@ -27,7 +27,7 @@ import {
   splitLunch,
   WEEKDAY_NAMES,
   WORKWEEK,
-} from "./week";
+} from "../week";
 
 // A qué días se copia lo que se edita acá: ninguno más, lunes a viernes o toda la semana.
 const TARGETS = {

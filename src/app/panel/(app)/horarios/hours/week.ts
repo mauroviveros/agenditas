@@ -1,4 +1,4 @@
-import type { HourRange } from "@/lib/hours";
+import type { HourRange } from "@/lib/hours/schema";
 
 // La semana como la ve la pantalla: siete días (0 = lunes … 6 = domingo), cada uno con
 // sus franjas. El almuerzo no se guarda: es el hueco entre dos franjas.
@@ -62,6 +62,10 @@ export function toggleDay(week: Week, day: number): Week {
     : [{ start_time: OPEN_AT, end_time: CLOSE_AT }];
   return week.map((slots, index) => (index === day ? next : slots));
 }
+
+// Reemplaza las franjas de un día y deja los demás como están.
+export const replaceDay = (week: Week, day: number, slots: readonly Slot[]): Week =>
+  week.map((current, index) => (index === day ? slots : current));
 
 // Corta una franja corrida en dos, con una hora de almuerzo cerca de la mitad.
 export function splitLunch(slots: readonly Slot[]): readonly Slot[] {

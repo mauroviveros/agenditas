@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { weekdayIndex } from "@/lib/hora";
-import { getMyHours, getUserId } from "@/lib/session";
-import { PanelHeader } from "../slots";
-import { HoursForm } from "./form";
+import { getUserId } from "@/lib/user";
+import { PanelHeader } from "../panel-slots";
+import { UpcomingHolidays } from "./holidays";
+import { BusinessHours } from "./hours";
 
 export const metadata: Metadata = {
   title: "Horarios · Agenditas",
@@ -15,7 +15,6 @@ export default async function HoursPage() {
   if (!(await getUserId())) {
     return null;
   }
-  const hours = await getMyHours();
 
   return (
     <div className="flex w-full flex-col gap-8">
@@ -28,7 +27,9 @@ export default async function HoursPage() {
         Almuerzo».
       </p>
 
-      <HoursForm initial={hours} today={weekdayIndex(new Date())} />
+      <BusinessHours />
+
+      <UpcomingHolidays />
     </div>
   );
 }

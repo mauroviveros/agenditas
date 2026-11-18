@@ -1,4 +1,4 @@
-import { PUBLIC_LINK_PATH } from "@/lib/business";
+import { PUBLIC_LINK_PATH } from "@/lib/business/schema";
 import { getPublicHost } from "@/lib/public-link";
 
 // Dónde reservan los clientes. Es texto hasta que exista la página pública (R5).

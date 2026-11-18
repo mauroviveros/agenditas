@@ -5,6 +5,47 @@
 
 ---
 
+## R2b · Feriados — 2026-11-18
+
+Branch `feat/r2b-feriados` · PR pendiente (se abre con el push)
+
+**Qué quedó:** bajo la semana de `/panel/horarios`, la card «Próximos feriados» con los
+próximos cinco: la fecha arriba, el nombre abajo, «Hoy» si cae hoy y «Puente» en los
+puentes turísticos. Datos: tabla `holidays` (global, solo lectura para la app) y el script
+`pnpm holidays:sync`, que carga el año actual y el siguiente desde ArgentinaDatos. 114 tests
+pgTAP, 104 de Vitest y 33 e2e.
+
+**Decisiones**
+- **La carga es a mano**, una vez al año, con la clave de servicio (`service_role`, el
+  único con `INSERT`, `UPDATE` y `DELETE`). Es idempotente y borra de esos dos años lo que
+  la API ya no trae (un feriado trasladado). Si la API responde vacía, no borra nada.
+- **El parser desconfía de la API:** un tipo desconocido, un feriado de otro año o más de
+  100 filas cortan la carga en vez de guardar datos raros. Quita del nombre la fecha entre
+  paréntesis («… (20/11)»), porque la fila ya la muestra.
+- **`kind` es un enum de Postgres** (`fixed`, `movable`, `bridge`): `supabase gen types` lo
+  tipa como unión y desaparecen los casts. El cliente de Supabase va tipado con `Database`.
+- **Tipos generados commiteados** (`src/lib/supabase/database.types.ts`, `pnpm db:types`):
+  typecheck y build no necesitan la base. El CI regenera el archivo y falla si difiere.
+- **«Hoy» y la lista salen de la misma fecha de Buenos Aires**, calculada una vez en el
+  loader.
+- **Un error al leer no tumba la pantalla:** la card muestra el aviso y los horarios siguen
+  usables. Es lo contrario de los horarios, donde el error sube a `error.tsx` para no
+  invitar a pisar lo guardado.
+- **Carpetas y archivos:** se reordenaron con reglas nuevas en AGENTS.md (carpeta = qué es,
+  archivo = su rol, `index.tsx` solo si es el principal, sección con datos = `index` +
+  `skeleton` y `loader` si tiene ramas). Se aplicaron a `holidays/` y `hours/`.
+- **Diseño:** fila con la fecha primero (variante 2 de `/impeccable live`).
+
+**Pendiente**
+- «Cerrar o abrir un feriado» (lo opcional del ROADMAP) no se hizo: el negocio todavía no
+  puede decidir que atiende un feriado.
+- La tabla no se refresca sola: si nadie corre `pnpm holidays:sync` al empezar un año, la
+  card muestra el aviso de vacío.
+- Sin verificar en pantalla: el Badge «Hoy» (hoy no cae ningún feriado) y el estado de
+  error en el navegador.
+
+---
+
 ## R2 · Horarios — 2026-11-18
 
 Branch `feat/r2-horarios` · PR pendiente (se abre con el push)

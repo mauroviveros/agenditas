@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { businessSchema, slugBaseForSuffix, slugify } from "./business";
+import { businessSchema, slugBaseForSuffix, slugify } from "./schema";
 
 describe("slugify", () => {
   test("pasa el nombre a minúsculas con guiones", () => {

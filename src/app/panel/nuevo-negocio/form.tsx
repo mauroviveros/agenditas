@@ -25,7 +25,7 @@ import {
   SLUG_MAX,
   slugBaseForSuffix,
   slugify,
-} from "@/lib/business";
+} from "@/lib/business/schema";
 import { checkSlugAvailability, createBusiness, type CreateBusinessState } from "./actions";
 
 const INITIAL_STATE: CreateBusinessState = {};

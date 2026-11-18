@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { getMyBusiness, getUserId } from "@/lib/session";
-import { BusinessForm } from "./business-form";
+import { getMyBusiness } from "@/lib/business/queries";
+import { getUserId } from "@/lib/user";
+import { BusinessForm } from "./form";
 
 export const metadata: Metadata = {
   title: "Tu negocio · Agenditas",

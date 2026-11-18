@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { cn } from "cn";
 import { buttonVariants } from "@/components/ui/button";
-import { getMyBusiness, getUserId } from "@/lib/session";
+import { getMyBusiness } from "@/lib/business/queries";
+import { getUserId } from "@/lib/user";
 
 export const metadata: Metadata = {
   title: "Panel · Agenditas",

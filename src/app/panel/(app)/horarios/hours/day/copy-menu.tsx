@@ -9,7 +9,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ALL_DAYS, WORKWEEK } from "./week";
+import { ALL_DAYS, WORKWEEK } from "../week";
 
 interface CopyDayMenuProps {
   dayName: string | undefined;

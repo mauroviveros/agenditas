@@ -18,7 +18,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import type { CurrentUser } from "@/lib/session";
+import type { CurrentUser } from "@/lib/user";
 import { signOut } from "@/app/auth/actions";
 
 // La cuenta de quien entró, con su menú (por ahora solo "Salir").
