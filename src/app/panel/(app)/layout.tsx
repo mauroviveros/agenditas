@@ -2,7 +2,6 @@ import { type ReactNode, Suspense } from "react";
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { getPublicHost } from "@/lib/public-link";
 import { getCurrentUser, getMyBusiness } from "@/lib/session";
 
 // Marco del panel: sidebar que se achica a íconos; en celu se abre como cajón con el botón.
@@ -26,11 +25,9 @@ async function Shell({ children }: { children: ReactNode }) {
     redirect("/panel/nuevo-negocio");
   }
 
-  const host = await getPublicHost();
-
   return (
     <SidebarProvider>
-      <AppSidebar businessName={business.name} businessSlug={business.slug} host={host} user={user} />
+      <AppSidebar businessName={business.name} businessSlug={business.slug} user={user} />
 
       <SidebarInset className="bg-card">
         <header className="flex h-14 items-center border-b px-1.5 md:px-4">
