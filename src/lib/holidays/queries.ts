@@ -1,4 +1,4 @@
-import { fechaEnBuenosAires } from "@/lib/hora";
+import { dateInBuenosAires } from "@/lib/time";
 import { createClient } from "@/lib/supabase/server";
 import type { HolidayRow } from "./parse";
 
@@ -10,7 +10,7 @@ export async function getUpcomingHolidays(): Promise<HolidayRow[]> {
   const { data, error } = await supabase
     .from("holidays")
     .select("date, name, kind")
-    .gte("date", fechaEnBuenosAires(new Date()))
+    .gte("date", dateInBuenosAires(new Date()))
     .order("date")
     .limit(UPCOMING_HOLIDAYS);
   if (error) {

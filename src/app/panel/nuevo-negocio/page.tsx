@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { getMyBusiness } from "@/lib/business/queries";
 import { getUserId } from "@/lib/user";
-import { BusinessForm } from "./business-form";
+import { BusinessForm } from "./form";
 
 export const metadata: Metadata = {
   title: "Tu negocio · Agenditas",

@@ -82,7 +82,7 @@ Si dos se contradicen, decide el de la tabla y el otro se corrige en el mismo ca
 - **Idioma**: todo lo técnico en inglés (tablas, columnas, RPC, nombres en
   TypeScript: `businesses`, `create_business`); español rioplatense con voseo en la UI,
   las URLs que ve el usuario, la documentación (`.md`), los comentarios del código y
-  la descripción de los PR. Los commits y el título del PR, en inglés. Lo viejo en español (`formatearHora`) se renombra
+  la descripción de los PR. Los commits y el título del PR, en inglés. Lo viejo en español se renombra
   cuando se toca el archivo.
 - **Hora**: se guarda en `timestamptz` y se muestra con `src/lib/time.ts`
   (`America/Argentina/Buenos_Aires`). Nunca `toLocaleString` suelto.

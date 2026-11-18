@@ -1,24 +1,24 @@
 import { describe, expect, test } from "vitest";
-import { fechaEnBuenosAires, formatearFecha, formatearHora, weekdayIndex } from "./hora";
+import { dateInBuenosAires, formatDate, formatTime, weekdayIndex } from "./time";
 
-describe("formatearHora", () => {
+describe("formatTime", () => {
   test("muestra la hora de Buenos Aires aunque el instante venga en UTC", () => {
     // Arrange: 17:30 UTC son las 14:30 en Buenos Aires (UTC-3)
     const instante = new Date("2026-11-17T17:30:00Z");
 
     // Act
-    const hora = formatearHora(instante);
+    const hora = formatTime(instante);
 
     // Assert
     expect(hora).toBe("14:30");
   });
 
   test("usa 24 horas con dos dígitos", () => {
-    expect(formatearHora(new Date("2026-11-17T12:05:00Z"))).toBe("09:05");
+    expect(formatTime(new Date("2026-11-17T12:05:00Z"))).toBe("09:05");
   });
 
   test("cruza la medianoche al día anterior en Buenos Aires", () => {
-    expect(formatearHora(new Date("2026-11-18T02:15:00Z"))).toBe("23:15");
+    expect(formatTime(new Date("2026-11-18T02:15:00Z"))).toBe("23:15");
   });
 });
 
@@ -36,24 +36,24 @@ describe("weekdayIndex", () => {
   });
 });
 
-describe("fechaEnBuenosAires", () => {
+describe("dateInBuenosAires", () => {
   test("devuelve el día de Buenos Aires como AAAA-MM-DD", () => {
-    expect(fechaEnBuenosAires(new Date("2026-11-18T15:00:00Z"))).toBe("2026-11-18");
+    expect(dateInBuenosAires(new Date("2026-11-18T15:00:00Z"))).toBe("2026-11-18");
   });
 
   test("usa el día de Buenos Aires, no el de UTC", () => {
     // 02:15 UTC del 18 son las 23:15 del 17 en Buenos Aires
-    expect(fechaEnBuenosAires(new Date("2026-11-18T02:15:00Z"))).toBe("2026-11-17");
+    expect(dateInBuenosAires(new Date("2026-11-18T02:15:00Z"))).toBe("2026-11-17");
   });
 });
 
-describe("formatearFecha", () => {
+describe("formatDate", () => {
   test("muestra el día de la semana, el número y el mes en español", () => {
-    expect(formatearFecha("2026-05-25")).toBe("lunes 25 de mayo");
-    expect(formatearFecha("2026-12-08")).toBe("martes 8 de diciembre");
+    expect(formatDate("2026-05-25")).toBe("lunes 25 de mayo");
+    expect(formatDate("2026-12-08")).toBe("martes 8 de diciembre");
   });
 
   test("no corre el día por la zona horaria", () => {
-    expect(formatearFecha("2027-01-01")).toBe("viernes 1 de enero");
+    expect(formatDate("2027-01-01")).toBe("viernes 1 de enero");
   });
 });

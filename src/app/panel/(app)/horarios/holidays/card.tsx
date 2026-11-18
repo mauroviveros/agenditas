@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { HolidayRow } from "@/lib/holidays/parse";
-import { formatearFecha } from "@/lib/hora";
+import { formatDate } from "@/lib/time";
 
 export type Holidays = { holidays: HolidayRow[] } | { failed: true };
 
@@ -43,7 +43,7 @@ function HolidaysBody({ result }: { result: Holidays }) {
         <li key={date} className="flex items-center gap-3 px-6 py-3">
           <span className="flex min-w-0 flex-1 flex-col gap-0.5">
             <span className="text-muted-foreground first-letter:uppercase">
-              {formatearFecha(date)}
+              {formatDate(date)}
             </span>
             <span className="font-medium">{name}</span>
           </span>

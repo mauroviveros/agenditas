@@ -4,7 +4,7 @@ import { AppSidebar } from "@/components/sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { getMyBusiness } from "@/lib/business/queries";
 import { getCurrentUser } from "@/lib/user";
-import { FooterSlot, HeaderSlot, PanelSlotsProvider } from "./slots";
+import { FooterSlot, HeaderSlot, PanelSlotsProvider } from "./panel-slots";
 import { PanelSkeleton } from "./skeleton";
 
 // Marco del panel: sidebar que se achica a íconos; en celu se abre como cajón con el botón.

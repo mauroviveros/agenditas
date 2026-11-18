@@ -1,7 +1,7 @@
 import { CircleAlertIcon, CircleCheckIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { PanelFooter } from "../../slots";
+import { PanelFooter } from "../../panel-slots";
 
 export const SAVED_MESSAGE = "Listo, guardamos tus horarios.";
 
