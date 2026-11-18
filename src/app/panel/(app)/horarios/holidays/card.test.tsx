@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
-import { HolidaysCard } from "./holidays-card";
+import { HolidaysCard } from "./card";
 
 const render = (result: Parameters<typeof HolidaysCard>[0]["result"]) =>
   renderToStaticMarkup(<HolidaysCard result={result} />);

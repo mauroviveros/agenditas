@@ -4,7 +4,8 @@ import { weekdayIndex } from "@/lib/hora";
 import { getMyHours, getUserId } from "@/lib/session";
 import { PanelHeader } from "../slots";
 import { HoursForm } from "./form";
-import { HolidaysCardSkeleton, UpcomingHolidays } from "./holidays-card";
+import { UpcomingHolidays } from "./holidays";
+import { HolidaysCardSkeleton } from "./holidays/skeleton";
 
 export const metadata: Metadata = {
   title: "Horarios · Agenditas",

@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { HolidaysCardSkeleton } from "./holidays-card";
+import { HolidaysCardSkeleton } from "./holidays/skeleton";
 
 // Esqueleto de Horarios: título, bajada, los siete días y los feriados.
 export default function Loading() {
