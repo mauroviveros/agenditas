@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   copyDay,
+  dayDuration,
   joinLunch,
   rangesFromWeek,
   splitLunch,
@@ -157,5 +158,23 @@ describe("copyDay", () => {
 
   test("copiar un día sobre sí mismo no hace nada", () => {
     expect(copyDay(week, 0, [0])).toEqual(week);
+  });
+});
+
+describe("dayDuration", () => {
+  test("suma las franjas sin contar el almuerzo", () => {
+    const slots = [
+      { start_time: "09:00", end_time: "13:00" },
+      { start_time: "14:00", end_time: "18:00" },
+    ];
+    expect(dayDuration(slots)).toBe("8 h");
+  });
+
+  test("muestra los minutos cuando no es una hora justa", () => {
+    expect(dayDuration([{ start_time: "09:00", end_time: "16:30" }])).toBe("7 h 30");
+  });
+
+  test("un día cerrado no tiene duración", () => {
+    expect(dayDuration([])).toBe("");
   });
 });

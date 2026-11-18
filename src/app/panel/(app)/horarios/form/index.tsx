@@ -63,7 +63,14 @@ const NO_ERRORS: ReadonlyMap<number, string> = new Map();
 
 // La semana completa. Se edita en pantalla y se guarda de una vez (reemplaza lo anterior).
 // En escritorio cada día se edita en su fila; en el celu, en una hoja que se abre al tocarlo.
-export function HoursForm({ initial }: { initial: readonly HourRange[] }) {
+export function HoursForm({
+  initial,
+  today,
+}: {
+  initial: readonly HourRange[];
+  /** Día de hoy en Buenos Aires: 0 = lunes … 6 = domingo. */
+  today: number;
+}) {
   const formId = useId();
   const [week, setWeek] = useState<Week>(() => weekFromRanges(initial));
   const [sheetDay, setSheetDay] = useState<number | null>(null);
@@ -144,6 +151,7 @@ export function HoursForm({ initial }: { initial: readonly HourRange[] }) {
                 <div className="hidden md:block">
                   <DayRow
                     day={day}
+                    isToday={day === today}
                     slots={slots}
                     errors={byDay.get(day) ?? NO_ERRORS}
                     onToggle={() => edit(toggleDay(week, day))}
@@ -153,6 +161,7 @@ export function HoursForm({ initial }: { initial: readonly HourRange[] }) {
                 <div className="md:hidden">
                   <DayListRow
                     day={day}
+                    isToday={day === today}
                     slots={slots}
                     onToggle={() => edit(toggleDay(week, day))}
                     onOpen={() => setSheetDay(day)}

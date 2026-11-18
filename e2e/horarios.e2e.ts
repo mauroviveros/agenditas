@@ -46,6 +46,19 @@ test.describe("escritorio", () => {
     await expect(page.getByRole("button", { name: "Guardar horarios" })).toHaveCount(0);
   });
 
+  test("marca el día de hoy y muestra las horas de cada día abierto", async ({ page, context }) => {
+    await negocioNuevo(context);
+    await page.goto("/panel/horarios");
+
+    await expect(page.locator("[data-slot=day-today]:visible")).toHaveCount(1);
+    await expect(page.locator("[data-slot=day-duration]:visible")).toHaveCount(0);
+
+    await page.getByRole("switch", { name: "Lunes: no atiende" }).click();
+    await expect(page.locator("[data-slot=day-duration]:visible")).toHaveText("9 h");
+    await page.getByRole("button", { name: "Almuerzo" }).first().click();
+    await expect(page.locator("[data-slot=day-duration]:visible")).toHaveText("8 h");
+  });
+
   test("Descartar vuelve a lo guardado y esconde el pie", async ({ page, context }) => {
     await negocioNuevo(context);
     await page.goto("/panel/horarios");

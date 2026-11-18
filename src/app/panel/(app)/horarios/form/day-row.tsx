@@ -4,8 +4,10 @@ import { CircleAlertIcon, PlusIcon, XIcon } from "lucide-react";
 import { useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { DayName } from "./day-name";
 import { SlotFields } from "./slot-fields";
 import {
+  dayDuration,
   joinLunch,
   MAX_SLOTS_PER_DAY,
   type Slot,
@@ -16,6 +18,7 @@ import {
 interface DayRowProps {
   day: number;
   slots: readonly Slot[];
+  isToday: boolean;
   /** Aviso por franja (posición dentro del día) que no pasa la validación. */
   errors: ReadonlyMap<number, string>;
   onToggle: () => void;
@@ -25,6 +28,7 @@ interface DayRowProps {
 // Un día en escritorio: interruptor, franjas en línea y, entre dos, el almuerzo.
 export function DayRow({
   day,
+  isToday,
   slots,
   errors,
   onToggle,
@@ -54,12 +58,21 @@ export function DayRow({
       data-open={isOpen}
       className="grid min-h-[88px] grid-cols-[8rem_auto_1fr] items-center gap-x-6 px-6 py-3"
     >
-      <span
-        data-slot="day-name"
-        className="text-sm font-medium text-muted-foreground"
-      >
-        {dayName}
-      </span>
+      <div className="flex flex-col gap-0.5">
+        <DayName
+          name={dayName}
+          isToday={isToday}
+          className="text-sm font-medium text-muted-foreground"
+        />
+        {isOpen ? (
+          <span
+            data-slot="day-duration"
+            className="text-xs text-muted-foreground tabular-nums"
+          >
+            {dayDuration(slots)}
+          </span>
+        ) : null}
+      </div>
       <Switch
         checked={isOpen}
         onCheckedChange={onToggle}

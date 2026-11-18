@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { weekdayIndex } from "@/lib/hora";
 import { getMyHours, getUserId } from "@/lib/session";
 import { PanelHeader } from "../slots";
 import { HoursForm } from "./form";
@@ -27,7 +28,7 @@ export default async function HoursPage() {
         Almuerzo».
       </p>
 
-      <HoursForm initial={hours} />
+      <HoursForm initial={hours} today={weekdayIndex(new Date())} />
     </div>
   );
 }

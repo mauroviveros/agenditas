@@ -34,6 +34,8 @@ export function rangesFromWeek(week: Week): HourRange[] {
 
 // Lunes a viernes, para "usar este horario de lunes a viernes".
 export const WORKWEEK = [0, 1, 2, 3, 4] as const;
+// Los siete días, para "usar este horario toda la semana".
+export const ALL_DAYS = [0, 1, 2, 3, 4, 5, 6] as const;
 // Un día tiene una franja corrida o dos (el hueco entre ellas es el almuerzo).
 export const MAX_SLOTS_PER_DAY = 2;
 
@@ -85,13 +87,22 @@ export function joinLunch(slots: readonly Slot[]): readonly Slot[] {
   return [{ start_time: first.start_time, end_time: second.end_time }];
 }
 
-// Cuánto se atiende en la semana, sin contar el almuerzo: "39 h", "7 h 30".
-export function weekDuration(week: Week): string {
-  const total = week
-    .flat()
-    .reduce((sum, slot) => sum + Math.max(0, toMinutes(slot.end_time) - toMinutes(slot.start_time)), 0);
+const slotMinutes = (slot: Slot) => Math.max(0, toMinutes(slot.end_time) - toMinutes(slot.start_time));
+
+// "8 h", "7 h 30".
+function formatMinutes(total: number): string {
   const minutes = total % 60;
   return `${Math.floor(total / 60)} h${minutes ? ` ${String(minutes).padStart(2, "0")}` : ""}`;
+}
+
+// Cuánto se atiende en la semana, sin contar el almuerzo: "39 h", "7 h 30".
+export function weekDuration(week: Week): string {
+  return formatMinutes(week.flat().reduce((sum, slot) => sum + slotMinutes(slot), 0));
+}
+
+// Lo mismo para un día; vacío si no atiende.
+export function dayDuration(slots: readonly Slot[]): string {
+  return slots.length === 0 ? "" : formatMinutes(slots.reduce((sum, slot) => sum + slotMinutes(slot), 0));
 }
 
 // "09:00–13:00 · 14:00–17:00": el resumen de un día para la lista del celu.
