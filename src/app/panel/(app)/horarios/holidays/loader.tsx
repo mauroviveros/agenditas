@@ -1,15 +1,22 @@
 import { getUpcomingHolidays } from "@/lib/holidays/queries";
+import { dateInBuenosAires } from "@/lib/time";
 import { HolidaysBody, HolidaysEmpty, HolidaysError } from "./body";
 import { HolidaysCard } from "./card";
 
 // Pide los feriados y elige qué mostrar dentro de la card: la lista, el aviso de vacío o,
-// si falla la lectura, el de error (los horarios siguen usables).
+// si falla la lectura, el de error (los horarios siguen usables). El «hoy» se calcula una
+// sola vez, para que la consulta y la lista hablen del mismo día.
 export async function HolidaysLoader() {
+  const today = dateInBuenosAires(new Date());
   try {
-    const holidays = await getUpcomingHolidays();
+    const holidays = await getUpcomingHolidays(today);
     return (
       <HolidaysCard>
-        {holidays.length === 0 ? <HolidaysEmpty /> : <HolidaysBody holidays={holidays} />}
+        {holidays.length === 0 ? (
+          <HolidaysEmpty />
+        ) : (
+          <HolidaysBody holidays={holidays} today={today} />
+        )}
       </HolidaysCard>
     );
   } catch (error) {

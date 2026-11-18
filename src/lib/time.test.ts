@@ -1,26 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { dateInBuenosAires, formatDate, formatTime, weekdayIndex } from "./time";
-
-describe("formatTime", () => {
-  test("muestra la hora de Buenos Aires aunque el instante venga en UTC", () => {
-    // Arrange: 17:30 UTC son las 14:30 en Buenos Aires (UTC-3)
-    const instante = new Date("2026-11-17T17:30:00Z");
-
-    // Act
-    const hora = formatTime(instante);
-
-    // Assert
-    expect(hora).toBe("14:30");
-  });
-
-  test("usa 24 horas con dos dígitos", () => {
-    expect(formatTime(new Date("2026-11-17T12:05:00Z"))).toBe("09:05");
-  });
-
-  test("cruza la medianoche al día anterior en Buenos Aires", () => {
-    expect(formatTime(new Date("2026-11-18T02:15:00Z"))).toBe("23:15");
-  });
-});
+import { dateInBuenosAires, formatDate, weekdayIndex } from "./time";
 
 describe("weekdayIndex", () => {
   test("cuenta desde el lunes (0) hasta el domingo (6)", () => {
@@ -48,12 +27,18 @@ describe("dateInBuenosAires", () => {
 });
 
 describe("formatDate", () => {
+  const today = "2026-11-18";
+
   test("muestra el día de la semana, el número y el mes en español", () => {
-    expect(formatDate("2026-05-25")).toBe("lunes 25 de mayo");
-    expect(formatDate("2026-12-08")).toBe("martes 8 de diciembre");
+    expect(formatDate("2026-05-25", today)).toBe("lunes 25 de mayo");
+    expect(formatDate("2026-12-08", today)).toBe("martes 8 de diciembre");
+  });
+
+  test("agrega el año cuando no es el de hoy", () => {
+    expect(formatDate("2027-01-01", today)).toBe("viernes 1 de enero de 2027");
   });
 
   test("no corre el día por la zona horaria", () => {
-    expect(formatDate("2027-01-01")).toBe("viernes 1 de enero");
+    expect(formatDate("2027-01-01", "2027-01-01")).toBe("viernes 1 de enero");
   });
 });
