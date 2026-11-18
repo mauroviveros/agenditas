@@ -290,7 +290,7 @@ test("los próximos feriados aparecen bajo la semana, sin alerta de error", asyn
   // Con feriados cargados hay filas; sin cargar, el aviso de vacío. Nunca el de error: sería
   // un problema de permisos al leer la tabla.
   await expect(
-    feriados.getByRole("listitem").first().or(feriados.getByText("No hay feriados cargados.")),
+    feriados.getByRole("listitem").first().or(feriados.getByText("Todavía no hay feriados para mostrar.")),
   ).toBeVisible();
   await expect(feriados.getByRole("alert")).toHaveCount(0);
 });
