@@ -70,10 +70,8 @@ verificación.
   muestra el texto pero el link no lo toma (queda en `tu-negocio`).
 
 **Para decidir con Mauro**
-- El panel pone el contenido en Superficie (blanco) y DESIGN.md dice que el fondo de
-  toda pantalla es Fondo hoja; el estado vacío usa borde punteado, que DESIGN.md reserva
-  para lo libre. Actualizar DESIGN.md con el look del panel, o volver atrás.
-- ¿"Desktop first" vale para toda la app? DESIGN.md sigue diciendo 390 px primero.
+- ¿"Desktop first" vale para toda la app? DESIGN.md ahora dice "celu y escritorio" sin
+  fijar cuál va primero.
 - Sin "Copiar link" ni compartir por WhatsApp, el link de reservas en celu solo se ve
   abriendo el cajón.
 
@@ -97,6 +95,15 @@ rendimiento.
 ## R6 · Clientes y WhatsApp
 
 ## R7 · Caja
+
+## R8 · Rebranding
+
+Hasta acá la app se desarrolla con el diseño base de shadcn (neutral, Geist). Al final se
+decide la identidad: restaurar Mate (está en `main` en el commit `9afb39d`, ver
+`globals.css` y el `DESIGN.md` de esa fecha) o probar otras variantes. Como las pantallas
+usan solo tokens y componentes de shadcn, el cambio debería quedar en `globals.css` y en
+las fuentes de `layout.tsx`. Al empezar, resolver también lo pendiente de `DESIGN.md`:
+alto táctil de 44 px, contraste de bordes y foco, y modo oscuro.
 
 ## ⏸ Estacionado
 

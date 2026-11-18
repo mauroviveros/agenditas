@@ -5,6 +5,29 @@
 
 ---
 
+## Base visual neutra — 2026-11-18
+
+Branch `chore/base-visual` · PR pendiente (se abre con el push)
+
+**Qué quedó:** el estilo Mate se reemplazó por shadcn `base-nova` con el tema neutral,
+tal como lo genera `shadcn init`, con Geist y el sidebar `inset`. Los componentes de `ui/`
+quedaron estándar. `DESIGN.md` y `/dev/tokens` se reescribieron, el header del panel pasó
+a `(app)/header.tsx` y se quitó `PageTitle` (el `h1` lleva la receta de clases). Sin
+cambios de datos ni de lógica.
+
+**Decisiones**
+- **Por qué:** el canvas de diseño de "Equipo y horarios" se veía distinto a Mate y
+  diseñar sobre shadcn estándar es más rápido. Se sigue con este diseño durante el
+  desarrollo; al final, la rebanada R8 decide si se restaura Mate (queda en `main` en el
+  commit `9afb39d`) o se prueban otras variantes.
+- **Errores:** `text-destructive` sobre `bg-destructive/10`, siempre con ícono y texto.
+- **Tamaños:** la acción principal usa `size="lg"` (36 px). El 44 px táctil y el
+  contraste 3:1 de bordes y foco quedaron sin resolver; están listados en `DESIGN.md`.
+- **Tokens que se fueron:** todos los de Mate (`fondo`, `tinta`, `acento`, `bloque`…,
+  `--radius-tarjeta`, `--radius-panel`, `--shadow-flotante`) y la regla global de foco.
+
+---
+
 ## R1 · Entrar y crear el negocio — 2026-11-18
 
 Branch `feat/r1-login` · PR pendiente (se abre con el push)

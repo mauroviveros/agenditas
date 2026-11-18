@@ -145,7 +145,11 @@ export function BusinessForm({ heading }: { heading: ReactNode }) {
 
           <div className="mt-auto pt-10 md:mt-10 md:pt-0">
             {state.formError ? (
-              <p role="alert" className="mb-4 rounded-control bg-muted p-4 font-semibold">
+              <p
+                role="alert"
+                className="mb-4 flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 font-medium"
+              >
+                <CircleAlertIcon aria-hidden className="mt-0.5 size-4 shrink-0 text-destructive" />
                 {state.formError}
               </p>
             ) : null}
@@ -162,7 +166,7 @@ export function BusinessForm({ heading }: { heading: ReactNode }) {
 // Repite lo que ya está en el formulario, por eso queda oculta para lectores de pantalla.
 function PagePreview({ name, slug, taken }: { name: string; slug: string; taken: boolean }) {
   return (
-    <aside aria-hidden="true" className="hidden flex-col gap-6 rounded-panel bg-card p-10 md:flex">
+    <aside aria-hidden="true" className="hidden flex-col gap-6 rounded-xl border bg-card p-10 md:flex">
       <p className="text-sm font-semibold text-muted-foreground">
         Así te van a encontrar tus clientes
       </p>
@@ -174,7 +178,7 @@ function PagePreview({ name, slug, taken }: { name: string; slug: string; taken:
         {LINK_PREFIX}
         {slug || "tu-negocio"}
       </p>
-      <p className="font-heading text-[2.5rem] leading-[1.05] font-extrabold tracking-[-0.02em] text-balance break-words">
+      <p className="font-heading text-4xl leading-tight font-semibold tracking-tight text-balance break-words">
         {name.trim() || "Tu negocio"}
       </p>
       <p className="text-muted-foreground">

@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Figtree } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "cn";
 
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
+const geist = Geist({
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const figtree = Figtree({
-  variable: "--font-figtree",
+const geistMono = Geist_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
 });
 
@@ -22,7 +22,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es-AR"
-      className={cn("h-full", "antialiased", bricolage.variable, figtree.variable, "font-sans")}
+      className={cn("h-full", "antialiased", geist.variable, geistMono.variable, "font-sans")}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
