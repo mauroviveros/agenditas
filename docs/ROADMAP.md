@@ -25,7 +25,7 @@
 Nada existe hasta que alguien lo carga:
 
 1. El solista entra y crea su negocio (R1).
-2. Carga cuándo atiende (R2, R2b) y qué ofrece (R3).
+2. Carga cuándo atiende (R2) y qué ofrece (R3).
 3. Usa su agenda (R4).
 4. Sus clientes reservan solos (R5) y quedan registrados (R6).
 5. Cobra (R7).
@@ -77,11 +77,6 @@ muestran en 24 h (en un navegador en inglés se ven en 12 h).
   fijar cuál va primero.
 - Sin "Copiar link" ni compartir por WhatsApp, el link de reservas en celu solo se ve
   abriendo el cajón.
-
-## R2b · Feriados
-
-Feriados de Argentina: tabla `holidays` global y de solo lectura, carga con
-`pnpm holidays:sync` y se muestran en Horarios. Opcional: cerrar o abrir un feriado.
 
 ## R3 · Servicios
 

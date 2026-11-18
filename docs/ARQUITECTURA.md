@@ -62,5 +62,6 @@ lógica está en la base.
 ## Preguntas abiertas
 
 - **Sentry:** más adelante; mientras tanto, los logs de Vercel.
-- **Feriados:** se toman de la API de ArgentinaDatos. Cómo se refresca la tabla se
-  decide en R2.
+- **Feriados:** se toman de la API de ArgentinaDatos y se cargan con `pnpm holidays:sync`
+  (a mano, una vez al año; también saca las fechas que la API ya no trae). Si algún día
+  conviene que se refresque solo, pasa a un cron con tope de tamaño de respuesta.
