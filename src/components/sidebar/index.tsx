@@ -1,5 +1,5 @@
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
-import type { CurrentUser } from "@/lib/session";
+import type { CurrentUser } from "@/lib/user";
 import { NavMenu } from "./nav-menu";
 import { NavUser } from "./nav-user";
 import { NavBusiness } from "./nav-business";

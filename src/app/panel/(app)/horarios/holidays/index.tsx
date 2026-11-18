@@ -1,4 +1,4 @@
-import { getUpcomingHolidays } from "@/lib/session";
+import { getUpcomingHolidays } from "@/lib/holidays/queries";
 import { HolidaysCard, type Holidays } from "./card";
 
 // Los próximos feriados. Si falla la lectura se avisa dentro de la card: los horarios

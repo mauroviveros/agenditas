@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { hoursSchema } from "@/lib/hours";
-import { getMyBusiness } from "@/lib/session";
+import { hoursSchema } from "@/lib/hours/schema";
+import { getMyBusiness } from "@/lib/business/queries";
 import { createClient } from "@/lib/supabase/server";
 
 export type SaveHoursResult = { ok: true } | { ok: false; error: string };

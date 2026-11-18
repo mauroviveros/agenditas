@@ -17,7 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { hoursSchema } from "@/lib/hours";
+import { hoursSchema } from "@/lib/hours/schema";
 import { SlotFields } from "./slot-fields";
 import {
   ALL_DAYS,

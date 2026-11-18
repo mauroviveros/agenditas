@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { weekdayIndex } from "@/lib/hora";
-import { getMyHours, getUserId } from "@/lib/session";
+import { getMyHours } from "@/lib/hours/queries";
+import { getUserId } from "@/lib/user";
 import { PanelHeader } from "../slots";
 import { HoursForm } from "./form";
 import { UpcomingHolidays } from "./holidays";

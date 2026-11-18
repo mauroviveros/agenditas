@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
-import { type HourRange, hoursSchema } from "@/lib/hours";
+import { type HourRange, hoursSchema } from "@/lib/hours/schema";
 import { PanelFooter } from "../../slots";
 import { saveHours } from "../actions";
 import { CopyDayMenu } from "./copy-day-menu";

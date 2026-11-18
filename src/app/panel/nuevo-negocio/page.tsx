@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { getMyBusiness, getUserId } from "@/lib/session";
+import { getMyBusiness } from "@/lib/business/queries";
+import { getUserId } from "@/lib/user";
 import { BusinessForm } from "./business-form";
 
 export const metadata: Metadata = {

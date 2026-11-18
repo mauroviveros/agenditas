@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { parseHolidays } from "./holidays";
+import { parseHolidays } from "./parse";
 
 const item = (fecha: string, nombre: string, tipo: string) => ({ fecha, nombre, tipo });
 

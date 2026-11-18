@@ -1,4 +1,4 @@
-import type { HourRange } from "@/lib/hours";
+import type { HourRange } from "@/lib/hours/schema";
 
 // La semana como la ve la pantalla: siete días (0 = lunes … 6 = domingo), cada uno con
 // sus franjas. El almuerzo no se guarda: es el hueco entre dos franjas.

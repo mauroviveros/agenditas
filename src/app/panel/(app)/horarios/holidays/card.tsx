@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { HolidayRow } from "@/lib/holidays";
+import type { HolidayRow } from "@/lib/holidays/parse";
 import { formatearFecha } from "@/lib/hora";
 
 export type Holidays = { holidays: HolidayRow[] } | { failed: true };

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { MAX_RANGES, hoursSchema, toHourRange } from "./hours";
+import { MAX_RANGES, hoursSchema, toHourRange } from "./schema";
 
 const range = (weekday: number, start_time: string, end_time: string) => ({
   weekday,

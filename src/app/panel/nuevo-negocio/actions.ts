@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { businessSchema } from "@/lib/business";
+import { businessSchema } from "@/lib/business/schema";
 import { createClient } from "@/lib/supabase/server";
 
 export interface CreateBusinessState {

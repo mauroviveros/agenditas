@@ -3,7 +3,7 @@
 // entorno (o de .env.local). La clave de servicio se salta la RLS: no se imprime ni se
 // versiona. Se corre a mano una vez al año; es idempotente (actualiza por fecha).
 import { createClient } from "@supabase/supabase-js";
-import { parseHolidays } from "../src/lib/holidays.ts";
+import { parseHolidays } from "../src/lib/holidays/parse.ts";
 
 const API = "https://api.argentinadatos.com/v1/feriados";
 const TIMEOUT_MS = 15_000;
