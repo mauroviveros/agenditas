@@ -1,4 +1,4 @@
-import { AppHeaderSkeleton } from "@/components/app-header";
+import { AppHeaderSkeleton } from "./header";
 import { SidebarSkeleton } from "@/components/sidebar/skeleton";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 

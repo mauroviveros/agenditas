@@ -26,7 +26,7 @@ export function SubmitButton({ children, pendingLabel, icon }: SubmitButtonProps
   ) : null;
 
   return (
-    <Button type="submit" size="xl" disabled={pending} aria-busy={pending} className="w-full">
+    <Button type="submit" size="lg" disabled={pending} aria-busy={pending} className="w-full">
       {lead}
       {pending ? pendingLabel : children}
     </Button>

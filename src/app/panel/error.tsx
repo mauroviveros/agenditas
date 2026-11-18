@@ -1,6 +1,5 @@
 "use client";
 
-import { PageTitle } from "@/components/page-title";
 import { Button } from "@/components/ui/button";
 
 // Si falla la lectura de la sesión o del negocio (un corte de Supabase, por ejemplo),
@@ -8,11 +7,13 @@ import { Button } from "@/components/ui/button";
 export default function PanelError({ retry }: { error: unknown; retry: () => void }) {
   return (
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-5 py-10">
-      <PageTitle>Algo salió mal de nuestro lado</PageTitle>
+      <h1 className="font-heading text-2xl font-semibold tracking-tight text-balance">
+        Algo salió mal de nuestro lado
+      </h1>
       <p className="mt-2 text-muted-foreground">
         No pudimos cargar tu panel. Probá de nuevo; si sigue igual, volvé en un rato.
       </p>
-      <Button type="button" size="xl" className="mt-8 w-full" onClick={() => retry()}>
+      <Button type="button" size="lg" className="mt-8 w-full" onClick={() => retry()}>
         Probar de nuevo
       </Button>
     </main>

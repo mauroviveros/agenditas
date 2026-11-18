@@ -1,6 +1,6 @@
 import { type ReactNode, Suspense } from "react";
 import { redirect } from "next/navigation";
-import { AppHeader } from "@/components/app-header";
+import { AppHeader } from "./header";
 import { AppSidebar } from "@/components/sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getCurrentUser, getMyBusiness } from "@/lib/session";

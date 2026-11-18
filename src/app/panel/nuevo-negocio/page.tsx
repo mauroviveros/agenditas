@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { PageTitle } from "@/components/page-title";
 import { getMyBusiness, getUserId } from "@/lib/session";
 import { BusinessForm } from "./business-form";
 
@@ -23,7 +22,9 @@ export default function NewBusinessPage() {
       <BusinessForm
         heading={
           <div className="mt-10 mb-8 md:mt-0">
-            <PageTitle>Armá tu negocio</PageTitle>
+            <h1 className="font-heading text-2xl font-semibold tracking-tight text-balance">
+              Armá tu negocio
+            </h1>
             <p className="mt-2 text-muted-foreground">
               Con esto armamos tu página para que tus clientes reserven solos.
             </p>

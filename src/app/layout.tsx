@@ -4,12 +4,12 @@ import "./globals.css";
 import { cn } from "cn";
 
 const geist = Geist({
-  variable: "--font-geist",
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+  variable: "--font-mono",
   subsets: ["latin"],
 });
 

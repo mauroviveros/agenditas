@@ -147,9 +147,9 @@ export function BusinessForm({ heading }: { heading: ReactNode }) {
             {state.formError ? (
               <p
                 role="alert"
-                className="mb-4 flex items-start gap-3 rounded-lg border border-peligro/30 bg-peligro-suave p-4 font-medium"
+                className="mb-4 flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 font-medium"
               >
-                <CircleAlertIcon aria-hidden className="mt-0.5 size-4 shrink-0 text-peligro" />
+                <CircleAlertIcon aria-hidden className="mt-0.5 size-4 shrink-0 text-destructive" />
                 {state.formError}
               </p>
             ) : null}

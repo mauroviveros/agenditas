@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { signInWithGoogle } from "@/app/auth/actions";
-import { PageTitle } from "@/components/page-title";
 import { SubmitButton } from "@/components/submit-button";
 
 export const metadata: Metadata = {
@@ -17,11 +16,13 @@ const ERROR_MESSAGES: Record<string, string> = {
 export default function LoginPage({ searchParams }: PageProps<"/login">) {
   return (
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col px-5 pt-8 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-      <p className="font-titulo text-lg font-semibold tracking-tight">Agenditas</p>
+      <p className="font-heading text-lg font-semibold tracking-tight">Agenditas</p>
 
       <div className="mt-auto pt-16">
-        <PageTitle>Entrá a tu agenda</PageTitle>
-        <p className="mt-2 text-tinta-suave">Con tu cuenta de Google, sin contraseñas nuevas.</p>
+        <h1 className="font-heading text-2xl font-semibold tracking-tight text-balance">
+          Entrá a tu agenda
+        </h1>
+        <p className="mt-2 text-muted-foreground">Con tu cuenta de Google, sin contraseñas nuevas.</p>
       </div>
 
       <Suspense fallback={null}>
@@ -51,13 +52,13 @@ async function LoginError({ searchParams }: Pick<PageProps<"/login">, "searchPar
   return (
     <div
       role="alert"
-      className="mt-6 flex items-start gap-3 rounded-lg border border-peligro/30 bg-peligro-suave p-4"
+      className="mt-6 flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4"
     >
       <svg
         viewBox="0 0 24 24"
         fill="none"
         aria-hidden="true"
-        className="mt-px size-5 shrink-0 text-peligro"
+        className="mt-px size-5 shrink-0 text-destructive"
       >
         <circle cx="12" cy="12" r="9.25" stroke="currentColor" strokeWidth="1.75" />
         <path d="M12 7.5v5.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />

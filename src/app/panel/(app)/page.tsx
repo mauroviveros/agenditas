@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { PageTitle } from "@/components/page-title";
 import { getMyBusiness, getUserId } from "@/lib/session";
 
 export const metadata: Metadata = {
@@ -19,7 +18,9 @@ export default async function PanelPage() {
   }
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8">
-      <PageTitle>{business.name}</PageTitle>
+      <h1 className="font-heading text-2xl font-semibold tracking-tight text-balance">
+        {business.name}
+      </h1>
 
       <section className="rounded-xl border border-dashed border-border p-6">
         <h2 className="text-base font-semibold">Tu agenda aparece acá</h2>
