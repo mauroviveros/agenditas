@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { PUBLIC_LINK_PREFIX } from "@/lib/business";
 import { getMyBusiness, getUserId } from "@/lib/session";
-import { CopyLinkButton } from "./copy-link-button";
 
 export const metadata: Metadata = {
   title: "Panel · Agenditas",
@@ -26,19 +24,11 @@ async function Welcome() {
   if (!business) {
     return null;
   }
-  const link = `${PUBLIC_LINK_PREFIX}${business.slug}`;
-
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8">
       <h1 className="font-heading text-[1.75rem] leading-[1.15] font-extrabold tracking-[-0.02em] text-balance md:text-[2.5rem] md:leading-[1.05]">
         {business.name}
       </h1>
-
-      <section className="flex flex-col gap-3 rounded-panel bg-background p-5 md:p-6">
-        <h2 className="text-lg font-bold">Tu link para reservas</h2>
-        <p className="rounded-full bg-card px-4 py-2 text-sm font-semibold break-all">{link}</p>
-        <CopyLinkButton link={`https://${link}`} />
-      </section>
 
       <section className="rounded-panel border-2 border-dashed border-border p-6">
         <h2 className="text-lg font-bold">Tu agenda aparece acá</h2>

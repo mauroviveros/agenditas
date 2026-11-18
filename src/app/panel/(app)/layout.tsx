@@ -27,7 +27,7 @@ async function Shell({ children }: { children: ReactNode }) {
 
   return (
     <SidebarProvider>
-      <AppSidebar businessName={business.name} user={user} />
+      <AppSidebar businessName={business.name} businessSlug={business.slug} user={user} />
 
       <SidebarInset className="bg-card">
         <header className="flex h-14 items-center border-b px-1.5 md:px-4">

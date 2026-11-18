@@ -3,12 +3,15 @@ import type { CurrentUser } from "@/lib/session";
 import { NavMenu } from "./nav-menu";
 import { NavUser } from "./nav-user";
 import { NavBusiness } from "./nav-business";
+import { NavPublicLink } from "./nav-public-link";
 
 export function AppSidebar({
   businessName,
+  businessSlug,
   user,
 }: {
   businessName: string;
+  businessSlug: string;
   user: CurrentUser;
 }) {
   return (
@@ -22,6 +25,7 @@ export function AppSidebar({
       </SidebarContent>
 
       <SidebarFooter>
+        <NavPublicLink slug={businessSlug} />
         <NavUser user={user} />
       </SidebarFooter>
 
