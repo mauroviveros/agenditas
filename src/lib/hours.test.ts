@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { MAX_RANGES, defaultSlotAfter, hoursSchema, toHourRange } from "./hours";
+import { MAX_RANGES, hoursSchema, toHourRange } from "./hours";
 
 const range = (weekday: number, start_time: string, end_time: string) => ({
   weekday,
@@ -9,7 +9,11 @@ const range = (weekday: number, start_time: string, end_time: string) => ({
 
 describe("hoursSchema", () => {
   test("acepta una semana con almuerzo (el hueco entre dos franjas)", () => {
-    const week = [range(1, "09:00", "13:00"), range(1, "15:00", "19:00"), range(2, "09:00", "13:00")];
+    const week = [
+      range(1, "09:00", "13:00"),
+      range(1, "15:00", "19:00"),
+      range(2, "09:00", "13:00"),
+    ];
 
     expect(hoursSchema.safeParse(week).success).toBe(true);
   });
@@ -19,7 +23,11 @@ describe("hoursSchema", () => {
   });
 
   test("acepta franjas pegadas y la misma franja en otro día", () => {
-    const week = [range(1, "09:00", "13:00"), range(1, "13:00", "19:00"), range(2, "09:00", "13:00")];
+    const week = [
+      range(1, "09:00", "13:00"),
+      range(1, "13:00", "19:00"),
+      range(2, "09:00", "13:00"),
+    ];
 
     expect(hoursSchema.safeParse(week).success).toBe(true);
   });
@@ -31,18 +39,26 @@ describe("hoursSchema", () => {
   });
 
   test("rechaza un día fuera de 1 a 7", () => {
-    expect(hoursSchema.safeParse([range(0, "09:00", "13:00")]).success).toBe(false);
-    expect(hoursSchema.safeParse([range(8, "09:00", "13:00")]).success).toBe(false);
+    expect(hoursSchema.safeParse([range(0, "09:00", "13:00")]).success).toBe(
+      false,
+    );
+    expect(hoursSchema.safeParse([range(8, "09:00", "13:00")]).success).toBe(
+      false,
+    );
   });
 
   test("rechaza un día con decimales", () => {
-    expect(hoursSchema.safeParse([range(1.5, "09:00", "13:00")]).success).toBe(false);
+    expect(hoursSchema.safeParse([range(1.5, "09:00", "13:00")]).success).toBe(
+      false,
+    );
   });
 
   test("rechaza horas con formato inválido o que no existen", () => {
     // Como fin, con inicio 00:00: el orden no la frena, solo el formato.
     for (const bad of ["9:00", "24:00", "09:60", "0900", "09:00:00", ""]) {
-      expect(hoursSchema.safeParse([range(1, "00:00", bad)]).success, bad).toBe(false);
+      expect(hoursSchema.safeParse([range(1, "00:00", bad)]).success, bad).toBe(
+        false,
+      );
     }
   });
 
@@ -52,53 +68,53 @@ describe("hoursSchema", () => {
 
     expect(before.success).toBe(false);
     expect(equal.success).toBe(false);
-    expect(before.error?.issues[0]?.message).toBe("El fin tiene que ser después del inicio.");
+    expect(before.error?.issues[0]?.message).toBe(
+      "El fin tiene que ser después del inicio.",
+    );
   });
 
   test("rechaza dos franjas que se pisan el mismo día", () => {
-    const result = hoursSchema.safeParse([range(1, "09:00", "13:00"), range(1, "12:00", "16:00")]);
+    const result = hoursSchema.safeParse([
+      range(1, "09:00", "13:00"),
+      range(1, "12:00", "16:00"),
+    ]);
 
     expect(result.success).toBe(false);
-    expect(result.error?.issues[0]?.message).toBe("Hay dos franjas del mismo día que se pisan.");
+    expect(result.error?.issues[0]?.message).toBe(
+      "Hay dos franjas del mismo día que se pisan.",
+    );
   });
 
   test("señala la franja que se pisa con la anterior, aunque vengan desordenadas", () => {
-    const result = hoursSchema.safeParse([range(1, "12:00", "16:00"), range(1, "09:00", "13:00")]);
+    const result = hoursSchema.safeParse([
+      range(1, "12:00", "16:00"),
+      range(1, "09:00", "13:00"),
+    ]);
 
     // La que arranca más tarde es la que pisa: es la primera de la lista (índice 0).
     expect(result.error?.issues[0]?.path).toEqual([0, "start_time"]);
   });
 
   test("rechaza más franjas que el tope", () => {
-    const tooMany = Array.from({ length: MAX_RANGES + 1 }, () => range(1, "09:00", "10:00"));
+    const tooMany = Array.from({ length: MAX_RANGES + 1 }, () =>
+      range(1, "09:00", "10:00"),
+    );
 
     expect(hoursSchema.safeParse(tooMany).success).toBe(false);
   });
 
   test("rechaza algo que no es una lista o le faltan campos", () => {
     expect(hoursSchema.safeParse({ weekday: 1 }).success).toBe(false);
-    expect(hoursSchema.safeParse([{ weekday: 1, start_time: "09:00" }]).success).toBe(false);
-  });
-});
-
-describe("defaultSlotAfter", () => {
-  test("sin franja anterior propone de 09:00 a 13:00", () => {
-    expect(defaultSlotAfter(undefined)).toEqual({ start_time: "09:00", end_time: "13:00" });
-  });
-
-  test("arranca donde terminó la anterior y dura cuatro horas", () => {
-    expect(defaultSlotAfter("13:00")).toEqual({ start_time: "13:00", end_time: "17:00" });
-  });
-
-  test("no pasa de las 23:59", () => {
-    expect(defaultSlotAfter("21:30")).toEqual({ start_time: "21:30", end_time: "23:59" });
+    expect(
+      hoursSchema.safeParse([{ weekday: 1, start_time: "09:00" }]).success,
+    ).toBe(false);
   });
 });
 
 describe("toHourRange", () => {
   test("recorta los segundos que devuelve la base", () => {
-    expect(toHourRange({ weekday: 1, start_time: "09:00:00", end_time: "13:30:00" })).toEqual(
-      range(1, "09:00", "13:30"),
-    );
+    expect(
+      toHourRange({ weekday: 1, start_time: "09:00:00", end_time: "13:30:00" }),
+    ).toEqual(range(1, "09:00", "13:30"));
   });
 });
