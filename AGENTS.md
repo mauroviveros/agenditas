@@ -106,11 +106,17 @@ Un atajo con límite conocido lleva:
   hacen falta dos). Las URLs que ve el usuario son lo único en español.
 - **Carpeta desde 2 archivos que no sean tests.** Con uno solo, queda plano y con su nombre
   (`submit-button.tsx`, `time.ts`).
-- **`index.tsx` solo si es el componente principal de la carpeta** (`form/index.tsx`). Nunca un
-  `index` que solo re-exporta: en Next arrastra código de servidor al cliente. Desde afuera
+- **`index.tsx` solo si es el componente principal de la carpeta** (`holidays/index.tsx`). Nunca
+  un `index` que solo re-exporta: en Next arrastra código de servidor al cliente. Desde afuera
   se importa la carpeta (`./holidays`); de sus archivos, solo las piezas públicas
   (`./holidays/skeleton`), nunca los internos.
-- **El test va al lado**, con el mismo nombre más `.test` (`card.test.tsx`).
+- **Una sección de pantalla que lee datos** lleva `index.tsx` (arma el `Suspense`) y
+  `skeleton.tsx`. El loader (la función que lee) va dentro del `index.tsx` si es simple
+  (`hours/`) y en su propio `loader.tsx` si elige entre varios casos o tiene tests
+  (`holidays/`). Los casos que se resuelven con un aviso (vacío, error) van en `body.tsx`
+  junto a la lista. Si un error no se puede disimular (los horarios: una semana vacía invita
+  a pisar lo guardado), el loader no lo atrapa y sube a `error.tsx`.
+- **El test va al lado**, con el mismo nombre más `.test` (`body.test.tsx`).
 - **Los nombres especiales de Next no se tocan**: `page`, `layout`, `loading`, `error`, `route`.
 - **En `src/lib/`, una carpeta por tema** con el esquema o parser (`schema.ts`, `parse.ts`, sin
   servidor: lo importan el cliente y los scripts) aparte de las lecturas (`queries.ts`, solo

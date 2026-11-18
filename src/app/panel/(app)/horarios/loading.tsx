@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { HolidaysCardSkeleton } from "./holidays/skeleton";
+import { HoursFormSkeleton } from "./hours/skeleton";
 
 // Esqueleto de Horarios: título, bajada, los siete días y los feriados.
 export default function Loading() {
@@ -9,11 +10,7 @@ export default function Loading() {
         <Skeleton className="h-9 w-1/2 md:h-11" />
         <Skeleton className="h-5 w-4/5" />
       </div>
-      <div className="flex flex-col gap-3">
-        {Array.from({ length: 7 }, (_, day) => (
-          <Skeleton key={day} className="h-24 rounded-xl" />
-        ))}
-      </div>
+      <HoursFormSkeleton />
       <HolidaysCardSkeleton />
     </div>
   );
