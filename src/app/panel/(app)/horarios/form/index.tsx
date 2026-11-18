@@ -20,6 +20,7 @@ import { DayRow } from "./day-row";
 import { DaySheet } from "./day-sheet";
 import {
   copyDay,
+  copyMessage,
   rangesFromWeek,
   type Slot,
   toggleDay,
@@ -76,6 +77,11 @@ export function HoursForm({
   const [week, setWeek] = useState<Week>(() => weekFromRanges(initial));
   const [sheetDay, setSheetDay] = useState<number | null>(null);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
+  // La última copia a otros días, para poder deshacerla: la semana de antes y qué se dijo.
+  const [lastCopy, setLastCopy] = useState<{
+    previous: Week;
+    message: string;
+  } | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const ranges = rangesFromWeek(week);
@@ -90,8 +96,25 @@ export function HoursForm({
   const isDirty = normalize(ranges) !== normalize(initial);
 
   const edit = (next: Week) => {
+    setLastCopy(null);
     setWeek(next);
     setStatus({ kind: "idle" });
+  };
+
+  const applyCopy = (day: number, next: Week, to: readonly number[]) => {
+    setLastCopy({
+      previous: week,
+      message: copyMessage(WEEKDAY_NAMES[day] ?? "", to),
+    });
+    setWeek(next);
+    setStatus({ kind: "idle" });
+  };
+
+  const undoCopy = () => {
+    if (lastCopy) {
+      setWeek(lastCopy.previous);
+    }
+    setLastCopy(null);
   };
 
   const applySheet = (
@@ -99,7 +122,12 @@ export function HoursForm({
     slots: readonly Slot[],
     copyTo: readonly number[],
   ) => {
-    edit(copyDay(replaceDay(week, day, slots), day, copyTo));
+    const next = copyDay(replaceDay(week, day, slots), day, copyTo);
+    if (copyTo.length === 0) {
+      edit(next);
+    } else {
+      applyCopy(day, next, copyTo);
+    }
     setSheetDay(null);
   };
 
@@ -110,6 +138,9 @@ export function HoursForm({
     }
     startTransition(async () => {
       const result = await saveHours(parsed.data);
+      if (result.ok) {
+        setLastCopy(null);
+      }
       setStatus(
         result.ok
           ? { kind: "saved" }
@@ -120,16 +151,15 @@ export function HoursForm({
 
   const notice =
     status.kind === "error" ? status.message : (general[0] ?? null);
-  const showBar = isDirty || status.kind !== "idle" || notice !== null;
+  const showBar =
+    isDirty || status.kind !== "idle" || notice !== null || lastCopy !== null;
   // Lo que anuncia el lector de pantalla. La región vive siempre en la página: una región
   // que aparece ya con texto no se anuncia de forma confiable.
   const liveMessage =
     notice ??
     (status.kind === "saved"
       ? "Listo, guardamos tus horarios."
-      : isDirty
-        ? "Cambios sin guardar"
-        : "");
+      : (lastCopy?.message ?? (isDirty ? "Cambios sin guardar" : "")));
 
   return (
     <form
@@ -175,7 +205,9 @@ export function HoursForm({
                     <div data-slot="copy" className="pr-4">
                       <CopyDayMenu
                         dayName={WEEKDAY_NAMES[day]}
-                        onCopy={(to) => edit(copyDay(week, day, to))}
+                        onCopy={(to) =>
+                          applyCopy(day, copyDay(week, day, to), to)
+                        }
                         trigger={
                           <Button
                             type="button"
@@ -238,11 +270,23 @@ export function HoursForm({
                   Listo, guardamos tus horarios.
                 </>
               ) : (
-                "Cambios sin guardar"
+                (lastCopy?.message ?? "Cambios sin guardar")
               )}
             </p>
 
             <div className="flex gap-2">
+              {lastCopy ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  className="h-11"
+                  disabled={isPending}
+                  onClick={undoCopy}
+                >
+                  Deshacer
+                </Button>
+              ) : null}
               <Button
                 type="button"
                 variant="ghost"

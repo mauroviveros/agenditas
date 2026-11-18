@@ -14,8 +14,8 @@ día, hasta dos franjas y el almuerzo como el hueco entre ellas. Cada día muest
 netas y el de hoy lleva una marca. Se puede copiar el horario de un día a lunes a viernes
 o a toda la semana (menú en escritorio, «Aplicar a» en la hoja del celu). Guardar y
 Descartar viven en el pie del panel y solo aparecen con cambios. Datos: tabla
-`business_hours`, `is_business_owner` y la RPC `set_business_hours`. 94 tests pgTAP, 75 de
-Vitest y 31 e2e. Los feriados quedaron para R2b.
+`business_hours`, `is_business_owner` y la RPC `set_business_hours`. 94 tests pgTAP, 76 de
+Vitest y 32 e2e. Los feriados quedaron para R2b.
 
 **Decisiones**
 - **El almuerzo no se guarda:** es el hueco entre dos franjas del mismo día. La pantalla
@@ -41,6 +41,10 @@ Vitest y 31 e2e. Los feriados quedaron para R2b.
   verificó en un dispositivo real (ver «Antes de producción»).
 - No hay estado vacío propio: con la semana sin horarios se ve todo «No atiende» y la
   frase de ayuda.
+- Del critique y el audit (25/40 y 14/20), sin hacer: las dos franjas de un día suenan igual
+  para un lector de pantalla («Lunes, desde»), la fila con almuerzo ocupa tres líneas entre
+  768 y 1024 px y se parte a 1280 px, y en el celu «Listo» parece el final aunque falta
+  Guardar (y su `aria-label` oculta las horas).
 
 ---
 

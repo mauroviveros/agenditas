@@ -13,12 +13,22 @@ interface DayListRowProps {
 }
 
 // Un día en el celu: el horario en una línea. Tocar la fila abre la hoja para editarlo.
-export function DayListRow({ day, isToday, slots, onToggle, onOpen }: DayListRowProps) {
+export function DayListRow({
+  day,
+  isToday,
+  slots,
+  onToggle,
+  onOpen,
+}: DayListRowProps) {
   const dayName = WEEKDAY_NAMES[day];
   const isOpen = slots.length > 0;
 
   return (
-    <div data-slot="day-list-row" data-open={isOpen} className="flex items-center gap-3 pr-5">
+    <div
+      data-slot="day-list-row"
+      data-open={isOpen}
+      className="flex items-center gap-3 pr-5"
+    >
       <button
         type="button"
         onClick={onOpen}
@@ -38,7 +48,10 @@ export function DayListRow({ day, isToday, slots, onToggle, onOpen }: DayListRow
             {summarizeDay(slots)}
           </span>
           {isOpen ? (
-            <span data-slot="day-duration" className="text-xs text-muted-foreground tabular-nums">
+            <span
+              data-slot="day-duration"
+              className="text-xs text-muted-foreground tabular-nums"
+            >
               {dayDuration(slots)}
             </span>
           ) : null}
@@ -47,6 +60,8 @@ export function DayListRow({ day, isToday, slots, onToggle, onOpen }: DayListRow
       <Switch
         checked={isOpen}
         onCheckedChange={onToggle}
+        // Zona de toque de 44 px de alto (la base trae 34).
+        className="after:-inset-y-3.5"
         aria-label={`${dayName}: ${isOpen ? "atiende" : "no atiende"}`}
       />
     </div>
