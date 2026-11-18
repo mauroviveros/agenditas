@@ -262,7 +262,7 @@ test("celu: el interruptor de cada día tiene una zona de toque de al menos 44 p
   await page.goto("/panel/horarios");
 
   const interruptor = page
-    .locator("[data-slot=day-list-row] [data-slot=switch]")
+    .locator("[data-slot=day-summary] [data-slot=switch]")
     .first();
   await expect(interruptor).toBeVisible();
   const alto = await interruptor

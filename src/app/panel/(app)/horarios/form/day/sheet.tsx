@@ -27,7 +27,7 @@ import {
   splitLunch,
   WEEKDAY_NAMES,
   WORKWEEK,
-} from "./week";
+} from "../week";
 
 // A qué días se copia lo que se edita acá: ninguno más, lunes a viernes o toda la semana.
 const TARGETS = {

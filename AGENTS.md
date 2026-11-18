@@ -102,7 +102,7 @@ Un atajo con límite conocido lleva:
 ## Archivos y carpetas
 
 - **La carpeta dice qué es; el archivo, su rol.** `holidays/card.tsx`, `holidays/skeleton.tsx`.
-  Nombres en kebab-case, en inglés y de una palabra cuando se entienda (`day-row.tsx` solo si
+  Nombres en kebab-case, en inglés y de una palabra cuando se entienda (`copy-menu.tsx` solo si
   hacen falta dos). Las URLs que ve el usuario son lo único en español.
 - **Carpeta desde 2 archivos que no sean tests.** Con uno solo, queda plano y con su nombre
   (`submit-button.tsx`, `time.ts`).

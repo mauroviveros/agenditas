@@ -1,10 +1,10 @@
 "use client";
 
 import { Switch } from "@/components/ui/switch";
-import { DayName } from "./day-name";
-import { dayDuration, type Slot, summarizeDay, WEEKDAY_NAMES } from "./week";
+import { DayName } from "./name";
+import { dayDuration, type Slot, summarizeDay, WEEKDAY_NAMES } from "../week";
 
-interface DayListRowProps {
+interface DaySummaryProps {
   day: number;
   isToday: boolean;
   slots: readonly Slot[];
@@ -13,19 +13,19 @@ interface DayListRowProps {
 }
 
 // Un día en el celu: el horario en una línea. Tocar la fila abre la hoja para editarlo.
-export function DayListRow({
+export function DaySummary({
   day,
   isToday,
   slots,
   onToggle,
   onOpen,
-}: DayListRowProps) {
+}: DaySummaryProps) {
   const dayName = WEEKDAY_NAMES[day];
   const isOpen = slots.length > 0;
 
   return (
     <div
-      data-slot="day-list-row"
+      data-slot="day-summary"
       data-open={isOpen}
       className="flex items-center gap-3 pr-5"
     >

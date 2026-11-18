@@ -63,6 +63,10 @@ export function toggleDay(week: Week, day: number): Week {
   return week.map((slots, index) => (index === day ? next : slots));
 }
 
+// Reemplaza las franjas de un día y deja los demás como están.
+export const replaceDay = (week: Week, day: number, slots: readonly Slot[]): Week =>
+  week.map((current, index) => (index === day ? slots : current));
+
 // Corta una franja corrida en dos, con una hora de almuerzo cerca de la mitad.
 export function splitLunch(slots: readonly Slot[]): readonly Slot[] {
   const [only] = slots;

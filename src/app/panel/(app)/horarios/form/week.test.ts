@@ -5,6 +5,7 @@ import {
   dayDuration,
   joinLunch,
   rangesFromWeek,
+  replaceDay,
   splitLunch,
   summarizeDay,
   toggleDay,
@@ -230,5 +231,23 @@ describe("copyMessage", () => {
     expect(copyMessage("Sábado", ALL_DAYS)).toBe(
       "Copiamos el horario del sábado a toda la semana.",
     );
+  });
+});
+
+describe("replaceDay", () => {
+  const week = weekFromRanges([range(1, "09:00", "13:00"), range(3, "10:00", "12:00")]);
+
+  test("cambia las franjas de ese día y deja los demás igual", () => {
+    const next = replaceDay(week, 1, [{ start_time: "08:00", end_time: "09:00" }]);
+
+    expect(next[1]).toEqual([{ start_time: "08:00", end_time: "09:00" }]);
+    expect(next[0]).toEqual(week[0]);
+    expect(next[2]).toEqual(week[2]);
+  });
+
+  test("no modifica la semana original", () => {
+    replaceDay(week, 0, []);
+
+    expect(week[0]).toEqual([{ start_time: "09:00", end_time: "13:00" }]);
   });
 });
