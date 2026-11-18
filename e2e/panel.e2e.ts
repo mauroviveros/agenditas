@@ -25,6 +25,8 @@ test("con negocio, el panel muestra su nombre y no deja crear otro", async ({ pa
 
   await page.goto("/panel");
   await expect(page.getByRole("heading", { name: nombre })).toBeVisible();
+  // SidebarInset ya es el <main>: no puede haber otro adentro.
+  await expect(page.locator("main")).toHaveCount(1);
 
   await page.goto("/panel/nuevo-negocio");
   await expect(page).toHaveURL(/\/panel$/);
@@ -50,6 +52,22 @@ test("mientras carga la sesión, el panel manda un esqueleto y no una pantalla e
   const html = await (await page.request.get("/panel")).text();
   expect(html).toContain('data-slot="skeleton"');
   expect(html).toContain("Cargando tu panel");
+});
+
+test("sin sesión, el proxy redirige con un 307 antes de renderizar nada", async ({ playwright, baseURL }) => {
+  const anonimo = await playwright.request.newContext({ baseURL });
+  for (const ruta of ["/panel", "/panel/nuevo-negocio"]) {
+    const respuesta = await anonimo.get(ruta, { maxRedirects: 0 });
+    expect(respuesta.status(), ruta).toBe(307);
+    expect(respuesta.headers().location, ruta).toMatch(/\/login$/);
+  }
+});
+
+test("con sesión, el proxy manda /login al panel con un 307", async ({ page, context }) => {
+  await signUpNewUser(context);
+  const respuesta = await page.request.get("/login", { maxRedirects: 0 });
+  expect(respuesta.status()).toBe(307);
+  expect(respuesta.headers().location).toMatch(/\/panel$/);
 });
 
 test("con sesión, /login lleva al panel", async ({ page, context }) => {
