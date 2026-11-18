@@ -15,7 +15,7 @@ export function AppSidebar({
   user: CurrentUser;
 }) {
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader>
         <NavBusiness businessName={businessName} />
       </SidebarHeader>
