@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Figtree } from "next/font/google";
 import "./globals.css";
+import { cn } from "cn";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -21,7 +22,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es-AR"
-      className={`${bricolage.variable} ${figtree.variable} h-full antialiased`}
+      className={cn("h-full", "antialiased", bricolage.variable, figtree.variable, "font-sans")}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
