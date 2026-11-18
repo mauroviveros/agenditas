@@ -113,7 +113,8 @@ select throws_ok($$ select public.set_business_hours('aaaaaaaa-aaaa-aaaa-aaaa-aa
 -- Lo de Beto no se tocó.
 reset role;
 select results_eq(
-  $$ select weekday::int, start_time::text from public.business_hours $$,
+  $$ select weekday::int, start_time::text from public.business_hours
+     where business_id = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb' $$,
   $$ values (1, '10:00:00') $$,
   'la franja de Beto sigue igual');
 
