@@ -4,6 +4,7 @@ import { AppHeader } from "./header";
 import { AppSidebar } from "@/components/sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getCurrentUser, getMyBusiness } from "@/lib/session";
+import { FooterSlot, PanelSlotsProvider } from "./slots";
 import { PanelSkeleton } from "./skeleton";
 
 // Marco del panel: sidebar que se achica a íconos; en celu se abre como cajón con el botón.
@@ -28,16 +29,25 @@ async function Shell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <SidebarProvider>
-      <AppSidebar businessName={business.name} businessSlug={business.slug} user={user} />
+    <PanelSlotsProvider>
+      <SidebarProvider>
+        <AppSidebar
+          businessName={business.name}
+          businessSlug={business.slug}
+          user={user}
+        />
 
-      <SidebarInset className="bg-card">
-        <AppHeader />
+        <SidebarInset className="bg-card">
+          <AppHeader />
 
-        <div data-slot="panel-content" className="px-5 py-8 md:px-10">
-          {children}
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+          <main data-slot="panel-content" className="flex-1 px-5 py-8 md:px-10">
+            {children}
+          </main>
+
+          {/* Acciones de la pantalla (guardar, descartar): se muestra solo si una pantalla pone algo con PanelFooter. */}
+          <FooterSlot className="sticky bottom-0 z-10 border-t border-border bg-card px-5 py-3 empty:hidden md:px-10" />
+        </SidebarInset>
+      </SidebarProvider>
+    </PanelSlotsProvider>
   );
 }
