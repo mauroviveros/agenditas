@@ -36,3 +36,6 @@ export function slugify(name: string): string {
     .slice(0, SLUG_MAX)
     .replace(/-+$/, "");
 }
+
+// Cómo se ve el link público de un negocio; la página llega en R5.
+export const PUBLIC_LINK_PREFIX = "agenditas.app/reservar/";

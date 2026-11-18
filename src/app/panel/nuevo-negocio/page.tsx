@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { getMyBusiness, getUserId } from "@/lib/session";
 import { BusinessForm } from "./business-form";
 
 export const metadata: Metadata = {
@@ -11,6 +14,10 @@ export default function NewBusinessPage() {
   return (
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col px-5 pt-8 pb-[max(1.5rem,env(safe-area-inset-bottom))] md:max-w-5xl md:px-10 md:py-10">
       <p className="font-heading text-xl font-extrabold tracking-[-0.02em]">Agenditas</p>
+
+      <Suspense fallback={null}>
+        <Guard />
+      </Suspense>
 
       <BusinessForm
         heading={
@@ -26,4 +33,15 @@ export default function NewBusinessPage() {
       />
     </main>
   );
+}
+
+// Guardas: sin sesión va a /login; si ya tiene negocio, al panel.
+async function Guard() {
+  if (!(await getUserId())) {
+    redirect("/login");
+  }
+  if (await getMyBusiness()) {
+    redirect("/panel");
+  }
+  return null;
 }

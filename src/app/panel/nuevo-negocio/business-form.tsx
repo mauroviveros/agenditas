@@ -19,11 +19,10 @@ import {
   InputGroupInput,
   InputGroupText,
 } from "@/components/ui/input-group";
-import { businessSchema, slugify } from "@/lib/business";
+import { businessSchema, PUBLIC_LINK_PREFIX as LINK_PREFIX, slugify } from "@/lib/business";
 import { checkSlugAvailability, createBusiness, type CreateBusinessState } from "./actions";
 
 const INITIAL_STATE: CreateBusinessState = {};
-const LINK_PREFIX = "agenditas.app/reservar/";
 // Espera después de la última tecla antes de preguntar si el link está libre.
 const CHECK_DELAY_MS = 400;
 

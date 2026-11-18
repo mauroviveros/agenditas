@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { getUserId } from "@/lib/session";
 import { signInWithGoogle } from "./actions";
 import { SubmitButton } from "@/components/submit-button";
 
@@ -24,6 +26,10 @@ export default function LoginPage({ searchParams }: PageProps<"/login">) {
         </h1>
         <p className="mt-2 text-tinta-suave">Con tu cuenta de Google, sin contraseñas nuevas.</p>
       </div>
+
+      <Suspense fallback={null}>
+        <RedirectIfSignedIn />
+      </Suspense>
 
       <Suspense fallback={null}>
         <LoginError searchParams={searchParams} />
@@ -64,4 +70,12 @@ async function LoginError({ searchParams }: Pick<PageProps<"/login">, "searchPar
       <p className="font-semibold">{message}</p>
     </div>
   );
+}
+
+// Quien ya entró no necesita ver el login.
+async function RedirectIfSignedIn() {
+  if (await getUserId()) {
+    redirect("/panel");
+  }
+  return null;
 }
