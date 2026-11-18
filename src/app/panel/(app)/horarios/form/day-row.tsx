@@ -135,6 +135,7 @@ export function DayRow({
 
           {errors.size > 0 ? (
             <p
+              role="alert"
               id={`${baseId}-error`}
               className="flex items-center gap-1.5 text-sm font-semibold"
             >

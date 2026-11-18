@@ -121,6 +121,15 @@ export function HoursForm({
   const notice =
     status.kind === "error" ? status.message : (general[0] ?? null);
   const showBar = isDirty || status.kind !== "idle" || notice !== null;
+  // Lo que anuncia el lector de pantalla. La región vive siempre en la página: una región
+  // que aparece ya con texto no se anuncia de forma confiable.
+  const liveMessage =
+    notice ??
+    (status.kind === "saved"
+      ? "Listo, guardamos tus horarios."
+      : isDirty
+        ? "Cambios sin guardar"
+        : "");
 
   return (
     <form
@@ -129,6 +138,9 @@ export function HoursForm({
       className="flex flex-col gap-4"
       noValidate
     >
+      <p role="status" className="sr-only">
+        {liveMessage}
+      </p>
       <Card role="region" aria-labelledby="week-title" className="gap-0 py-0">
         <CardHeader className="border-b px-6 pt-5">
           <CardTitle
@@ -212,7 +224,7 @@ export function HoursForm({
         <PanelFooter>
           <div className="flex flex-col gap-3 md:flex-row md:items-center">
             <p
-              role={notice ? "alert" : "status"}
+              aria-hidden
               className="flex min-h-5 flex-1 items-center gap-1.5 text-sm font-semibold"
             >
               {notice ? (

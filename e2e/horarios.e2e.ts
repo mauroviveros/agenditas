@@ -34,10 +34,10 @@ test.describe("escritorio", () => {
     await page.goto("/panel/horarios");
 
     await page.getByRole("switch", { name: "Lunes: no atiende" }).click();
-    await expect(page.getByText("Cambios sin guardar")).toBeVisible();
+    await expect(page.getByRole("status")).toHaveText("Cambios sin guardar");
 
     await page.getByRole("button", { name: "Guardar horarios" }).click();
-    await expect(page.getByText("Listo, guardamos tus horarios.")).toBeVisible();
+    await expect(page.getByRole("status")).toHaveText("Listo, guardamos tus horarios.");
 
     await page.reload();
     await expect(page.getByRole("switch", { name: "Lunes: atiende" })).toBeChecked();
@@ -98,7 +98,9 @@ test.describe("escritorio", () => {
 
     await expect(page.getByRole("button", { name: "Guardar horarios" })).toBeDisabled();
     await expect(page.getByLabel("Lunes, hasta")).toHaveAttribute("aria-invalid", "true");
-    await expect(page.getByRole("alert")).toBeVisible();
+    await expect(
+      page.getByRole("alert").filter({ hasText: "El fin tiene que ser después del inicio" }),
+    ).toBeVisible();
     await expect(page.getByRole("button", { name: "Almuerzo" }).first()).toBeDisabled();
   });
 
@@ -111,7 +113,7 @@ test.describe("escritorio", () => {
     await expect(page.getByText(/^almuerzo \d\d:\d\d–\d\d:\d\d$/)).toBeVisible();
 
     await page.getByRole("button", { name: "Guardar horarios" }).click();
-    await expect(page.getByText("Listo, guardamos tus horarios.")).toBeVisible();
+    await expect(page.getByRole("status")).toHaveText("Listo, guardamos tus horarios.");
     await page.reload();
     await expect(page.getByText(/^almuerzo /)).toBeVisible();
   });
@@ -128,7 +130,7 @@ test("celu: se edita un día en la hoja, se aplica a la semana y se guarda", asy
   await page.getByRole("button", { name: "Listo" }).click();
 
   await page.getByRole("button", { name: "Guardar horarios" }).click();
-  await expect(page.getByText("Listo, guardamos tus horarios.")).toBeVisible();
+  await expect(page.getByRole("status")).toHaveText("Listo, guardamos tus horarios.");
 
   await page.reload();
   await expect(page.getByRole("switch", { name: "Viernes: atiende" })).toBeChecked();
