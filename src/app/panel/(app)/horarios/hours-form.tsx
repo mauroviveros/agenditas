@@ -1,7 +1,7 @@
 "use client";
 
 import { CircleAlertIcon, CircleCheckIcon } from "lucide-react";
-import { type FormEvent, useState, useTransition } from "react";
+import { type FormEvent, useId, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -64,6 +64,7 @@ const NO_ERRORS: ReadonlyMap<number, string> = new Map();
 // La semana completa. Se edita en pantalla y se guarda de una vez (reemplaza lo anterior).
 // En escritorio cada día se edita en su fila; en el celu, en una hoja que se abre al tocarlo.
 export function HoursForm({ initial }: { initial: readonly HourRange[] }) {
+  const formId = useId();
   const [week, setWeek] = useState<Week>(() => weekFromRanges(initial));
   const [sheetDay, setSheetDay] = useState<number | null>(null);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
@@ -115,7 +116,12 @@ export function HoursForm({ initial }: { initial: readonly HourRange[] }) {
   const showBar = isDirty || status.kind !== "idle" || notice !== null;
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
+    <form
+      id={formId}
+      onSubmit={submit}
+      className="flex flex-col gap-4"
+      noValidate
+    >
       <Card role="region" aria-labelledby="week-title" className="gap-0 py-0">
         <CardHeader className="border-b px-6 pt-5">
           <CardTitle
@@ -209,6 +215,8 @@ export function HoursForm({ initial }: { initial: readonly HourRange[] }) {
               </Button>
               <Button
                 type="submit"
+                // El botón vive en el pie del panel, fuera del <form> en el DOM.
+                form={formId}
                 size="lg"
                 className="h-11 flex-1"
                 disabled={!isDirty || !parsed.success || isPending}
