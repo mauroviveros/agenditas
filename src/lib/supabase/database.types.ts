@@ -82,6 +82,9 @@ isOneToOne: false
             "create_business":
 { Args: { "name": string,"slug": string }; Returns: string
                            },
+"delete_service":
+{ Args: { "business_id": string,"service_id": string }; Returns: undefined
+                           },
 "is_business_owner":
 { Args: { "business_id": string }; Returns: boolean
                            },
