@@ -41,7 +41,7 @@ export function DaySheet({ day, initial, onApply, onClose }: DaySheetProps) {
 
   return (
     <Sheet open onOpenChange={(open) => (open ? null : onClose())}>
-      <SheetContent side="bottom" className="rounded-t-panel p-5">
+      <SheetContent side="bottom" className="rounded-t-xl p-5">
         <SheetHeader className="p-0">
           <SheetTitle className="text-xl font-bold">{dayName}</SheetTitle>
           <SheetDescription>
@@ -93,7 +93,8 @@ export function DaySheet({ day, initial, onApply, onClose }: DaySheetProps) {
 
         <Button
           type="button"
-          size="xl"
+          size="lg"
+          className="h-11"
           disabled={!parsed.success}
           onClick={() => onApply(draft, toWorkweek)}
         >

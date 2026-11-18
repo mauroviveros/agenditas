@@ -23,12 +23,12 @@ export function DayListRow({ day, slots, onToggle, onOpen }: DayListRowProps) {
         aria-label={`Editar el horario del ${dayName?.toLowerCase()}`}
         className="flex min-h-16 min-w-0 flex-1 flex-col items-start justify-center gap-0.5 py-2 pl-5 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
       >
-        <span data-slot="day-name" className="font-bold">
+        <span data-slot="day-name" className="text-[0.8125rem] font-medium text-muted-foreground">
           {dayName}
         </span>
         <span
           data-slot="day-summary"
-          className={`text-sm tabular-nums ${isOpen ? "" : "text-muted-foreground"}`}
+          className={`tabular-nums ${isOpen ? "text-[1.0625rem] font-semibold tracking-tight" : "text-sm text-muted-foreground"}`}
         >
           {summarizeDay(slots)}
         </span>

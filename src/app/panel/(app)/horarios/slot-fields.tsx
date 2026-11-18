@@ -16,7 +16,7 @@ interface SlotFieldsProps {
 export function SlotFields({ label, slot, onChange, invalid, describedBy }: SlotFieldsProps) {
   const shared = {
     type: "time",
-    className: "min-w-0 flex-1 tabular-nums md:w-[7.5rem] md:flex-none",
+    className: "h-11 min-w-0 flex-1 bg-transparent text-base font-semibold tracking-tight tabular-nums md:w-[7.5rem] md:flex-none md:text-base",
     "aria-invalid": invalid ? true : undefined,
     "aria-describedby": invalid ? describedBy : undefined,
   } as const;

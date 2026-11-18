@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getMyHours, getUserId } from "@/lib/session";
+import { PanelHeader } from "../slots";
 import { HoursForm } from "./hours-form";
 
 export const metadata: Metadata = {
@@ -17,15 +18,14 @@ export default async function HoursPage() {
 
   return (
     <div className="flex w-full flex-col gap-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="font-heading text-[1.75rem] leading-[1.15] font-extrabold tracking-[-0.02em] text-balance md:text-[2.5rem] md:leading-[1.05]">
-          Horarios
-        </h1>
-        <p className="text-muted-foreground">
-          Prendé los días en que atendés y poné las horas. Si cortás para almorzar, tocá «+
-          Almuerzo».
-        </p>
-      </div>
+      <PanelHeader>
+        <h1 className="truncate font-heading text-base font-medium">Horarios</h1>
+      </PanelHeader>
+
+      <p className="text-muted-foreground">
+        Prendé los días en que atendés y poné las horas. Si cortás para almorzar, tocá «+
+        Almuerzo».
+      </p>
 
       <HoursForm initial={hours} />
     </div>

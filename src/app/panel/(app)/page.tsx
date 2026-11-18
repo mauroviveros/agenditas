@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { cn } from "cn";
+import { buttonVariants } from "@/components/ui/button";
 import { getMyBusiness, getUserId } from "@/lib/session";
 
 export const metadata: Metadata = {
@@ -27,6 +30,9 @@ export default async function PanelPage() {
         <p className="mt-1 text-muted-foreground">
           Cuando cargues tus horarios y tus servicios, vas a ver los turnos del día en este lugar.
         </p>
+        <Link href="/panel/horarios" className={cn(buttonVariants({ size: "lg" }), "mt-4")}>
+          Cargar mis horarios
+        </Link>
       </section>
     </div>
   );

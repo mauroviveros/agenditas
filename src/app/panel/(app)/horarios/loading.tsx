@@ -10,7 +10,7 @@ export default function Loading() {
       </div>
       <div className="flex flex-col gap-3">
         {Array.from({ length: 7 }, (_, day) => (
-          <Skeleton key={day} className="h-24 rounded-tarjeta" />
+          <Skeleton key={day} className="h-24 rounded-xl" />
         ))}
       </div>
     </div>

@@ -30,21 +30,45 @@ export const hoursSchema = z
   .array(rangeSchema)
   .max(MAX_RANGES, `Una semana puede tener hasta ${MAX_RANGES} franjas.`)
   .superRefine((ranges, context) => {
-    const byStart = [...ranges].sort((a, b) => a.start_time.localeCompare(b.start_time));
+    const byStart = ranges
+      .map((range, index) => ({ range, index }))
+      .sort((a, b) => a.range.start_time.localeCompare(b.range.start_time));
     const lastEnd = new Map<number, string>();
-    for (const range of byStart) {
+    for (const { range, index } of byStart) {
       const previousEnd = lastEnd.get(range.weekday);
       // Pegadas (una termina donde arranca la otra) no se pisan.
       if (previousEnd !== undefined && range.start_time < previousEnd) {
+        // Señala la que arranca más tarde: es la que entra en el tramo de la otra.
         context.addIssue({
           code: "custom",
           message: "Hay dos franjas del mismo día que se pisan.",
+          path: [index, "start_time"],
         });
         return;
       }
       lastEnd.set(range.weekday, range.end_time);
     }
   });
+
+const DEFAULT_START = "09:00";
+const DEFAULT_SLOT_HOURS = 4;
+const LAST_MINUTE = "23:59";
+
+// Franja que se propone al tocar "Agregar franja": sigue a la anterior del día (o arranca
+// a las 09:00) y dura cuatro horas sin pasar de las 23:59. El solista la ajusta.
+export function defaultSlotAfter(previousEnd: string | undefined): {
+  start_time: string;
+  end_time: string;
+} {
+  const start = previousEnd ?? DEFAULT_START;
+  const [hours = 0, minutes = 0] = start.split(":").map(Number);
+  const endHours = hours + DEFAULT_SLOT_HOURS;
+  const end =
+    endHours > 23
+      ? LAST_MINUTE
+      : `${String(endHours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+  return { start_time: start, end_time: end };
+}
 
 interface HourRow {
   weekday: number;

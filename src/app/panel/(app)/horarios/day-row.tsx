@@ -31,9 +31,9 @@ export function DayRow({ day, slots, errors, onToggle, onChange }: DayRowProps) 
     <div
       data-slot="day-row"
       data-open={isOpen}
-      className="grid min-h-[88px] grid-cols-[8rem_auto_1fr] items-center gap-x-6 px-5 py-3"
+      className="grid min-h-[88px] grid-cols-[8rem_auto_1fr] items-center gap-x-6 px-6 py-3"
     >
-      <span data-slot="day-name" className="font-bold">
+      <span data-slot="day-name" className="text-sm font-medium text-muted-foreground">
         {dayName}
       </span>
       <Switch
@@ -52,7 +52,7 @@ export function DayRow({ day, slots, errors, onToggle, onChange }: DayRowProps) 
                   {index === 1 && hasLunch && first ? (
                     <span
                       data-slot="lunch-chip"
-                      className="whitespace-nowrap rounded-control bg-[repeating-linear-gradient(135deg,var(--color-bloque)_0_6px,var(--color-fondo)_6px_7px)] px-3 py-2 text-sm font-semibold tabular-nums"
+                      className="whitespace-nowrap rounded-full border border-dashed border-input px-3 py-1.5 text-sm font-medium tabular-nums text-muted-foreground"
                     >
                       almuerzo {first.end_time}–{slot.start_time}
                     </span>

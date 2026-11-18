@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { HouseIcon, type LucideIcon } from "lucide-react";
+import { ClockIcon, HouseIcon, type LucideIcon } from "lucide-react";
 
 export interface NavItem {
   title: string;
@@ -19,6 +19,7 @@ export interface NavItem {
 // Cada rebanada suma su destino acá.
 const NAV_ITEMS: readonly NavItem[] = [
   { title: "Inicio", href: "/panel", icon: HouseIcon },
+  { title: "Horarios", href: "/panel/horarios", icon: ClockIcon },
 ];
 
 export function NavMenu() {
