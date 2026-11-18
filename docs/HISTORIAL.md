@@ -5,6 +5,58 @@
 
 ---
 
+## R1 · Entrar y crear el negocio — 2026-11-18
+
+Branch `feat/r1-login` · PR pendiente (se abre con el push)
+
+**Qué quedó:** `/login` con Google, `/panel/nuevo-negocio` (nombre y link con vista
+previa), y `/panel` con sidebar, el link de reservas y "Salir". La tabla `businesses` con
+RLS y las RPC `create_business` e `is_slug_available`. 47 tests pgTAP, 23 de Vitest y
+21 e2e.
+
+**Decisiones**
+- **Guardas en capas:** el proxy hace el chequeo optimista de sesión (307 a `/login` sin
+  sesión, 307 a `/panel` en `/login` con sesión) leyendo solo la cookie; el layout del
+  panel vuelve a chequear la sesión y es el único que sabe si hay negocio (necesita la
+  base, y las docs de Next piden no consultarla en el proxy); la RLS decide qué filas se
+  ven. Un 401 no sirve para páginas: el navegador no tiene a dónde ir. Es para APIs.
+- **Cache Components:** lo que lee cookies o headers va dentro de `<Suspense>`;
+  `createClient` hace `await connection()` porque Supabase lee la hora al iniciar y eso
+  rompía el prerender. La página espera a `getUserId()` antes de consultar la tabla,
+  porque layout y página renderizan en paralelo y sin sesión la consulta fallaba.
+- **Esqueletos:** el `fallback` del layout dibuja solo el marco (sidebar y encabezado) y
+  no sabe qué ruta carga; cada pantalla trae su `loading.tsx`. Cada esqueleto vive junto
+  al componente que imita. `SidebarInset` ya es el `<main>`: había dos anidados.
+- **shadcn `base-nova` (Base UI, no Radix)** con los tokens de Mate encima. El `init`
+  pisó los ajustes de Mate y hubo que restaurarlos; el radio base quedó en `0.625rem`.
+  Descartado: sidebar con Superficie como acento (no se ve sobre Fondo): el ítem activo es
+  una pastilla Superficie con borde Línea.
+- **Link de reservas:** va en el pie del sidebar, sin botón de copiar (decisión de Mauro).
+  El dominio sale del header `Host` en el servidor (`getPublicHost`), así llega correcto
+  en el primer HTML. Un hook de cliente mostraba `agenditas.app` y saltaba a `localhost`
+  al hidratar. El formulario de crear el negocio muestra solo la ruta, para seguir
+  siendo estático.
+- **Acciones de auth** (`signInWithGoogle`, `signOut`) en `src/app/auth/actions.ts`.
+  `signOut` ya no va en un `<form>` dentro del menú: React tiraba "A React form was
+  unexpectedly submitted" porque el menú se desmonta al hacer clic.
+- **Link del negocio:** si el nombre da un link muy corto o muy largo, "Cambiar link"
+  también aparece; la base se recorta para dejar lugar a la zona; el error del servidor
+  solo vale para el link con el que se envió.
+- **Rojo:** `--destructive` sigue en Tinta (DESIGN.md: error con ícono y texto, sin
+  rojo). Si hace falta rojo, entra como token propio con su contraste, no como `oklch`
+  suelto en `globals.css` (el chequeo de colores no mira ese archivo).
+- **Auditoría de cierre** (code-reviewer, security-reviewer, `audit` medido y `critique`):
+  nada CRITICAL ni HIGH. Se arreglaron: salida del formulario con link inválido, "Revisando…"
+  colgado sin red, `error.tsx` del panel, `NavBusiness` sin dropdown vacío, textos del
+  riel en español, `prefers-reduced-motion` en los esqueletos y el formato. Lo que
+  queda está en [ROADMAP](./ROADMAP.md).
+
+**Atajos:** el link público es texto hasta que exista la página (R5); `getPublicHost`
+confía en el header `Host`; el sidebar tiene un solo ítem; el estado vacío del panel no
+tiene acción porque todavía no hay una pantalla a la cual llevar (R2).
+
+---
+
 ## F0 · Fundaciones — 2026-11-17
 
 Branch `chore/fundaciones` · PR https://github.com/mauroviveros/agenditas/pull/4
