@@ -1,7 +1,7 @@
 -- Feriados: tabla global de solo lectura. Forma, restricciones, permisos y RLS.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(16);
+select plan(17);
 
 select has_table('public', 'holidays', 'existe la tabla holidays');
 select columns_are('public', 'holidays', array['date', 'name', 'kind'],
@@ -16,8 +16,15 @@ select table_privs_are('public', 'holidays', 'authenticated', array['SELECT'],
   'authenticated solo puede leer holidays');
 select table_privs_are('public', 'holidays', 'anon', array['SELECT'],
   'anon solo puede leer holidays');
+select results_eq(
+  $$ select p, has_table_privilege('service_role', 'public.holidays', p)
+     from unnest(array['SELECT', 'INSERT', 'UPDATE', 'DELETE']) p order by p $$,
+  $$ values ('DELETE', false), ('INSERT', true), ('SELECT', true), ('UPDATE', true) $$,
+  'service_role (el script de carga) lee, inserta y actualiza, pero no borra');
 
--- Restricciones.
+-- Restricciones. Arranca vacía aunque la base local ya tenga los feriados reales cargados
+-- (todo queda dentro de la transacción y se revierte).
+delete from public.holidays;
 insert into public.holidays (date, name, kind) values
   ('2026-05-25', 'Día de la Revolución de Mayo', 'fixed'),
   ('2026-03-23', 'Puente turístico no laborable', 'bridge');
