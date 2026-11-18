@@ -75,6 +75,11 @@ describe("splitLunch", () => {
     expect(splitLunch([slot("09:00", "10:00")])).toEqual([slot("09:00", "10:00")]);
   });
 
+  test("no corta si la segunda franja quedaría vacía", () => {
+    expect(splitLunch([slot("09:00", "11:00")])).toEqual([slot("09:00", "11:00")]);
+    expect(splitLunch([slot("10:40", "12:50")])).toEqual([slot("10:40", "12:50")]);
+  });
+
   test("si ya hay dos franjas, no corta de nuevo", () => {
     const two = [slot("09:00", "13:00"), slot("14:00", "18:00")];
 
