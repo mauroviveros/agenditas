@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { HouseIcon, LucideIcon } from "lucide-react";
+import { HouseIcon, type LucideIcon } from "lucide-react";
 
 export interface NavItem {
   title: string;
@@ -23,10 +23,10 @@ const NAV_ITEMS: readonly NavItem[] = [
 
 export function NavMenu() {
   const pathname = usePathname();
+
   return (
     <SidebarGroup>
       <SidebarMenu>
-
         {NAV_ITEMS.map(({ title, href, icon: Icon }) => {
           const isActive = pathname === href;
 

@@ -29,7 +29,7 @@ export function AppSidebar({
         <NavUser user={user} />
       </SidebarFooter>
 
-      <SidebarRail  />
+      <SidebarRail aria-label="Mostrar u ocultar el menú" title="Mostrar u ocultar el menú" />
     </Sidebar>
   );
 }

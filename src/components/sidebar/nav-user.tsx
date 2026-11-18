@@ -29,42 +29,42 @@ export function NavUser({ user }: { user: CurrentUser }) {
 
   return (
     <SidebarMenu>
-        <SidebarMenuItem>
-          <DropdownMenu>
-            <DropdownMenuTrigger render={<SidebarMenuButton size="lg" />}>
-              <UserSummary user={user} />
+      <SidebarMenuItem>
+        <DropdownMenu>
+          <DropdownMenuTrigger render={<SidebarMenuButton size="lg" />}>
+            <UserSummary user={user} />
 
-              <ChevronsUpDownIcon className="ml-auto size-4" aria-hidden />
-            </DropdownMenuTrigger>
+            <ChevronsUpDownIcon className="ml-auto size-4" aria-hidden />
+          </DropdownMenuTrigger>
 
-            <DropdownMenuContent
-              className="w-56 min-w-56"
-              side={isMobile ? "bottom" : "right"}
-              align="end"
-              sideOffset={4}
+          <DropdownMenuContent
+            className="w-56 min-w-56"
+            side={isMobile ? "bottom" : "right"}
+            align="end"
+            sideOffset={4}
+          >
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="p-0 font-normal">
+                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm text-foreground">
+                  <UserSummary user={user} />
+                </div>
+              </DropdownMenuLabel>
+            </DropdownMenuGroup>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem
+              variant="destructive"
+              disabled={isSigningOut}
+              onClick={() => startSigningOut(() => signOut())}
             >
-              <DropdownMenuGroup>
-                <DropdownMenuLabel className="p-0 font-normal">
-                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm text-foreground">
-                    <UserSummary user={user} />
-                  </div>
-                </DropdownMenuLabel>
-              </DropdownMenuGroup>
-
-              <DropdownMenuSeparator />
-
-              <DropdownMenuItem
-                variant="destructive"
-                disabled={isSigningOut}
-                onClick={() => startSigningOut(() => signOut())}
-              >
-                <LogOutIcon aria-hidden />
-                Salir
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </SidebarMenuItem>
-      </SidebarMenu>
+              <LogOutIcon aria-hidden />
+              Salir
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarMenuItem>
+    </SidebarMenu>
   );
 }
 
