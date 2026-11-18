@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleAlertIcon, CircleCheckIcon } from "lucide-react";
+import { CircleAlertIcon, CircleCheckIcon, CopyIcon } from "lucide-react";
 import { type FormEvent, useId, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { type HourRange, hoursSchema } from "@/lib/hours";
 import { PanelFooter } from "../../slots";
 import { saveHours } from "../actions";
+import { CopyDayMenu } from "./copy-day-menu";
 import { DayListRow } from "./day-list-row";
 import { DayRow } from "./day-row";
 import { DaySheet } from "./day-sheet";
@@ -24,8 +25,8 @@ import {
   toggleDay,
   type Week,
   weekDuration,
+  WEEKDAY_NAMES,
   weekFromRanges,
-  WORKWEEK,
 } from "./week";
 
 type Status =
@@ -96,10 +97,9 @@ export function HoursForm({
   const applySheet = (
     day: number,
     slots: readonly Slot[],
-    toWorkweek: boolean,
+    copyTo: readonly number[],
   ) => {
-    const next = replaceDay(week, day, slots);
-    edit(toWorkweek ? copyDay(next, day, WORKWEEK) : next);
+    edit(copyDay(replaceDay(week, day, slots), day, copyTo));
     setSheetDay(null);
   };
 
@@ -148,15 +148,36 @@ export function HoursForm({
           <ul data-slot="week" className="divide-y divide-border">
             {week.map((slots, day) => (
               <li key={day}>
-                <div className="hidden md:block">
-                  <DayRow
-                    day={day}
-                    isToday={day === today}
-                    slots={slots}
-                    errors={byDay.get(day) ?? NO_ERRORS}
-                    onToggle={() => edit(toggleDay(week, day))}
-                    onChange={(next) => edit(replaceDay(week, day, next))}
-                  />
+                <div className="hidden md:flex md:items-center">
+                  <div className="min-w-0 flex-1">
+                    <DayRow
+                      day={day}
+                      isToday={day === today}
+                      slots={slots}
+                      errors={byDay.get(day) ?? NO_ERRORS}
+                      onToggle={() => edit(toggleDay(week, day))}
+                      onChange={(next) => edit(replaceDay(week, day, next))}
+                    />
+                  </div>
+                  {slots.length > 0 ? (
+                    <div data-slot="copy" className="pr-4">
+                      <CopyDayMenu
+                        dayName={WEEKDAY_NAMES[day]}
+                        onCopy={(to) => edit(copyDay(week, day, to))}
+                        trigger={
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-lg"
+                            className="size-11 text-muted-foreground"
+                            aria-label={`Copiar el horario del ${WEEKDAY_NAMES[day]?.toLowerCase()} a otros días`}
+                          />
+                        }
+                      >
+                        <CopyIcon aria-hidden />
+                      </CopyDayMenu>
+                    </div>
+                  ) : null}
                 </div>
                 <div className="md:hidden">
                   <DayListRow
@@ -182,9 +203,7 @@ export function HoursForm({
               ? (week[sheetDay] ?? [])
               : (toggleDay(week, sheetDay)[sheetDay] ?? [])
           }
-          onApply={(slots, toWorkweek) =>
-            applySheet(sheetDay, slots, toWorkweek)
-          }
+          onApply={(slots, copyTo) => applySheet(sheetDay, slots, copyTo)}
           onClose={() => setSheetDay(null)}
         />
       ) : null}

@@ -1,10 +1,15 @@
 "use client";
 
-import { CircleAlertIcon, PlusIcon } from "lucide-react";
+import { ChevronsUpDownIcon, CircleAlertIcon, PlusIcon } from "lucide-react";
 import { useId, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Sheet,
   SheetContent,
@@ -15,18 +20,29 @@ import {
 import { hoursSchema } from "@/lib/hours";
 import { SlotFields } from "./slot-fields";
 import {
+  ALL_DAYS,
   joinLunch,
   MAX_SLOTS_PER_DAY,
   type Slot,
   splitLunch,
   WEEKDAY_NAMES,
+  WORKWEEK,
 } from "./week";
+
+// A qué días se copia lo que se edita acá: ninguno más, lunes a viernes o toda la semana.
+const TARGETS = {
+  day: { label: "Solo este día", days: [] },
+  workweek: { label: "Lunes a viernes", days: WORKWEEK },
+  all: { label: "Toda la semana", days: ALL_DAYS },
+} as const;
+type Target = keyof typeof TARGETS;
 
 interface DaySheetProps {
   day: number;
   /** Franjas con las que abre; si el día estaba cerrado, la propuesta de apertura. */
   initial: readonly Slot[];
-  onApply: (slots: readonly Slot[], toWorkweek: boolean) => void;
+  /** `copyTo`: los otros días que reciben este horario (vacío si es solo este). */
+  onApply: (slots: readonly Slot[], copyTo: readonly number[]) => void;
   onClose: () => void;
 }
 
@@ -35,7 +51,9 @@ export function DaySheet({ day, initial, onApply, onClose }: DaySheetProps) {
   const dayName = WEEKDAY_NAMES[day];
   const errorId = useId();
   const [draft, setDraft] = useState(initial);
-  const [toWorkweek, setToWorkweek] = useState(false);
+  const [target, setTarget] = useState<Target>("day");
+  const targetId = useId();
+  const targetValueId = useId();
 
   // El día no importa para validar: solo el orden y el solapamiento de este borrador.
   const parsed = hoursSchema.safeParse(
@@ -119,20 +137,55 @@ export function DaySheet({ day, initial, onApply, onClose }: DaySheetProps) {
           </p>
         ) : null}
 
-        <Label className="min-h-11 text-base font-medium">
-          <Checkbox
-            checked={toWorkweek}
-            onCheckedChange={(checked) => setToWorkweek(checked === true)}
-          />
-          Usar este horario de lunes a viernes
-        </Label>
+        <div
+          data-slot="apply-to"
+          className="flex items-center justify-between gap-3"
+        >
+          <p
+            id={targetId}
+            className="text-sm font-medium text-muted-foreground"
+          >
+            Aplicar a
+          </p>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-11 min-w-44 justify-between text-base font-medium"
+                  aria-labelledby={`${targetId} ${targetValueId}`}
+                />
+              }
+            >
+              <span id={targetValueId}>{TARGETS[target].label}</span>
+              <ChevronsUpDownIcon aria-hidden data-icon="inline-end" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuRadioGroup
+                value={target}
+                onValueChange={(value) => setTarget(value as Target)}
+              >
+                {(Object.keys(TARGETS) as Target[]).map((key) => (
+                  <DropdownMenuRadioItem
+                    key={key}
+                    value={key}
+                    className="min-h-11 text-base"
+                  >
+                    {TARGETS[key].label}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
         <Button
           type="button"
           size="lg"
           className="h-11"
           disabled={!parsed.success}
-          onClick={() => onApply(draft, toWorkweek)}
+          onClick={() => onApply(draft, TARGETS[target].days)}
         >
           Listo
         </Button>

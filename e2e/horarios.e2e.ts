@@ -59,6 +59,25 @@ test.describe("escritorio", () => {
     await expect(page.locator("[data-slot=day-duration]:visible")).toHaveText("8 h");
   });
 
+  test("copiar el horario de un día a lunes a viernes o a toda la semana", async ({ page, context }) => {
+    await negocioNuevo(context);
+    await page.goto("/panel/horarios");
+
+    // Un día cerrado no ofrece copiar.
+    await expect(page.getByRole("button", { name: /Copiar el horario del lunes/ })).toHaveCount(0);
+
+    await page.getByRole("switch", { name: "Lunes: no atiende" }).click();
+    await page.getByRole("button", { name: /Copiar el horario del lunes/ }).click();
+    await page.getByRole("menuitem", { name: "Lunes a viernes" }).click();
+
+    await expect(page.getByRole("switch", { name: "Viernes: atiende" })).toBeChecked();
+    await expect(page.getByRole("switch", { name: "Sábado: no atiende" })).toBeVisible();
+
+    await page.getByRole("button", { name: /Copiar el horario del martes/ }).click();
+    await page.getByRole("menuitem", { name: "Toda la semana" }).click();
+    await expect(page.getByRole("switch", { name: "Domingo: atiende" })).toBeChecked();
+  });
+
   test("Descartar vuelve a lo guardado y esconde el pie", async ({ page, context }) => {
     await negocioNuevo(context);
     await page.goto("/panel/horarios");
@@ -103,7 +122,9 @@ test("celu: se edita un día en la hoja, se aplica a la semana y se guarda", asy
   await page.goto("/panel/horarios");
 
   await page.getByRole("button", { name: "Editar el horario del lunes" }).click();
-  await page.getByRole("checkbox", { name: /lunes a viernes/i }).check();
+  await expect(page.getByRole("button", { name: "Aplicar a Solo este día" })).toBeVisible();
+  await page.getByRole("button", { name: /Aplicar a/ }).click();
+  await page.getByRole("menuitemradio", { name: "Lunes a viernes" }).click();
   await page.getByRole("button", { name: "Listo" }).click();
 
   await page.getByRole("button", { name: "Guardar horarios" }).click();
@@ -112,4 +133,16 @@ test("celu: se edita un día en la hoja, se aplica a la semana y se guarda", asy
   await page.reload();
   await expect(page.getByRole("switch", { name: "Viernes: atiende" })).toBeChecked();
   await expect(page.getByRole("switch", { name: "Sábado: no atiende" })).not.toBeChecked();
+});
+
+test("celu: la hoja puede aplicar el horario a toda la semana", async ({ page, context }) => {
+  await negocioNuevo(context);
+  await page.goto("/panel/horarios");
+
+  await page.getByRole("button", { name: "Editar el horario del lunes" }).click();
+  await page.getByRole("button", { name: /Aplicar a/ }).click();
+  await page.getByRole("menuitemradio", { name: "Toda la semana" }).click();
+  await page.getByRole("button", { name: "Listo" }).click();
+
+  await expect(page.getByRole("switch", { name: "Domingo: atiende" })).toBeChecked();
 });
