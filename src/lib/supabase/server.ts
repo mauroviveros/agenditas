@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { connection } from "next/server";
+import type { Database } from "./database.types";
 import { getSupabaseEnv } from "./env";
 
 // Cliente de Supabase con la sesión del usuario: para Server Components,
@@ -11,7 +12,7 @@ export async function createClient() {
   await connection();
   const { url, key } = getSupabaseEnv();
 
-  return createServerClient(url, key, {
+  return createServerClient<Database>(url, key, {
     cookies: {
       getAll: () => cookieStore.getAll(),
       setAll(cookiesToSet) {

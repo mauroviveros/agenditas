@@ -1,7 +1,7 @@
 -- Feriados: tabla global de solo lectura. Forma, restricciones, permisos y RLS.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(17);
+select plan(20);
 
 select has_table('public', 'holidays', 'existe la tabla holidays');
 select columns_are('public', 'holidays', array['date', 'name', 'kind'],
@@ -19,8 +19,8 @@ select table_privs_are('public', 'holidays', 'anon', array['SELECT'],
 select results_eq(
   $$ select p, has_table_privilege('service_role', 'public.holidays', p)
      from unnest(array['SELECT', 'INSERT', 'UPDATE', 'DELETE']) p order by p $$,
-  $$ values ('DELETE', false), ('INSERT', true), ('SELECT', true), ('UPDATE', true) $$,
-  'service_role (el script de carga) lee, inserta y actualiza, pero no borra');
+  $$ values ('DELETE', true), ('INSERT', true), ('SELECT', true), ('UPDATE', true) $$,
+  'service_role (el script de carga) lee, inserta, actualiza y borra');
 
 -- Restricciones. Arranca vacía aunque la base local ya tenga los feriados reales cargados
 -- (todo queda dentro de la transacción y se revierte).
@@ -30,7 +30,7 @@ insert into public.holidays (date, name, kind) values
   ('2026-03-23', 'Puente turístico no laborable', 'bridge');
 select throws_ok($$ insert into public.holidays (date, name, kind)
   values ('2026-05-26', 'Inventado', 'otro') $$,
-  '23514', null, 'un tipo desconocido no entra');
+  '22P02', null, 'un tipo desconocido no entra');
 select throws_ok($$ insert into public.holidays (date, name, kind)
   values ('2026-05-26', '   ', 'fixed') $$,
   '23514', null, 'el nombre no puede estar vacío');
@@ -67,6 +67,18 @@ reset role;
 select lives_ok($$ insert into public.holidays (date, name, kind)
   values ('2026-07-09', 'Día de la Independencia', 'fixed') $$,
   'el dueño de la base puede cargar feriados');
+
+-- La clave de servicio como tal (rol service_role): carga, corrige y borra los feriados que
+-- la API ya no trae (por ejemplo, uno trasladado de día).
+set local role service_role;
+select lives_ok($$ insert into public.holidays (date, name, kind)
+  values ('2026-09-01', 'Prueba', 'fixed') $$,
+  'service_role inserta feriados');
+select lives_ok($$ update public.holidays set name = 'Otra' where date = '2026-09-01' $$,
+  'service_role actualiza feriados');
+select lives_ok($$ delete from public.holidays where date = '2026-09-01' $$,
+  'service_role borra feriados');
+reset role;
 
 select * from finish();
 rollback;

@@ -47,6 +47,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec supabase db start
       - run: pnpm test:db
+      # Los tipos commiteados tienen que ser los de las migraciones.
+      - run: pnpm db:types && git diff --exit-code src/lib/supabase/database.types.ts
 
   e2e:
     name: e2e
