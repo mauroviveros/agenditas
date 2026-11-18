@@ -67,6 +67,7 @@ test.describe("escritorio", () => {
     await expect(page.getByRole("button", { name: "Guardar horarios" })).toBeDisabled();
     await expect(page.getByLabel("Lunes, hasta")).toHaveAttribute("aria-invalid", "true");
     await expect(page.getByRole("alert")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Almuerzo" }).first()).toBeDisabled();
   });
 
   test("agregar almuerzo parte el día en dos franjas y se guarda", async ({ page, context }) => {

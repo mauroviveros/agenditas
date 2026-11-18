@@ -1,10 +1,9 @@
 import { type ReactNode, Suspense } from "react";
 import { redirect } from "next/navigation";
-import { AppHeader } from "./header";
 import { AppSidebar } from "@/components/sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { getCurrentUser, getMyBusiness } from "@/lib/session";
-import { FooterSlot, PanelSlotsProvider } from "./slots";
+import { FooterSlot, HeaderSlot, PanelSlotsProvider } from "./slots";
 import { PanelSkeleton } from "./skeleton";
 
 // Marco del panel: sidebar que se achica a íconos; en celu se abre como cajón con el botón.
@@ -20,13 +19,10 @@ export default function PanelLayout({ children }: { children: ReactNode }) {
 // Guardas: sin sesión va a /login; con sesión pero sin negocio, a crearlo.
 async function Shell({ children }: { children: ReactNode }) {
   const user = await getCurrentUser();
-  if (!user) {
-    redirect("/login");
-  }
+  if (!user) redirect("/login");
+
   const business = await getMyBusiness();
-  if (!business) {
-    redirect("/panel/nuevo-negocio");
-  }
+  if (!business) redirect("/panel/nuevo-negocio");
 
   return (
     <PanelSlotsProvider>
@@ -38,7 +34,10 @@ async function Shell({ children }: { children: ReactNode }) {
         />
 
         <SidebarInset className="bg-card">
-          <AppHeader />
+          <header className="flex h-14 items-center border-b px-1.5 md:px-4">
+            <SidebarTrigger className="size-11 md:size-8" aria-label="Mostrar u ocultar el menú" />
+            <HeaderSlot className="flex min-w-0 flex-1 items-center gap-2 px-2" />
+          </header>
 
           <main data-slot="panel-content" className="flex-1 px-5 py-8 md:px-10">
             {children}

@@ -13,10 +13,17 @@ interface SlotFieldsProps {
 }
 
 // Un par de horas, de inicio y de fin. Lo usan la fila de escritorio y la hoja del celu.
-export function SlotFields({ label, slot, onChange, invalid, describedBy }: SlotFieldsProps) {
+export function SlotFields({
+  label,
+  slot,
+  onChange,
+  invalid,
+  describedBy,
+}: SlotFieldsProps) {
   const shared = {
     type: "time",
-    className: "h-11 min-w-0 flex-1 bg-transparent text-base font-semibold tracking-tight tabular-nums md:w-[7.5rem] md:flex-none md:text-base",
+    className:
+      "h-11 min-w-0 flex-1 bg-transparent text-base font-semibold tracking-tight tabular-nums md:w-[8rem] md:flex-none md:text-base",
     "aria-invalid": invalid ? true : undefined,
     "aria-describedby": invalid ? describedBy : undefined,
   } as const;

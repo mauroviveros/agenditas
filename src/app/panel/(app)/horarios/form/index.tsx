@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { type HourRange, hoursSchema } from "@/lib/hours";
-import { PanelFooter } from "../slots";
-import { saveHours } from "./actions";
+import { PanelFooter } from "../../slots";
+import { saveHours } from "../actions";
 import { DayListRow } from "./day-list-row";
 import { DayRow } from "./day-row";
 import { DaySheet } from "./day-sheet";

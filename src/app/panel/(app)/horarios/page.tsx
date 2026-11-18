@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getMyHours, getUserId } from "@/lib/session";
 import { PanelHeader } from "../slots";
-import { HoursForm } from "./hours-form";
+import { HoursForm } from "./form";
 
 export const metadata: Metadata = {
   title: "Horarios · Agenditas",
