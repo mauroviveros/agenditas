@@ -2,31 +2,37 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* Mate es solo claro: `dark:` aplica únicamente bajo una clase .dark que no usamos.
+/* La app es solo clara: `dark:` aplica únicamente bajo una clase .dark que no usamos.
    Sin esta línea, los `dark:` de shadcn se prenderían con el modo oscuro del sistema. */
 @custom-variant dark (&:is(.dark *));
 
-/* Tokens del estilo Mate. Fuente de verdad: docs/DESIGN.md. Fuera de acá no hay colores sueltos. */
+/* Tokens base: neutros cálidos y un solo acento. Fuente de verdad: docs/DESIGN.md.
+   Fuera de acá no hay colores sueltos. El rebranding cambia estos valores y nada más. */
 @theme {
   --color-*: initial;
-  --color-fondo: #f2f4ee;
+  --color-fondo: #f5f4f1;
   --color-superficie: #ffffff;
-  --color-tinta: #17261e;
-  --color-tinta-suave: #536158;
-  --color-acento: #1e5b3f;
-  --color-resalte: #f2c230;
-  --color-bloque: #dde5d6;
-  --color-linea: #b9c4b4;
+  --color-tinta: #1c1c1a;
+  --color-tinta-suave: #5f5c56;
+  --color-acento: #1f6f5c;
+  --color-resalte: #e3efe9;
+  --color-bloque: #ecebe7;
+  --color-linea: #e3e1db;
+  /* Borde de un campo: necesita contraste 3:1 (WCAG 1.4.11); Línea es solo para divisores. */
+  --color-campo: #8f8c85;
+  --color-peligro: #b42318;
+  --color-peligro-suave: #fdf3f1;
   --color-transparent: transparent;
   --color-current: currentColor;
 
-  --font-titulo: var(--font-bricolage), sans-serif;
-  --font-texto: var(--font-figtree), sans-serif;
+  --font-titulo: var(--font-geist), sans-serif;
+  --font-texto: var(--font-geist), sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  --radius-tarjeta: 18px;
-  --radius-panel: 22px;
+  --radius-tarjeta: 12px;
+  --radius-panel: 18px;
 
-  --shadow-flotante: 0 6px 24px rgb(23 38 30 / 0.14);
+  --shadow-flotante: 0 8px 24px rgb(28 28 26 / 0.12);
 }
 
 body {
@@ -46,8 +52,8 @@ body {
   outline-offset: 2px;
 }
 
-/* shadcn: sus nombres (primary, background…) son alias de los tokens de Mate.
-   No hay rojo: el error (destructive) es Tinta y siempre va con ícono y texto. */
+/* shadcn: sus nombres (primary, background…) son alias de los tokens de arriba.
+   El error (destructive) es rojo, pero nunca va solo: siempre con ícono y texto. */
 :root {
   --background: var(--color-fondo);
   --foreground: var(--color-tinta);
@@ -63,10 +69,9 @@ body {
   --muted-foreground: var(--color-tinta-suave);
   --accent: var(--color-bloque);
   --accent-foreground: var(--color-tinta);
-  --destructive: var(--color-tinta);
+  --destructive: var(--color-peligro);
   --border: var(--color-linea);
-  /* Tinta suave y no Línea: el borde de un campo necesita contraste 3:1 (WCAG 1.4.11). */
-  --input: var(--color-tinta-suave);
+  --input: var(--color-campo);
   --ring: var(--color-tinta);
   /* Sidebar sobre Fondo; el ítem activo o en hover es una pastilla Superficie con borde Línea. */
   --sidebar: var(--color-fondo);
