@@ -88,6 +88,9 @@ isOneToOne: false
 "is_slug_available":
 { Args: { "slug": string }; Returns: boolean
                            },
+"save_service":
+{ Args: { "business_id": string,"duration_minutes": number,"name": string,"price_cents": number,"service_id": string }; Returns: string
+                           },
 "set_business_hours":
 { Args: { "business_id": string,"ranges": Json }; Returns: undefined
                            }
