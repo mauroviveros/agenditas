@@ -1,15 +1,16 @@
 import { type ReactNode, Suspense } from "react";
 import { redirect } from "next/navigation";
+import { AppHeader } from "@/components/app-header";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getCurrentUser, getMyBusiness } from "@/lib/session";
-import { PanelSkeleton } from "./skeleton";
+import { PanelFrameSkeleton } from "./panel-frame-skeleton";
 
 // Marco del panel: sidebar que se achica a íconos; en celu se abre como cajón con el botón.
 // Cada rebanada suma su destino acá: hoy solo existe Inicio.
 export default function PanelLayout({ children }: { children: ReactNode }) {
   return (
-    <Suspense fallback={<PanelSkeleton />}>
+    <Suspense fallback={<PanelFrameSkeleton />}>
       <Shell>{children}</Shell>
     </Suspense>
   );
@@ -31,11 +32,11 @@ async function Shell({ children }: { children: ReactNode }) {
       <AppSidebar businessName={business.name} businessSlug={business.slug} user={user} />
 
       <SidebarInset className="bg-card">
-        <header className="flex h-14 items-center border-b px-1.5 md:px-4">
-          <SidebarTrigger className="size-11 md:size-8" aria-label="Mostrar u ocultar el menú" />
-        </header>
+        <AppHeader />
 
-        <main className="px-5 py-8 md:px-10">{children}</main>
+        <div data-slot="panel-content" className="px-5 py-8 md:px-10">
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

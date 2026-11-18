@@ -1,21 +1,13 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { getMyBusiness, getUserId } from "@/lib/session";
 
 export const metadata: Metadata = {
   title: "Panel · Agenditas",
 };
 
-export default function PanelPage() {
-  return (
-    <Suspense fallback={null}>
-      <Welcome />
-    </Suspense>
-  );
-}
-
 // El layout ya redirige si falta sesión o negocio; acá solo se muestra.
-async function Welcome() {
+// Mientras carga, Next muestra loading.tsx.
+export default async function PanelPage() {
   // Layout y página renderizan en paralelo: sin sesión no se toca la tabla.
   if (!(await getUserId())) {
     return null;
