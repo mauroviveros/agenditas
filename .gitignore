@@ -44,3 +44,9 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 !.env.example
+
+# impeccable: solo la config de live se versiona; sesiones y caché son locales
+.impeccable/*
+!.impeccable/live/
+.impeccable/live/*
+!.impeccable/live/config.json

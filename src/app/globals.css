@@ -1,4 +1,10 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Mate es solo claro: `dark:` aplica únicamente bajo una clase .dark que no usamos.
+   Sin esta línea, los `dark:` de shadcn se prenderían con el modo oscuro del sistema. */
+@custom-variant dark (&:is(.dark *));
 
 /* Tokens del estilo Mate. Fuente de verdad: docs/DESIGN.md. Fuera de acá no hay colores sueltos. */
 @theme {
@@ -17,7 +23,6 @@
   --font-titulo: var(--font-bricolage), sans-serif;
   --font-texto: var(--font-figtree), sans-serif;
 
-  --radius-control: 14px;
   --radius-tarjeta: 18px;
   --radius-panel: 22px;
 
@@ -39,4 +44,87 @@ body {
 :focus-visible {
   outline: 2px solid var(--color-tinta);
   outline-offset: 2px;
+}
+
+/* shadcn: sus nombres (primary, background…) son alias de los tokens de Mate.
+   No hay rojo: el error (destructive) es Tinta y siempre va con ícono y texto. */
+:root {
+  --background: var(--color-fondo);
+  --foreground: var(--color-tinta);
+  --card: var(--color-superficie);
+  --card-foreground: var(--color-tinta);
+  --popover: var(--color-superficie);
+  --popover-foreground: var(--color-tinta);
+  --primary: var(--color-acento);
+  --primary-foreground: var(--color-superficie);
+  --secondary: var(--color-bloque);
+  --secondary-foreground: var(--color-tinta);
+  --muted: var(--color-bloque);
+  --muted-foreground: var(--color-tinta-suave);
+  --accent: var(--color-bloque);
+  --accent-foreground: var(--color-tinta);
+  --destructive: var(--color-tinta);
+  --border: var(--color-linea);
+  /* Tinta suave y no Línea: el borde de un campo necesita contraste 3:1 (WCAG 1.4.11). */
+  --input: var(--color-tinta-suave);
+  --ring: var(--color-tinta);
+  /* Sidebar sobre Fondo; el ítem activo o en hover es una pastilla Superficie con borde Línea. */
+  --sidebar: var(--color-fondo);
+  --sidebar-foreground: var(--color-tinta);
+  --sidebar-primary: var(--color-acento);
+  --sidebar-primary-foreground: var(--color-superficie);
+  --sidebar-accent: var(--color-superficie);
+  --sidebar-accent-foreground: var(--color-tinta);
+  --sidebar-border: var(--color-linea);
+  --sidebar-ring: var(--color-tinta);
+  /* Radio base de shadcn: el de los controles (DESIGN.md, 10 px). */
+  --radius: 0.625rem;
+}
+
+@theme inline {
+  --font-sans: var(--font-texto);
+  --font-heading: var(--font-titulo);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-control: var(--radius);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+  }
 }

@@ -7,7 +7,7 @@
 Cliente final (anónimo)                    Solista (Google)
       │                                          │
       ▼                                          ▼
-agenditas.app/[negocio]   ── Next.js (1 app) ──  agenditas.app/panel/…
+agenditas.app/reservar/[slug] ── Next.js (1 app) ── agenditas.app/panel/…
 agenditas.app (landing)          │
                                  ▼
                Supabase · Postgres (sa-east-1)
@@ -61,8 +61,6 @@ lógica está en la base.
 
 ## Preguntas abiertas
 
-- **URL de cada negocio** (`agenditas.app/negocio` o `negocio.agenditas.app`): se
-  decide en R1, junto con el slug.
 - **Sentry:** más adelante; mientras tanto, los logs de Vercel.
 - **Feriados:** se toman de la API de ArgentinaDatos. Cómo se refresca la tabla se
   decide en R2.

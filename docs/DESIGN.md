@@ -39,7 +39,7 @@ typography:
     fontWeight: 600
     lineHeight: 1.3
 rounded:
-  control: "14px"
+  control: "0.625rem"
   tarjeta: "18px"
   panel: "22px"
   pill: "999px"
@@ -149,9 +149,16 @@ amable para leer al paso.
 
 Una columna para el celu (390 px de referencia) con 16 a 20 px de margen lateral.
 Listas con 6 px entre turnos; secciones separadas por 12 a 20 px. Las acciones
-principales viven abajo, al alcance del pulgar, en una barra pill flotante. En la PC
-el contenido se centra con un ancho máximo; el layout de escritorio se define cuando
-aparezca la primera vista que lo necesite.
+principales viven abajo, al alcance del pulgar, en una barra pill flotante.
+
+**Escritorio** (desde `md`, 768 px), definido en R1 con la pantalla de crear el negocio:
+contenido centrado hasta 1024 px; formularios en dos columnas, el formulario a la
+izquierda (hasta 26rem) y a la derecha una vista previa en Superficie (radio de 22 px)
+de lo que se está armando. El título sube a Display (40 px) y la acción principal va
+debajo del formulario, no fija abajo. Cada pantalla se diseña para los dos tamaños.
+
+**Controles de texto** (`Input`, `InputGroup` de shadcn): 50 px de alto, Superficie,
+borde de 1 px en Tinta suave (contraste 3:1) y radio de 10 px.
 
 ## Elevation & Depth
 
@@ -164,7 +171,7 @@ La única sombra es la de la barra de acciones flotante.
 
 ## Shapes
 
-Todo redondeado, nada filoso: controles y turnos con 14 px, tarjetas con 18 px, el
+Todo redondeado, nada filoso: controles y turnos con 10 px (el radio base de shadcn, 0.625rem), tarjetas con 18 px, el
 bloque "Ahora" y encabezados de marca con 22 a 26 px, y pills (999 px) para botones,
 horarios y etiquetas. Lo libre se dibuja con borde punteado de 2 px en Línea.
 
@@ -182,9 +189,9 @@ horarios y etiquetas. Lo libre se dibuja con borde punteado de 2 px en Línea.
   y lleva `aria-pressed`.
 
 ### Cards / Containers
-- **Turno:** Superficie, radio de 14 px, alto mínimo de 46 px, sin borde ni sombra.
+- **Turno:** Superficie, radio de 10 px, alto mínimo de 46 px, sin borde ni sombra.
 - **Ahora:** Amarillo mate, radio de 22 px, 18 px de padding, con etiqueta pill en Tinta.
-- **Bloqueo:** fondo Bloque, radio de 14 px, nombre en 700 y detalle en Tinta suave.
+- **Bloqueo:** fondo Bloque, radio de 10 px, nombre en 700 y detalle en Tinta suave.
 - **Libre:** botón con borde punteado de 2 px en Línea y texto en el acento:
   tocarlo carga un turno.
 

@@ -1,6 +1,12 @@
+import { existsSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
 
 const PUERTO = 3100;
+
+// En tu máquina las variables vienen de .env.local; en CI, del workflow.
+if (existsSync(".env.local")) {
+  process.loadEnvFile(".env.local");
+}
 
 // Los e2e corren contra el build de producción, igual en tu máquina que en CI,
 // en otro puerto para no chocar con `pnpm dev`.

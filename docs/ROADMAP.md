@@ -13,7 +13,10 @@
 - **Cierre de bloque:** test primero → checks en verde → chequeo de seguridad si toca
   auth, inputs, claves o la reserva (🔒) → el agente abre la vista y deja 2 o 3 cosas
   para probar → **OK de Mauro** → el agente commitea el bloque.
-- **Cierre de rebanada:** auditoría (code-reviewer + security-reviewer) → PR con CI
+- **Pantallas:** `/impeccable shape` → esqueleto → `/impeccable live` → Mauro elige la
+  variante → estados, tests y e2e (ver AGENTS.md).
+- **Cierre de rebanada:** auditoría (code-reviewer + security-reviewer, y por pantalla
+  `/impeccable critique`, `audit` y `polish`) → PR con CI
   verde → **el merge lo hace Mauro**. Se pasa al HISTORIAL y se borra de acá.
 - Los comandos que crean o instalan cosas los corre Mauro, de a uno.
 
@@ -29,21 +32,50 @@ Nada existe hasta que alguien lo carga:
 
 ---
 
-## R1 · Entrar y crear el negocio ▶
+## Antes de producción
 
-El solista entra con Google y crea su negocio (nombre, rubro, slug).
-Requisito: la verificación de marca de Google (la arranca Mauro, tarda días). Los bloques
-se detallan al empezar la rebanada.
+Lo que dejó R1 y no bloquea el merge, pero sí el deploy. Cada punto, un caso borde o un
+check.
 
-**Seguridad pendiente de la auditoría de F0** (cada punto, un caso borde o un check):
+**Google** (lo hace Mauro; la verificación tarda días): el cliente OAuth
+`Agenditas local` ya existe en modo Testing. Falta: verificar `agenditas.app` en Search
+Console; publicar una home y una política de privacidad en `agenditas.app` (Google las
+revisa); cargar Branding (logo, home, privacidad, dominio autorizado); crear el cliente
+`Agenditas prod` con el callback de Supabase de producción; publicar la app y pedir la
+verificación.
 
-- `config.toml`: apagar el provider email, activar Google con `env()` y fijar
-  `site_url` / `additional_redirect_urls` a los dominios reales (sacar `https://127.0.0.1`).
-- Toda RPC `security definer` con `set search_path = ''`.
-- Cada RPC pública: `grant execute` explícito, validación con Zod y rate limit.
-- Vistas con `security_invoker = true` (el guard de RLS no mira vistas).
-- Sacar `graphql_public` de `api.schemas` si no se usa.
-- Un esquema nuevo (p. ej. `private`) repite los revokes de la migración de fundaciones.
+**Configuración y seguridad**
+- Producción: apagar el provider email y `enable_signup` en el proyecto remoto (en local
+  quedan prendidos para los e2e) y cargar en Supabase las URL de redirección exactas, sin
+  comodines. Que `Host` sea el dominio público detrás del proxy del hosting.
+- Cabeceras de seguridad en `next.config.ts`: `frame-ancestors 'none'`, `nosniff` y
+  `Referrer-Policy` (hoy `/login` y `/panel` se pueden meter en un iframe).
+- Rate limit en `is_slug_available` y en `create_business`.
+- `create_business`: nombres explícitos de los constraints de `businesses` (con un test
+  por código) y traducir `not_null_violation`.
+- Un test pgTAP que recorra los grants de `public` para `anon` y `authenticated`.
+- Un JWT ya emitido vale hasta 1 hora aunque se cierre sesión; si hace falta revocar
+  antes en acciones sensibles, usar `getUser()`. `signOut()` cierra todos los
+  dispositivos (scope global): confirmar que es lo que se quiere.
+- `proxy.ts` corre `getClaims()` en todos los pedidos; en R5 las páginas públicas no
+  deberían pagarlo.
+
+**Calidad**
+- Tests unitarios de `createBusiness` (Zod, mapeo de errores de la RPC, redirects).
+- Nombres de variables de los e2e en inglés (AGENTS.md).
+- `/login` en `next dev`: "Could not validate `instant` because a Client Component in a
+  parent segment prevented the page from rendering" (solo en desarrollo; el build y los
+  e2e pasan). Entender y arreglar o marcar `instant = false` con su porqué.
+- Crear negocio: si se escribe el nombre antes de que hidrate la página, el campo
+  muestra el texto pero el link no lo toma (queda en `tu-negocio`).
+
+**Para decidir con Mauro**
+- El panel pone el contenido en Superficie (blanco) y DESIGN.md dice que el fondo de
+  toda pantalla es Fondo hoja; el estado vacío usa borde punteado, que DESIGN.md reserva
+  para lo libre. Actualizar DESIGN.md con el look del panel, o volver atrás.
+- ¿"Desktop first" vale para toda la app? DESIGN.md sigue diciendo 390 px primero.
+- Sin "Copiar link" ni compartir por WhatsApp, el link de reservas en celu solo se ve
+  abriendo el cajón.
 
 ## R2 · Horarios
 

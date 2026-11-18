@@ -52,6 +52,13 @@ jobs:
     name: e2e
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Valores públicos de Supabase local (los mismos de .env.example).
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH
+      # config.toml las pide con env(); en CI nadie entra con Google de verdad.
+      GOOGLE_CLIENT_ID: ci-sin-google
+      GOOGLE_CLIENT_SECRET: ci-sin-google
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -63,4 +70,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
+      # Los e2e crean usuarios y negocios: hacen falta la base, auth y la API.
+      - run: >-
+          pnpm exec supabase start
+          -x realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
       - run: pnpm test:e2e
