@@ -242,7 +242,7 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
             </Button>
             <Button type="submit" size="lg" className="h-11 md:h-9" disabled={busy} aria-busy={saving}>
               {saving ? <Spinner aria-hidden /> : null}
-              {saving ? "Guardando…" : "Guardar"}
+              {saving ? "Guardando…" : "Guardar servicio"}
             </Button>
           </div>
         </div>
