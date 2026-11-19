@@ -83,7 +83,10 @@ select throws_ok(
 -- Después de todo eso, quedan la Barba de Ana y el servicio de Beto.
 reset role;
 select results_eq(
-  $$ select name from public.services order by name $$,
+  -- Solo los negocios de este test: la base local puede traer servicios de otras pruebas.
+  $$ select name from public.services
+     where business_id in ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb')
+     order by name $$,
   $$ values ('Barba'), ('Tatuaje chico') $$,
   'solo se borró el Corte de Ana');
 
