@@ -74,3 +74,20 @@ export function formatPesos(cents: number): string {
   const format = cents % CENTS_PER_PESO === 0 ? wholePesosFormat : centsFormat;
   return format.format(cents / CENTS_PER_PESO);
 }
+
+// Lo que se lee en la lista: "Sin cargo" para el precio 0 y pesos para el resto.
+export function formatPrice(cents: number): string {
+  return cents === 0 ? "Sin cargo" : formatPesos(cents);
+}
+
+const MINUTES_PER_HOUR = 60;
+
+// Minutos → "45 min", "1 h", "1 h 30". Las horas justas van sin minutos.
+export function formatDuration(minutes: number): string {
+  if (minutes < MINUTES_PER_HOUR) {
+    return `${minutes} min`;
+  }
+  const hours = Math.floor(minutes / MINUTES_PER_HOUR);
+  const rest = minutes % MINUTES_PER_HOUR;
+  return rest === 0 ? `${hours} h` : `${hours} h ${rest}`;
+}
