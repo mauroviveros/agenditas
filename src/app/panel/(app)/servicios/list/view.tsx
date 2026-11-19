@@ -71,10 +71,10 @@ export function ServicesView({ services }: { services: Service[] }) {
         {/* En celu solo el ícono; el texto queda para lectores de pantalla. */}
         <Button
           size="lg"
-          className="size-11 px-0 md:h-9 md:w-auto md:px-2.5"
-          disabled={isFull}
+          className="size-11 px-0 aria-disabled:pointer-events-none aria-disabled:opacity-50 md:h-9 md:w-auto md:px-2.5"
+          aria-disabled={isFull || undefined}
           aria-describedby={isFull ? limitId : undefined}
-          onClick={openNew}
+          onClick={isFull ? undefined : openNew}
         >
           <PlusIcon aria-hidden />
           <span className="sr-only md:not-sr-only">Nuevo servicio</span>
@@ -143,7 +143,7 @@ function NoticeBar({
       >
         <CircleAlertIcon aria-hidden className="mt-0.5 size-5 shrink-0 text-destructive" />
         <p className="flex-1 font-medium">{notice.message}</p>
-        <Button variant="ghost" size="sm" onClick={onDismiss}>
+        <Button variant="ghost" size="sm" className="h-11 md:h-7" onClick={onDismiss}>
           Cerrar
         </Button>
       </div>
@@ -161,7 +161,12 @@ function NoticeBar({
       <p className="flex-1">
         Borraste <span className="font-medium">{notice.service.name}</span>.
       </p>
-      <Button variant="outline" size="sm" onClick={() => onUndo(notice.service)}>
+      <Button
+        variant="outline"
+        size="sm"
+        className="h-11 md:h-7"
+        onClick={() => onUndo(notice.service)}
+      >
         Deshacer
       </Button>
     </div>

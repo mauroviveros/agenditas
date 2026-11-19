@@ -102,6 +102,8 @@ test.describe("escritorio", () => {
     await page.getByRole("button", { name: "Corte", exact: true }).click();
     const formulario = await completarFormulario(page, { precio: "2000,50" });
     await expect(formulario.getByLabel("Nombre")).toHaveValue("Corte");
+    await expect(formulario.getByText("30 min · $ 15.000")).toBeVisible();
+    await expect(formulario.getByRole("button", { name: "Cerrar" })).toBeVisible();
     await formulario.getByRole("button", { name: "Guardar" }).click();
     await expect(formulario).toBeHidden();
 
@@ -191,7 +193,11 @@ test.describe("escritorio", () => {
     await page.goto("/panel/servicios");
 
     await expect(page.getByText("Llegaste al máximo de 50 servicios.")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Nuevo servicio" })).toBeDisabled();
+    const nuevo = page.getByRole("button", { name: "Nuevo servicio" });
+    await expect(nuevo).toBeDisabled();
+    // Apagado pero enfocable: con el teclado se llega y se lee el motivo.
+    await nuevo.focus();
+    await expect(nuevo).toBeFocused();
   });
 });
 

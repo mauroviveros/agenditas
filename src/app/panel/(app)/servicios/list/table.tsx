@@ -119,7 +119,7 @@ export function ServicesTable({ services, selectedId, onSelect }: ServicesTableP
       </InputGroup>
 
       {rows.length === 0 ? (
-        <div className="flex flex-col items-start gap-3 rounded-lg border p-4">
+        <div className="flex flex-col items-start gap-3 rounded-xl border bg-card p-4">
           <p className="font-medium">No encontramos servicios con «{query.trim()}»</p>
           <Button variant="outline" className="h-11 md:h-8" onClick={() => search("")}>
             Borrar la búsqueda
@@ -127,7 +127,7 @@ export function ServicesTable({ services, selectedId, onSelect }: ServicesTableP
         </div>
       ) : (
         <>
-          <div className="hidden overflow-hidden rounded-lg border md:block">
+          <div className="hidden overflow-hidden rounded-xl border bg-card md:block">
           <Table>
             <TableCaption className="sr-only">Tus servicios, con su duración y su precio</TableCaption>
             <TableHeader>

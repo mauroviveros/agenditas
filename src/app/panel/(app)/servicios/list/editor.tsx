@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { Service } from "@/lib/services/queries";
+import { formatDuration, formatPrice } from "@/lib/services/schema";
 import type { ServiceResult } from "../actions";
 import { ServiceForm } from "./form";
 
@@ -32,7 +33,10 @@ interface ServiceEditorProps {
 export function ServiceEditor({ open, service, onOpenChange, onDelete }: ServiceEditorProps) {
   const isMobile = useIsMobile();
   const title = service ? "Editar servicio" : "Nuevo servicio";
-  const description = service ? service.name : "Cargá cómo se llama, cuánto dura y cuánto cuesta.";
+  // El nombre ya está en el campo; lo que se viene a mirar es cuánto dura y cuánto cuesta.
+  const description = service
+    ? `${formatDuration(service.duration_minutes)} · ${formatPrice(service.price_cents)}`
+    : "Cargá cómo se llama, cuánto dura y cuánto cuesta.";
 
   const form = (
     <ServiceForm

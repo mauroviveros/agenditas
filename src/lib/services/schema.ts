@@ -24,8 +24,8 @@ export const serviceSchema = z.object({
     .min(1, "Poné un nombre.")
     .max(NAME_MAX, `El nombre puede tener hasta ${NAME_MAX} caracteres.`),
   duration_minutes: z
-    .number({ error: "Poné cuánto dura." })
-    .int("Poné cuánto dura.")
+    .number({ error: "Elegí cuánto dura." })
+    .int("Elegí cuánto dura.")
     .min(DURATION_MIN, `Dura al menos ${DURATION_MIN} minutos.`)
     .max(DURATION_MAX, `Dura hasta ${DURATION_MAX} minutos.`)
     .multipleOf(DURATION_STEP, `La duración va de a ${DURATION_STEP} minutos.`),
