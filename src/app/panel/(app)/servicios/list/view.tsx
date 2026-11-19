@@ -1,7 +1,7 @@
 "use client";
 
 import { CircleAlertIcon, PlusIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Service } from "@/lib/services/queries";
 import { MAX_SERVICES } from "@/lib/services/schema";
@@ -32,6 +32,7 @@ export function ServicesView({ services }: { services: Service[] }) {
   const [editor, setEditor] = useState<EditorState>({ open: false, service: null });
   const [notice, setNotice] = useState<Notice>(null);
   const isFull = services.length >= MAX_SERVICES;
+  const limitId = useId();
   // Lo que se edita se lee de la lista al día; si ya no está (se borró desde otro lado), el
   // editor se cierra solo.
   const editing = editor.service
@@ -72,6 +73,7 @@ export function ServicesView({ services }: { services: Service[] }) {
           size="lg"
           className="size-11 px-0 md:h-9 md:w-auto md:px-2.5"
           disabled={isFull}
+          aria-describedby={isFull ? limitId : undefined}
           onClick={openNew}
         >
           <PlusIcon aria-hidden />
@@ -82,7 +84,11 @@ export function ServicesView({ services }: { services: Service[] }) {
       <h2 id="services-heading" className="sr-only">
         Tus servicios
       </h2>
-      {isFull ? <p className="font-medium">{LIMIT_MESSAGE}</p> : null}
+      {isFull ? (
+        <p id={limitId} className="font-medium">
+          {LIMIT_MESSAGE}
+        </p>
+      ) : null}
 
       {notice ? <NoticeBar notice={notice} onUndo={undo} onDismiss={dismissNotice} /> : null}
 

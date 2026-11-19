@@ -102,10 +102,19 @@ describe("parseDraft", () => {
   });
 
   test("un precio que no se entiende avisa cómo escribirlo", () => {
-    for (const price of ["", "abc", "1500.50", "1,500"]) {
+    for (const price of ["abc", "1500.50", "1,500"]) {
       expect(parseDraft({ ...valid, price })).toMatchObject({
         ok: false,
-        errors: { price: "Poné el precio así: 1500 o 1.500,50." },
+        errors: { price: "Poné el precio así: 1500 o 1500,50." },
+      });
+    }
+  });
+
+  test("sin precio avisa que hay que ponerlo y cómo dejarlo sin cargo", () => {
+    for (const price of ["", "   "]) {
+      expect(parseDraft({ ...valid, price })).toMatchObject({
+        ok: false,
+        errors: { price: "Poné el precio. Si no cobrás, poné 0." },
       });
     }
   });
@@ -125,14 +134,14 @@ describe("parseDraft", () => {
       errors: {
         name: "Poné un nombre.",
         duration: "Elegí cuánto dura.",
-        price: "Poné el precio así: 1500 o 1.500,50.",
+        price: "Poné el precio. Si no cobrás, poné 0.",
       },
     });
   });
 });
 
 describe("withoutErrorsFor", () => {
-  const errors = { name: "Poné un nombre.", duration: "Elegí cuánto dura.", price: "Poné el precio así: 1500 o 1.500,50." };
+  const errors = { name: "Poné un nombre.", duration: "Elegí cuánto dura.", price: "Poné el precio así: 1500 o 1500,50." };
 
   test("escribir el nombre saca solo el aviso del nombre", () => {
     expect(withoutErrorsFor(errors, { name: "C" })).toEqual({ duration: errors.duration, price: errors.price });
