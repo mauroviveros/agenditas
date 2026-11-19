@@ -5,6 +5,67 @@
 
 ---
 
+## R3 · Servicios — 2026-11-18
+
+Branch `feat/r3-servicios-v2` (la primera quedó con commits sin firma tras un rebase de GitHub) · PR pendiente (se abre con el push)
+
+**Qué quedó:** `/panel/servicios`, donde el solista crea, edita y borra lo que ofrece. En
+escritorio, una tabla con búsqueda por nombre (sin acentos ni mayúsculas), columnas
+ordenables y paginación de 10; en celu, filas planas de borde a borde. Crear y editar abren
+un Sheet (escritorio) o un Drawer (celu) con nombre, duración en chips («Otra…» para el
+resto) y precio. Borrar avisa con «Borraste X» y un Deshacer de 6 segundos. Cubre vacío,
+carga, error, búsqueda sin resultados y el tope de 50. «Nuevo servicio» vive en el
+encabezado del panel. Datos: tabla `services`, RPC `save_service` y `delete_service`,
+`src/lib/services/` y las Server Actions. 183 tests pgTAP, 243 de Vitest y 45 e2e.
+
+**Decisiones**
+- **Precio en centavos** (`price_cents`); $0 vale y se lee «Sin cargo»; tope $10.000.000.
+  Se escribe en pesos con coma para los centavos («1500,50»); el punto de miles también se
+  acepta. Duración de 5 a 480 minutos, en pasos de 5. Nombre de 1 a 60, único por negocio
+  sin distinguir mayúsculas.
+- **Una sola RPC para crear y editar** (`save_service`). El negocio sale de la sesión, nunca
+  del navegador. El tope de 50 se cuenta con `FOR UPDATE` sobre la fila del negocio, así
+  dos altas a la vez no lo pasan. Un servicio ajeno da el mismo error que uno que no existe.
+- **Borrar es borrado real y Deshacer lo recrea:** vuelve con otro id y al final de la
+  lista. Es un límite conocido; en R4, cuando los turnos apunten a servicios, se pasa a
+  archivar.
+- **Sin card en la colección principal.** El fondo del panel ya es `bg-card`; una card va
+  solo para un grupo con título propio (como en Horarios). La lista de celu usa `Item` de
+  shadcn; la tabla de escritorio, TanStack Table v9 (`@tanstack/react-table`).
+- **La búsqueda filtra los datos antes de la tabla** y la paginación es de TanStack. La
+  página se conserva al guardar o borrar, y solo vuelve a la primera al buscar.
+- **Encabezado del panel:** `PanelHeader` recibe `title` y `subtitle` y trae los estilos;
+  `PanelHeaderActions` pone acciones a la derecha. En celu la acción es solo el ícono y el
+  subtítulo se oculta. Hay un separador entre el botón del menú y el título.
+- **Los errores van donde se mira:** el de borrar y el de guardar, dentro del formulario
+  abierto; el aviso con Deshacer es una barra sobre la lista que pausa su tiempo al apuntar
+  o enfocar. Tras un envío fallido el foco va al primer campo con aviso.
+- **Atajo:** `saveService` castea `service_id` a `null` al crear, porque los tipos
+  generados lo marcan no nulo (`// shortcut:` en el código).
+- **Diseño:** tabla estándar de shadcn con búsqueda arriba y paginación en el pie, filas
+  planas en celu (variante 2 de `/impeccable live`).
+
+**Auditoría:** `code-reviewer` y `security-reviewer` sin hallazgos CRITICAL ni HIGH. Se
+arreglaron seis puntos del primero (error de borrar escondido tras el panel, doble toque,
+página al guardar, errores del formulario, pausa del Deshacer y editor desactualizado).
+`/impeccable critique` dio 26/40 y `audit` 14/20; se arreglaron el precio, el foco, «Borrar»
+aparte, el motivo del límite, el esqueleto de carga, los botones de 44 px, el radio de las
+cajas, el subtítulo del editor y los textos. Además se restauró el fondo del overlay del
+Sheet (una clase mal escrita) y su botón «Cerrar». El detector de impeccable no cubre
+`.tsx`: se revisó a mano.
+
+**Pendiente (ver ROADMAP)**
+- El título y el botón del encabezado aparecen después de hidratar, no en el primer
+  pintado (entran por portal; también pasa en Horarios).
+- Sin aviso de «Guardaste X» al cerrar el panel; un toast (sonner) lo resolvería.
+- Borrar un servicio con turnos futuros: se decide en R4.
+- Rate limit en `save_service` y `delete_service`; nombres con caracteres de control; un
+  test del tope de 50 con dos sesiones (pgTAP corre en una sola transacción).
+- Decisiones de DESIGN.md: contraste de los bordes de los campos (1,26:1, pide 3:1),
+  receta del h1 contra el encabezado compacto y alto de controles en escritorio.
+
+---
+
 ## R2b · Feriados — 2026-11-18
 
 Branch `feat/r2b-feriados` · PR pendiente (se abre con el push)

@@ -41,9 +41,31 @@ export function FooterSlot({ className }: { className?: string }) {
   return <footer ref={useSlots().setFooter} className={className} />;
 }
 
-export function PanelHeader({ children }: { children: ReactNode }) {
+// El título de la pantalla en el encabezado, con una bajada corta opcional debajo. Los
+// estilos viven acá: las pantallas solo pasan texto.
+export function PanelHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   const { header } = useSlots();
-  return header ? createPortal(children, header) : null;
+  if (!header) {
+    return null;
+  }
+  return createPortal(
+    <div className="flex min-w-0 flex-1 flex-col">
+      <h1 className="truncate font-heading text-base font-medium">{title}</h1>
+      {subtitle ? (
+        <p className="hidden truncate text-sm text-muted-foreground md:block">{subtitle}</p>
+      ) : null}
+    </div>,
+    header
+  );
+}
+
+// Las acciones de la pantalla (p. ej. «Nuevo servicio»), a la derecha del encabezado. Viven
+// en el árbol de quien las pone, así que ven su estado y sus handlers.
+export function PanelHeaderActions({ children }: { children: ReactNode }) {
+  const { header } = useSlots();
+  return header
+    ? createPortal(<div className="order-last flex shrink-0 items-center gap-2">{children}</div>, header)
+    : null;
 }
 
 export function PanelFooter({ children }: { children: ReactNode }) {
