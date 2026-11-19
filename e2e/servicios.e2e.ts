@@ -76,7 +76,9 @@ test.describe("escritorio", () => {
 
     await expect(formulario.getByText("Poné un nombre.")).toBeVisible();
     await expect(formulario.getByText("Elegí cuánto dura.")).toBeVisible();
-    await expect(formulario.getByText("Poné el precio así: 1500 o 1.500,50.")).toBeVisible();
+    await expect(formulario.getByText("Poné el precio. Si no cobrás, poné 0.")).toBeVisible();
+    // El foco va al primer campo con aviso, para corregirlo sin buscarlo.
+    await expect(formulario.getByLabel("Nombre")).toBeFocused();
   });
 
   test("un nombre repetido lo rechaza la base y el formulario sigue abierto", async ({ page, context }) => {

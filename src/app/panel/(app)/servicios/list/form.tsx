@@ -1,7 +1,7 @@
 "use client";
 
 import { CircleAlertIcon } from "lucide-react";
-import { type FormEvent, useId, useState, useTransition } from "react";
+import { type FormEvent, useEffect, useId, useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -57,9 +57,19 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
   const minutesId = useId();
   const priceId = useId();
   const groupName = useId();
+  const formRef = useRef<HTMLFormElement>(null);
+  const [failedAttempts, setFailedAttempts] = useState(0);
   const nameErrorId = useId();
   const durationErrorId = useId();
   const priceErrorId = useId();
+
+  // Tras un intento fallido, el foco va al primer campo con aviso (los avisos ya están
+  // dibujados cuando corre este efecto).
+  useEffect(() => {
+    if (failedAttempts > 0) {
+      formRef.current?.querySelector<HTMLElement>("[aria-invalid=true]")?.focus();
+    }
+  }, [failedAttempts]);
 
   function update(change: Partial<ServiceDraft>) {
     setDraft((current) => ({ ...current, ...change }));
@@ -85,6 +95,7 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
     const parsed = parseDraft(draft, service?.id);
     if (!parsed.ok) {
       setErrors(parsed.errors);
+      setFailedAttempts((count) => count + 1);
       return;
     }
     setErrors({});
@@ -99,7 +110,7 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
   }
 
   return (
-    <form onSubmit={submit} noValidate className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-4 pb-4">
+    <form ref={formRef} onSubmit={submit} noValidate className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-4 pb-4">
       <FieldGroup>
         <Field data-invalid={Boolean(errors.name)}>
           <FieldLabel htmlFor={nameId}>Nombre</FieldLabel>
@@ -129,6 +140,7 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
                   name={groupName}
                   className="peer sr-only"
                   checked={draft.preset === minutes}
+                  aria-invalid={errors.duration ? true : undefined}
                   onChange={() => update({ preset: minutes })}
                 />
                 <span className={CHIP}>{formatDuration(minutes)}</span>
@@ -140,6 +152,7 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
                 name={groupName}
                 className="peer sr-only"
                 checked={draft.preset === "other"}
+                aria-invalid={errors.duration ? true : undefined}
                 onChange={() => update({ preset: "other" })}
               />
               <span className={CHIP}>Otra…</span>
@@ -205,18 +218,21 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
         ) : null}
         <div className="flex flex-col-reverse gap-2 md:flex-row md:items-center md:justify-between">
           {service ? (
-            <Button
-              type="button"
-              variant="destructive"
-              size="lg"
-              className="h-11 md:h-9"
-              disabled={busy}
-              aria-busy={deleting}
-              onClick={remove}
-            >
-              {deleting ? <Spinner aria-hidden /> : null}
-              {deleting ? "Borrando…" : "Borrar servicio"}
-            </Button>
+            // En celu queda abajo y aparte, con una línea de por medio, lejos de Guardar.
+            <div className="mt-2 border-t pt-4 md:mt-0 md:border-t-0 md:pt-0">
+              <Button
+                type="button"
+                variant="destructive"
+                size="lg"
+                className="h-11 w-full md:h-9 md:w-auto"
+                disabled={busy}
+                aria-busy={deleting}
+                onClick={remove}
+              >
+                {deleting ? <Spinner aria-hidden /> : null}
+                {deleting ? "Borrando…" : "Borrar servicio"}
+              </Button>
+            </div>
           ) : (
             <span />
           )}

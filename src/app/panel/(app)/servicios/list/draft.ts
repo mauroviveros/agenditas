@@ -24,7 +24,8 @@ export type ParsedDraft =
   | { ok: true; data: ServiceInput }
   | { ok: false; errors: DraftErrors };
 
-const PRICE_FORMAT_ERROR = "Poné el precio así: 1500 o 1.500,50.";
+const PRICE_FORMAT_ERROR = "Poné el precio así: 1500 o 1500,50.";
+const PRICE_MISSING_ERROR = "Poné el precio. Si no cobrás, poné 0.";
 
 // Qué campo del formulario es cada clave del esquema.
 const FIELD_OF_KEY: Record<string, DraftField> = {
@@ -66,7 +67,7 @@ export function parseDraft(draft: ServiceDraft, id?: string): ParsedDraft {
 
   const price = parsePesos(draft.price);
   if (price === null) {
-    errors.price = PRICE_FORMAT_ERROR;
+    errors.price = draft.price.trim() === "" ? PRICE_MISSING_ERROR : PRICE_FORMAT_ERROR;
   }
 
   const parsed = serviceSchema.safeParse({

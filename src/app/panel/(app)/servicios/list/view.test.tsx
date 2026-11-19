@@ -58,6 +58,14 @@ describe("ServicesView", () => {
     expect(html).toContain("Llegaste al máximo de 50 servicios.");
   });
 
+  test("con el máximo el motivo queda vinculado al botón apagado", () => {
+    const html = render(makeServices(MAX_SERVICES));
+
+    const id = /<p id="([^"]+)"[^>]*>Llegaste al máximo/.exec(html)?.[1];
+    expect(id).toBeDefined();
+    expect(newServiceButton(html)).toContain(`aria-describedby="${id}"`);
+  });
+
   test("con uno menos que el máximo todavía se puede crear", () => {
     const html = render(makeServices(MAX_SERVICES - 1));
 
