@@ -7,7 +7,7 @@
 
 ## R3 · Servicios — 2026-11-18
 
-Branch `feat/r3-servicios` · PR pendiente (se abre con el push)
+Branch `feat/r3-servicios-v2` (la primera quedó con commits sin firma tras un rebase de GitHub) · PR pendiente (se abre con el push)
 
 **Qué quedó:** `/panel/servicios`, donde el solista crea, edita y borra lo que ofrece. En
 escritorio, una tabla con búsqueda por nombre (sin acentos ni mayúsculas), columnas
