@@ -142,6 +142,47 @@ test.describe("escritorio", () => {
     await expect(page.getByText("1–10 de 12 servicios")).toBeVisible();
   });
 
+  test("tocar dos veces «Borrar» borra una sola vez y deja el Deshacer", async ({ page, context }) => {
+    const solista = await negocioNuevo(context);
+    await cargarServicios(solista, ["Corte", "Tintura"]);
+    await page.goto("/panel/servicios");
+
+    await page.getByRole("button", { name: "Corte", exact: true }).click();
+    await page.getByRole("button", { name: "Borrar servicio" }).dblclick();
+
+    await expect(page.getByRole("status")).toContainText("Borraste Corte.");
+    // Sin el segundo borrado fallido encima: no aparece «Quizás ya lo borraste».
+    await expect(page.getByText("Quizás ya lo borraste")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Deshacer" })).toBeVisible();
+  });
+
+  test("al guardar un servicio de la segunda página se queda en la segunda página", async ({ page, context }) => {
+    const solista = await negocioNuevo(context);
+    await cargarServicios(solista, Array.from({ length: 12 }, (_, i) => `Servicio ${String(i + 1).padStart(2, "0")}`));
+    await page.goto("/panel/servicios");
+
+    await page.getByRole("button", { name: "Siguiente" }).click();
+    await page.getByRole("button", { name: "Servicio 11", exact: true }).click();
+    const formulario = await completarFormulario(page, { precio: "2000" });
+    await formulario.getByRole("button", { name: "Guardar" }).click();
+
+    await expect(formulario).toBeHidden();
+    await expect(page.getByText("11–12 de 12 servicios")).toBeVisible();
+  });
+
+  test("al borrar todo lo de la última página vuelve a la anterior", async ({ page, context }) => {
+    const solista = await negocioNuevo(context);
+    await cargarServicios(solista, Array.from({ length: 11 }, (_, i) => `Servicio ${String(i + 1).padStart(2, "0")}`));
+    await page.goto("/panel/servicios");
+
+    await page.getByRole("button", { name: "Siguiente" }).click();
+    await page.getByRole("button", { name: "Servicio 11", exact: true }).click();
+    await page.getByRole("button", { name: "Borrar servicio" }).click();
+
+    await expect(page.getByText("10 servicios", { exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Servicio 01", exact: true })).toBeVisible();
+  });
+
   test("con 50 servicios no deja crear más y lo explica", async ({ page, context }) => {
     const solista = await negocioNuevo(context);
     await cargarServicios(solista, Array.from({ length: 50 }, (_, i) => `Servicio ${i + 1}`));

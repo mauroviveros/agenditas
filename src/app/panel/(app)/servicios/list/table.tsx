@@ -10,7 +10,7 @@ import {
   useTable,
 } from "@tanstack/react-table";
 import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon, SearchIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cn } from "cn";
 import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
@@ -84,9 +84,23 @@ export function ServicesTable({ services, selectedId, onSelect }: ServicesTableP
     () => services.filter(({ name }) => matchesQuery(name, query)),
     [services, query],
   );
-  const table = useTable({ features, columns, data: visible, initialState });
+  // La página se conserva al guardar o borrar; solo vuelve a la primera al buscar.
+  const table = useTable({ features, columns, data: visible, initialState, autoResetPageIndex: false });
   const rows = table.getRowModel().rows;
   const { pageIndex, pageSize } = table.state.pagination;
+  const lastPageIndex = Math.max(table.getPageCount() - 1, 0);
+
+  // Si se borra lo último de la última página, se vuelve a la anterior en vez de quedar vacío.
+  useEffect(() => {
+    if (pageIndex > lastPageIndex) {
+      table.setPageIndex(lastPageIndex);
+    }
+  }, [pageIndex, lastPageIndex, table]);
+
+  function search(value: string) {
+    setQuery(value);
+    table.setPageIndex(0);
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -97,7 +111,7 @@ export function ServicesTable({ services, selectedId, onSelect }: ServicesTableP
         <InputGroupInput
           type="search"
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(event) => search(event.target.value)}
           placeholder="Buscar servicio…"
           aria-label="Buscar servicio"
           autoComplete="off"
@@ -107,7 +121,7 @@ export function ServicesTable({ services, selectedId, onSelect }: ServicesTableP
       {rows.length === 0 ? (
         <div className="flex flex-col items-start gap-3 rounded-lg border p-4">
           <p className="font-medium">No encontramos servicios con «{query.trim()}»</p>
-          <Button variant="outline" className="h-11 md:h-8" onClick={() => setQuery("")}>
+          <Button variant="outline" className="h-11 md:h-8" onClick={() => search("")}>
             Borrar la búsqueda
           </Button>
         </div>

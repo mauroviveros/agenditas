@@ -1,12 +1,12 @@
 "use client";
 
 import { CircleAlertIcon, PlusIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Service } from "@/lib/services/queries";
 import { MAX_SERVICES } from "@/lib/services/schema";
 import { PanelHeaderActions } from "../../panel-slots";
-import { deleteService, saveService } from "../actions";
+import { type ServiceResult, deleteService, saveService } from "../actions";
 import { ServiceEditor } from "./editor";
 import { ServicesEmpty } from "./empty";
 import { ServicesTable } from "./table";
@@ -32,27 +32,27 @@ export function ServicesView({ services }: { services: Service[] }) {
   const [editor, setEditor] = useState<EditorState>({ open: false, service: null });
   const [notice, setNotice] = useState<Notice>(null);
   const isFull = services.length >= MAX_SERVICES;
+  // Lo que se edita se lee de la lista al día; si ya no está (se borró desde otro lado), el
+  // editor se cierra solo.
+  const editing = editor.service
+    ? (services.find(({ id }) => id === editor.service?.id) ?? null)
+    : null;
+  const editorOpen = editor.open && (editor.service === null || editing !== null);
 
-  useEffect(() => {
-    if (notice?.kind !== "deleted") {
-      return;
-    }
-    const timer = setTimeout(() => setNotice(null), UNDO_WINDOW_MS);
-    return () => clearTimeout(timer);
-  }, [notice]);
-
+  const dismissNotice = useCallback(() => setNotice(null), []);
   const openNew = () => setEditor({ open: true, service: null });
   const openEdit = (service: Service) => setEditor({ open: true, service });
   const closeEditor = (open: boolean) => setEditor((current) => ({ ...current, open }));
 
-  async function remove(service: Service) {
+  // El error de un borrado lo muestra el formulario, que sigue abierto; acá solo se cierra el
+  // editor y se avisa con Deshacer cuando salió bien.
+  async function remove(service: Service): Promise<ServiceResult> {
     const result = await deleteService(service.id);
-    if (!result.ok) {
-      setNotice({ kind: "error", message: result.error });
-      return;
+    if (result.ok) {
+      closeEditor(false);
+      setNotice({ kind: "deleted", service });
     }
-    closeEditor(false);
-    setNotice({ kind: "deleted", service });
+    return result;
   }
 
   async function undo(service: Service) {
@@ -84,22 +84,22 @@ export function ServicesView({ services }: { services: Service[] }) {
       </h2>
       {isFull ? <p className="font-medium">{LIMIT_MESSAGE}</p> : null}
 
-      {notice ? <NoticeBar notice={notice} onUndo={undo} onDismiss={() => setNotice(null)} /> : null}
+      {notice ? <NoticeBar notice={notice} onUndo={undo} onDismiss={dismissNotice} /> : null}
 
       {services.length === 0 ? (
         <ServicesEmpty onCreate={openNew} />
       ) : (
         <ServicesTable
           services={services}
-          selectedId={editor.open ? (editor.service?.id ?? null) : null}
+          selectedId={editorOpen ? (editor.service?.id ?? null) : null}
           onSelect={openEdit}
         />
       )}
 
       <ServiceEditor
         key={editor.service?.id ?? "new"}
-        open={editor.open}
-        service={editor.service}
+        open={editorOpen}
+        service={editing ?? editor.service}
         onOpenChange={closeEditor}
         onDelete={remove}
       />
@@ -116,6 +116,19 @@ function NoticeBar({
   onUndo: (service: Service) => void;
   onDismiss: () => void;
 }) {
+  // El tiempo para deshacer corre solo mientras nadie apunta ni enfoca el aviso: quien lo
+  // lee con calma o con un lector de pantalla no lo ve desaparecer.
+  const [paused, setPaused] = useState(false);
+  const isDeleted = notice.kind === "deleted";
+
+  useEffect(() => {
+    if (!isDeleted || paused) {
+      return;
+    }
+    const timer = setTimeout(onDismiss, UNDO_WINDOW_MS);
+    return () => clearTimeout(timer);
+  }, [isDeleted, paused, onDismiss]);
+
   if (notice.kind === "error") {
     return (
       <div
@@ -131,7 +144,14 @@ function NoticeBar({
     );
   }
   return (
-    <div role="status" className="flex items-center gap-3 rounded-lg border bg-muted p-4">
+    <div
+      role="status"
+      className="flex items-center gap-3 rounded-lg border bg-muted p-4"
+      onPointerEnter={() => setPaused(true)}
+      onPointerLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+    >
       <p className="flex-1">
         Borraste <span className="font-medium">{notice.service.name}</span>.
       </p>
