@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ClockIcon, HouseIcon, type LucideIcon } from "lucide-react";
+import { ClockIcon, HouseIcon, TagIcon, type LucideIcon } from "lucide-react";
 
 export interface NavItem {
   title: string;
@@ -20,6 +20,7 @@ export interface NavItem {
 const NAV_ITEMS: readonly NavItem[] = [
   { title: "Inicio", href: "/panel", icon: HouseIcon },
   { title: "Horarios", href: "/panel/horarios", icon: ClockIcon },
+  { title: "Servicios", href: "/panel/servicios", icon: TagIcon },
 ];
 
 export function NavMenu() {
