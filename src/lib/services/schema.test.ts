@@ -1,7 +1,9 @@
 import { describe, expect, test } from "vitest";
 import {
   MAX_PRICE_CENTS,
+  formatDuration,
   formatPesos,
+  formatPrice,
   parsePesos,
   pesosInputValue,
   serviceSchema,
@@ -165,5 +167,34 @@ describe("formatPesos", () => {
 
   test("el servicio sin cargo se ve como $ 0", () => {
     expect(plain(0)).toBe("$ 0");
+  });
+});
+
+describe("formatDuration", () => {
+  test.each([
+    [5, "5 min"],
+    [30, "30 min"],
+    [45, "45 min"],
+    [60, "1 h"],
+    [90, "1 h 30"],
+    [120, "2 h"],
+    [150, "2 h 30"],
+    [185, "3 h 5"],
+    [480, "8 h"],
+  ])("%i minutos se ven «%s»", (minutes, text) => {
+    expect(formatDuration(minutes)).toBe(text);
+  });
+});
+
+describe("formatPrice", () => {
+  const plain = (cents: number) => formatPrice(cents).replace(/ /g, " ");
+
+  test("el precio 0 es «Sin cargo»", () => {
+    expect(plain(0)).toBe("Sin cargo");
+  });
+
+  test("lo demás se ve en pesos", () => {
+    expect(plain(1_500_000)).toBe("$ 15.000");
+    expect(plain(2_200_050)).toBe("$ 22.000,50");
   });
 });
