@@ -89,3 +89,18 @@ export function parseDraft(draft: ServiceDraft, id?: string): ParsedDraft {
   }
   return { ok: true, data: parsed.data };
 }
+
+// Qué campo del borrador corrige cada cambio: al tocarlo, su aviso deja de valer.
+const FIELD_OF_CHANGE: Record<keyof ServiceDraft, DraftField> = {
+  name: "name",
+  preset: "duration",
+  otherMinutes: "duration",
+  price: "price",
+};
+
+// Los avisos sin los de los campos que se acaban de tocar; el resto sigue hasta el próximo
+// intento de guardar.
+export function withoutErrorsFor(errors: DraftErrors, change: Partial<ServiceDraft>): DraftErrors {
+  const touched = new Set(Object.keys(change).map((key) => FIELD_OF_CHANGE[key as keyof ServiceDraft]));
+  return Object.fromEntries(Object.entries(errors).filter(([field]) => !touched.has(field as DraftField)));
+}

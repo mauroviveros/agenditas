@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import type { Service } from "@/lib/services/queries";
-import { DURATION_PRESETS, draftFrom, parseDraft } from "./draft";
+import { DURATION_PRESETS, draftFrom, parseDraft, withoutErrorsFor } from "./draft";
 
 const SERVICE_ID = "a0000000-0000-4000-8000-000000000001";
 const corte: Service = { id: SERVICE_ID, name: "Corte", duration_minutes: 30, price_cents: 1_500_000 };
@@ -128,5 +128,30 @@ describe("parseDraft", () => {
         price: "Poné el precio así: 1500 o 1.500,50.",
       },
     });
+  });
+});
+
+describe("withoutErrorsFor", () => {
+  const errors = { name: "Poné un nombre.", duration: "Elegí cuánto dura.", price: "Poné el precio así: 1500 o 1.500,50." };
+
+  test("escribir el nombre saca solo el aviso del nombre", () => {
+    expect(withoutErrorsFor(errors, { name: "C" })).toEqual({ duration: errors.duration, price: errors.price });
+  });
+
+  test("elegir una duración o escribir los minutos saca el aviso de la duración", () => {
+    expect(withoutErrorsFor(errors, { preset: 30 })).toEqual({ name: errors.name, price: errors.price });
+    expect(withoutErrorsFor(errors, { otherMinutes: "9" })).toEqual({ name: errors.name, price: errors.price });
+  });
+
+  test("escribir el precio saca el aviso del precio", () => {
+    expect(withoutErrorsFor(errors, { price: "1" })).toEqual({ name: errors.name, duration: errors.duration });
+  });
+
+  test("no toca los avisos que recibe", () => {
+    const original = { ...errors };
+
+    withoutErrorsFor(errors, { name: "C" });
+
+    expect(errors).toEqual(original);
   });
 });

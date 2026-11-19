@@ -22,13 +22,14 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import type { Service } from "@/lib/services/queries";
 import { DURATION_MAX, DURATION_MIN, DURATION_STEP, formatDuration } from "@/lib/services/schema";
-import { saveService } from "../actions";
+import { type ServiceResult, saveService } from "../actions";
 import {
   DURATION_PRESETS,
   type DraftErrors,
   type ServiceDraft,
   draftFrom,
   parseDraft,
+  withoutErrorsFor,
 } from "./draft";
 
 const CHIP =
@@ -39,7 +40,8 @@ interface ServiceFormProps {
   service: Service | null;
   onSaved: () => void;
   onCancel: () => void;
-  onDelete: (service: Service) => void;
+  /** Borra el servicio; si falla, el aviso se muestra acá adentro, no detrás del panel. */
+  onDelete: (service: Service) => Promise<ServiceResult>;
 }
 
 // Nombre, duración y precio de un servicio. Lo escrito se valida con las reglas del esquema
@@ -48,14 +50,33 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
   const [draft, setDraft] = useState<ServiceDraft>(() => draftFrom(service ?? undefined));
   const [errors, setErrors] = useState<DraftErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
+  const [saving, startSaving] = useTransition();
+  const [deleting, startDeleting] = useTransition();
+  const busy = saving || deleting;
   const nameId = useId();
   const minutesId = useId();
   const priceId = useId();
   const groupName = useId();
+  const nameErrorId = useId();
+  const durationErrorId = useId();
+  const priceErrorId = useId();
 
   function update(change: Partial<ServiceDraft>) {
     setDraft((current) => ({ ...current, ...change }));
+    setErrors((current) => withoutErrorsFor(current, change));
+  }
+
+  function remove() {
+    if (!service) {
+      return;
+    }
+    setFormError(null);
+    startDeleting(async () => {
+      const result = await onDelete(service);
+      if (!result.ok) {
+        setFormError(result.error);
+      }
+    });
   }
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -67,7 +88,7 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
       return;
     }
     setErrors({});
-    startTransition(async () => {
+    startSaving(async () => {
       const result = await saveService(parsed.data);
       if (result.ok) {
         onSaved();
@@ -90,11 +111,15 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
             autoComplete="off"
             className="h-11 md:h-8"
             aria-invalid={errors.name ? true : undefined}
+            aria-describedby={errors.name ? nameErrorId : undefined}
           />
-          <FieldError>{errors.name}</FieldError>
+          <FieldError id={nameErrorId}>{errors.name}</FieldError>
         </Field>
 
-        <FieldSet data-invalid={Boolean(errors.duration)}>
+        <FieldSet
+          data-invalid={Boolean(errors.duration)}
+          aria-describedby={errors.duration ? durationErrorId : undefined}
+        >
           <FieldLegend variant="label">Duración</FieldLegend>
           <div className="grid grid-cols-3 gap-2">
             {DURATION_PRESETS.map((minutes) => (
@@ -143,7 +168,7 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
               </FieldDescription>
             </Field>
           ) : null}
-          <FieldError>{errors.duration}</FieldError>
+          <FieldError id={durationErrorId}>{errors.duration}</FieldError>
         </FieldSet>
 
         <Field data-invalid={Boolean(errors.price)}>
@@ -160,10 +185,11 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
               autoComplete="off"
               className="tabular-nums"
               aria-invalid={errors.price ? true : undefined}
+              aria-describedby={errors.price ? priceErrorId : undefined}
             />
           </InputGroup>
           <FieldDescription>En pesos. Para los centavos, usá coma: 1500,50.</FieldDescription>
-          <FieldError>{errors.price}</FieldError>
+          <FieldError id={priceErrorId}>{errors.price}</FieldError>
         </Field>
       </FieldGroup>
 
@@ -184,10 +210,12 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
               variant="destructive"
               size="lg"
               className="h-11 md:h-9"
-              disabled={pending}
-              onClick={() => onDelete(service)}
+              disabled={busy}
+              aria-busy={deleting}
+              onClick={remove}
             >
-              Borrar servicio
+              {deleting ? <Spinner aria-hidden /> : null}
+              {deleting ? "Borrando…" : "Borrar servicio"}
             </Button>
           ) : (
             <span />
@@ -196,9 +224,9 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
             <Button type="button" variant="outline" size="lg" className="h-11 md:h-9" onClick={onCancel}>
               Cancelar
             </Button>
-            <Button type="submit" size="lg" className="h-11 md:h-9" disabled={pending} aria-busy={pending}>
-              {pending ? <Spinner aria-hidden /> : null}
-              {pending ? "Guardando…" : "Guardar"}
+            <Button type="submit" size="lg" className="h-11 md:h-9" disabled={busy} aria-busy={saving}>
+              {saving ? <Spinner aria-hidden /> : null}
+              {saving ? "Guardando…" : "Guardar"}
             </Button>
           </div>
         </div>

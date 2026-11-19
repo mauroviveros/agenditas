@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { Service } from "@/lib/services/queries";
+import type { ServiceResult } from "../actions";
 import { ServiceForm } from "./form";
 
 interface ServiceEditorProps {
@@ -23,7 +24,7 @@ interface ServiceEditorProps {
   /** El servicio que se edita; sin él, se crea uno nuevo. */
   service: Service | null;
   onOpenChange: (open: boolean) => void;
-  onDelete: (service: Service) => void;
+  onDelete: (service: Service) => Promise<ServiceResult>;
 }
 
 // El formulario del servicio: un Sheet a la derecha en escritorio y un Drawer que sube desde
