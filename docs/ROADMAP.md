@@ -50,7 +50,7 @@ verificación.
   comodines. Que `Host` sea el dominio público detrás del proxy del hosting.
 - Cabeceras de seguridad en `next.config.ts`: `frame-ancestors 'none'`, `nosniff` y
   `Referrer-Policy` (hoy `/login` y `/panel` se pueden meter en un iframe).
-- Rate limit en `is_slug_available` y en `create_business`.
+- Rate limit en `is_slug_available`, `create_business`, `save_service` y `delete_service`.
 - `create_business`: nombres explícitos de los constraints de `businesses` (con un test
   por código) y traducir `not_null_violation`.
 - Un test pgTAP que recorra los grants de `public` para `anon` y `authenticated`.
@@ -69,41 +69,35 @@ verificación.
 - Crear negocio: si se escribe el nombre antes de que hidrate la página, el campo
   muestra el texto pero el link no lo toma (queda en `tu-negocio`).
 
+- `PanelHeader` (título y acciones): entran por portal, así que aparecen después de
+  hidratar y no en el primer pintado (pasa en Horarios y en Servicios). Renderizar el
+  título en el servidor.
+- Servicios: sin aviso al guardar («Guardaste X»); si se suma sonner, usarlo también para
+  el Deshacer. Nombres con caracteres de control (`\n`, `\t`): rechazarlos en Zod y en el
+  constraint. Test del tope de 50 con dos sesiones (pgTAP no puede). Sin sesión, las
+  acciones de servicios redirigen a `/panel` en vez de `/login`.
+- Movimiento reducido: ni el esqueleto ni el Sheet o Drawer respetan
+  `prefers-reduced-motion`; resolverlo en los componentes compartidos.
+
 **Horarios (R2):** verificar en un dispositivo real con región es-AR que las horas se
 muestran en 24 h (en un navegador en inglés se ven en 12 h).
 
 **Para decidir con Mauro**
+- DESIGN.md: oscurecer `--input` (los bordes de campos y chips miden 1,26:1 y WCAG pide
+  3:1), si el título del panel sigue `text-base` o pasa a la receta del h1 (`text-2xl`), y
+  si los controles de escritorio miden 44 px como en Horarios o `md:h-8` como en Servicios.
 - ¿"Desktop first" vale para toda la app? DESIGN.md ahora dice "celu y escritorio" sin
   fijar cuál va primero.
 - Sin "Copiar link" ni compartir por WhatsApp, el link de reservas en celu solo se ve
   abriendo el cajón.
 
-## ▶ R3 · Servicios
-
-Nombre, duración y precio. Branch `feat/r3-servicios`.
-
-**Listo cuando:** en `/panel/servicios` el solista crea, edita y borra sus servicios, y
-la lista cubre vacío, carga y error.
-- Nombre de 1 a 60 caracteres, sin repetir en el negocio (sin distinguir mayúsculas).
-- Duración de 5 a 480 minutos, en pasos de 5.
-- Precio obligatorio, en centavos (`price_cents`); $0 vale (sin cargo), tope $10.000.000.
-- Hasta 50 servicios por negocio.
-
-**Bloques**
-1. Tabla `services` con RLS y grants.
-2. RPC `save_service` (crea o edita; tope 50, nombre repetido).
-3. RPC `delete_service`.
-4. `src/lib/services/`: esquema Zod, pesos ↔ centavos y `getMyServices`.
-5. Server Actions `saveService` y `deleteService`.
-6. Pantalla `/panel/servicios` (shape → live → estados) y "Servicios" en el menú.
-7. e2e y cierre.
-
-Borrar es borrado real; en R4, cuando los turnos apunten a servicios, se pasa a archivar
-y cada turno guarda su copia de nombre, duración y precio.
-
 ## R4 · Agenda del día
 
 Cargar un turno a mano, moverlo, cancelar con deshacer y "salgo 30 min".
+
+Al empezar, decidir el borrado de servicios: hoy es real y Deshacer los recrea con otro id.
+Con turnos apuntando a servicios pasa a archivar, y cada turno guarda su copia de nombre,
+duración y precio. Borrar uno con turnos futuros pide confirmar (hay un cliente avisado).
 
 ## R5 · Página pública y reserva
 
