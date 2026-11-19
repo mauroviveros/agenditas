@@ -1,6 +1,7 @@
 import { type ReactNode, Suspense } from "react";
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/sidebar";
+import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { getMyBusiness } from "@/lib/business/queries";
 import { getCurrentUser } from "@/lib/user";
@@ -37,6 +38,7 @@ async function Shell({ children }: { children: ReactNode }) {
         <SidebarInset className="bg-card">
           <header className="flex h-14 items-center border-b px-1.5 md:px-4">
             <SidebarTrigger className="size-11 md:size-8" aria-label="Mostrar u ocultar el menú" />
+            <Separator orientation="vertical" className="mx-1 data-vertical:h-5 data-vertical:self-center md:mx-2" />
             <HeaderSlot className="flex min-w-0 flex-1 items-center gap-2 px-2" />
           </header>
 
