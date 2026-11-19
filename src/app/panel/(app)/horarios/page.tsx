@@ -18,9 +18,7 @@ export default async function HoursPage() {
 
   return (
     <div className="flex w-full flex-col gap-8">
-      <PanelHeader>
-        <h1 className="truncate font-heading text-base font-medium">Horarios</h1>
-      </PanelHeader>
+      <PanelHeader title="Horarios" />
 
       <p className="text-muted-foreground">
         Prendé los días en que atendés y poné las horas. Si cortás para almorzar, tocá «+
