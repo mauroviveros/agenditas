@@ -2,6 +2,7 @@
 
 import { createContext, type ReactNode, useContext, useState } from "react";
 import { createPortal } from "react-dom";
+import { cn } from "cn";
 
 // Dos huecos del marco del panel (acciones del encabezado y pie) donde cada pantalla pone lo suyo.
 // El contexto guarda los nodos, no el contenido: lo que se pone sigue en el árbol de la
@@ -50,7 +51,15 @@ export function PanelHeaderActions({ children }: { children: ReactNode }) {
   return actions ? createPortal(children, actions) : null;
 }
 
-export function PanelFooter({ children }: { children: ReactNode }) {
+// Las acciones de pie. Traen su propia caja (borde, fondo y padding) y no el hueco: así una
+// pantalla puede esconder la suya según el tamaño (`className="md:hidden"`) sin dejar una
+// franja vacía.
+export function PanelFooter({ children, className }: { children: ReactNode; className?: string }) {
   const { footer } = useSlots();
-  return footer ? createPortal(children, footer) : null;
+  return footer
+    ? createPortal(
+        <div className={cn("border-t border-border bg-card px-5 py-3 md:px-10", className)}>{children}</div>,
+        footer
+      )
+    : null;
 }

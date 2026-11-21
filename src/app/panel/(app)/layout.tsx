@@ -43,7 +43,7 @@ async function Shell({ children }: { children: ReactNode }) {
           </main>
 
           {/* Acciones de la pantalla (guardar, descartar): se muestra solo si una pantalla pone algo con PanelFooter. */}
-          <FooterSlot className="sticky bottom-0 z-10 border-t border-border bg-card px-5 py-3 empty:hidden md:px-10" />
+          <FooterSlot className="sticky bottom-0 z-10 empty:hidden" />
         </SidebarInset>
       </SidebarProvider>
     </PanelSlotsProvider>

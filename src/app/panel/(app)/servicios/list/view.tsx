@@ -5,7 +5,8 @@ import { useCallback, useEffect, useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Service } from "@/lib/services/queries";
 import { MAX_SERVICES } from "@/lib/services/schema";
-import { PanelHeaderActions } from "../../panel-slots";
+import { cn } from "cn";
+import { PanelFooter, PanelHeaderActions } from "../../panel-slots";
 import { type ServiceResult, deleteService, saveService } from "../actions";
 import { ServiceEditor } from "./editor";
 import { ServicesTable } from "./table";
@@ -66,19 +67,21 @@ export function ServicesView({ services }: { services: Service[] }) {
 
   return (
     <section aria-labelledby="services-heading" className="flex flex-col gap-4">
+      {/* Desde md, en el encabezado; en celu, en el pie y al alcance del pulgar. Con la lista vacía
+          el aviso ya trae su «Cargar el primero». */}
       <PanelHeaderActions>
-        {/* En celu solo el ícono; el texto queda para lectores de pantalla. */}
-        <Button
-          size="lg"
-          className="w-11 px-0 aria-disabled:pointer-events-none aria-disabled:opacity-50 md:w-auto md:px-2.5"
-          aria-disabled={isFull || undefined}
-          aria-describedby={isFull ? limitId : undefined}
-          onClick={isFull ? undefined : openNew}
-        >
-          <PlusIcon aria-hidden />
-          <span className="sr-only md:not-sr-only">Nuevo servicio</span>
-        </Button>
+        <NewServiceButton
+          className="hidden md:inline-flex"
+          isFull={isFull}
+          limitId={limitId}
+          onClick={openNew}
+        />
       </PanelHeaderActions>
+      {services.length > 0 ? (
+        <PanelFooter className="md:hidden">
+          <NewServiceButton className="w-full" isFull={isFull} limitId={limitId} onClick={openNew} />
+        </PanelFooter>
+      ) : null}
 
       <h2 id="services-heading" className="sr-only">
         Tus servicios
@@ -109,6 +112,31 @@ export function ServicesView({ services }: { services: Service[] }) {
         onDelete={remove}
       />
     </section>
+  );
+}
+
+function NewServiceButton({
+  className,
+  isFull,
+  limitId,
+  onClick,
+}: {
+  className?: string;
+  isFull: boolean;
+  limitId: string;
+  onClick: () => void;
+}) {
+  return (
+    <Button
+      size="lg"
+      className={cn("aria-disabled:pointer-events-none aria-disabled:opacity-50", className)}
+      aria-disabled={isFull || undefined}
+      aria-describedby={isFull ? limitId : undefined}
+      onClick={isFull ? undefined : onClick}
+    >
+      <PlusIcon aria-hidden />
+      Nuevo servicio
+    </Button>
   );
 }
 

@@ -211,7 +211,7 @@ test("en celu el formulario sube como Drawer y el servicio queda en la lista", a
   await page.goto("/panel/servicios");
 
   // En celu el botón es solo el ícono, pero tiene nombre para lectores de pantalla.
-  await page.getByRole("button", { name: "Nuevo servicio" }).click();
+  await page.getByRole("button", { name: "Cargar el primero" }).click();
   const formulario = await completarFormulario(page, { nombre: "Corte", duracion: "45 min", precio: "1500" });
   await formulario.getByRole("button", { name: "Guardar" }).click();
 
@@ -280,5 +280,79 @@ test.describe("densidad", () => {
 
     expect(await alto(page.getByRole("button", { name: "Nuevo servicio" }))).toBeGreaterThanOrEqual(44);
     expect(await alto(buscador(page))).toBeGreaterThanOrEqual(44);
+  });
+});
+
+test.describe("acciones y buscador", () => {
+  test("celu: «Nuevo servicio» va en el pie, de ancho completo y al alcance del pulgar", async ({ page, context }) => {
+    const solista = await negocioNuevo(context);
+    await cargarServicios(solista, ["Corte"]);
+    await page.goto("/panel/servicios");
+
+    const boton = page.getByRole("group", { name: "Acciones de la pantalla" }).getByRole("button", { name: "Nuevo servicio" });
+    await expect(boton).toBeVisible();
+    const caja = await boton.boundingBox();
+    const pantalla = page.viewportSize();
+    expect(caja?.width ?? 0).toBeGreaterThan((pantalla?.width ?? 0) * 0.8);
+    expect((caja?.y ?? 0) + (caja?.height ?? 0)).toBeGreaterThan((pantalla?.height ?? 0) * 0.85);
+    // El del encabezado queda solo desde md.
+    await expect(page.getByRole("banner").getByRole("button", { name: "Nuevo servicio" })).toBeHidden();
+  });
+
+  test.describe("escritorio", () => {
+    test.use({ viewport: { width: 1280, height: 800 } });
+
+    test("«Nuevo servicio» vive en el encabezado y no hay pie", async ({ page, context }) => {
+      const solista = await negocioNuevo(context);
+      await cargarServicios(solista, ["Corte"]);
+      await page.goto("/panel/servicios");
+
+      await expect(page.getByRole("banner").getByRole("button", { name: "Nuevo servicio" })).toBeVisible();
+      await expect(page.getByRole("group", { name: "Acciones de la pantalla" })).toBeHidden();
+    });
+
+    test("tocar cualquier parte de la fila abre el editor", async ({ page, context }) => {
+      const solista = await negocioNuevo(context);
+      await cargarServicios(solista, ["Corte"]);
+      await page.goto("/panel/servicios");
+
+      await page.locator("tbody tr").first().locator("td").last().click();
+
+      await expect(page.getByRole("dialog").getByLabel("Nombre")).toHaveValue("Corte");
+    });
+
+    test("el buscador usa su propio botón para limpiar, de 32 px", async ({ page, context }) => {
+      const solista = await negocioNuevo(context);
+      await cargarServicios(solista, ["Corte"]);
+      await page.goto("/panel/servicios");
+
+      const buscador = page.getByRole("searchbox", { name: "Buscar servicio" });
+      await buscador.fill("zz");
+      const limpiar = page.getByRole("button", { name: "Limpiar el buscador" });
+      expect(await alto(limpiar)).toBe(32);
+      await limpiar.click();
+      await expect(buscador).toHaveValue("");
+      await expect(buscador).toBeFocused();
+    });
+  });
+
+  test("celu: el botón de limpiar el buscador mide 44 px y el nativo no se ve", async ({ page, context }) => {
+    const solista = await negocioNuevo(context);
+    await cargarServicios(solista, ["Corte"]);
+    await page.goto("/panel/servicios");
+
+    const buscador = page.getByRole("searchbox", { name: "Buscar servicio" });
+    await buscador.fill("zz");
+    expect(await alto(page.getByRole("button", { name: "Limpiar el buscador" }))).toBeGreaterThanOrEqual(44);
+    // Chromium no informa el estilo de los pseudo-elementos internos del campo (devuelve «auto»):
+    // se comprueba que la regla que apaga el botón nativo esté en las hojas de estilo.
+    const reglaQueApagaElNativo = await page.evaluate(() =>
+      Array.from(document.styleSheets).some((hoja) =>
+        Array.from(hoja.cssRules).some((regla) =>
+          /webkit-search-cancel-button[^}]*appearance:\s*none/.test(regla.cssText),
+        ),
+      ),
+    );
+    expect(reglaQueApagaElNativo).toBe(true);
   });
 });

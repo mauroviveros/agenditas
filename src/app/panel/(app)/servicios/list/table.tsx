@@ -9,8 +9,8 @@ import {
   tableFeatures,
   useTable,
 } from "@tanstack/react-table";
-import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon, SearchIcon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon, SearchIcon, XIcon } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "cn";
 import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
@@ -79,6 +79,7 @@ interface ServicesTableProps {
 // celu y pie con la paginación. La pantalla elige tabla o lista con el ancho, no con JavaScript.
 export function ServicesTable({ services, selectedId, onSelect }: ServicesTableProps) {
   const [query, setQuery] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
   // Estable entre renders: la tabla recalcula (y vuelve a la página 1) solo si cambian los datos.
   const visible = useMemo(
     () => services.filter(({ name }) => matchesQuery(name, query)),
@@ -109,13 +110,30 @@ export function ServicesTable({ services, selectedId, onSelect }: ServicesTableP
           <SearchIcon aria-hidden />
         </InputGroupAddon>
         <InputGroupInput
+          ref={searchRef}
           type="search"
           value={query}
           onChange={(event) => search(event.target.value)}
           placeholder="Buscar servicio…"
           aria-label="Buscar servicio"
           autoComplete="off"
+          // El botón de borrar nativo es azul y de unos 14 px: se reemplaza por el de abajo.
+          className="[&::-webkit-search-cancel-button]:appearance-none"
         />
+        {query !== "" ? (
+          <Button
+            variant="ghost"
+            // Cubre el borde del campo para medir lo mismo que él (44 px en celu, 32 px desde md).
+            className="-my-px -mr-px h-auto self-stretch rounded-l-none rounded-r-lg w-11 px-0 md:h-auto md:w-8"
+            aria-label="Limpiar el buscador"
+            onClick={() => {
+              search("");
+              searchRef.current?.focus();
+            }}
+          >
+            <XIcon aria-hidden />
+          </Button>
+        ) : null}
       </InputGroup>
 
       {rows.length === 0 ? (
@@ -162,13 +180,15 @@ export function ServicesTable({ services, selectedId, onSelect }: ServicesTableP
                   {rows.map(({ id, original: service }) => (
                     <TableRow
                       key={id}
-                      className="h-14"
+                      className="h-14 cursor-pointer"
                       data-state={service.id === selectedId ? "selected" : undefined}
+                      // Toda la fila abre el editor. El nombre es el único elemento enfocable y su
+                      // Enter o Espacio sube hasta acá como un clic.
+                      onClick={() => onSelect(service)}
                     >
                       <TableCell className="w-full max-w-0 px-6 py-3">
                         <button
                           type="button"
-                          onClick={() => onSelect(service)}
                           className={cn("block max-w-full truncate rounded-sm text-left font-medium", FOCUS_RING)}
                         >
                           {service.name}

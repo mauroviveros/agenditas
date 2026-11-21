@@ -3,7 +3,7 @@ import type { Service } from "@/lib/services/queries";
 
 const getMyServices = vi.hoisted(() => vi.fn<() => Promise<Service[]>>());
 vi.mock("@/lib/services/queries", () => ({ getMyServices }));
-vi.mock("../../panel-slots", () => ({ PanelHeaderActions: () => null }));
+vi.mock("../../panel-slots", () => ({ PanelHeaderActions: () => null, PanelFooter: () => null }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
 
 import { ServicesLoader } from "./index";
