@@ -19,8 +19,8 @@ const makeServices = (count: number): Service[] =>
     price_cents: 1_000_000,
   }));
 
-const render = (services: Service[]) =>
-  renderToStaticMarkup(<ServicesView services={services} />).replace(/ /g, " ");
+const render = (services: Service[], archived: Service[] = []) =>
+  renderToStaticMarkup(<ServicesView services={services} archived={archived} />).replace(/ /g, " ");
 
 // Apagado con aria-disabled (no `disabled`) para que se pueda enfocar y se lea el motivo.
 const APAGADO = /aria-disabled="true"/;
@@ -72,6 +72,27 @@ describe("ServicesView", () => {
 
     expect(newServiceButton(html)).not.toMatch(APAGADO);
     expect(html).not.toContain("Llegaste al máximo");
+  });
+
+  test("los archivados se ven aparte, con «Restaurar»", () => {
+    const html = render(makeServices(2), [
+      { id: "a-1", name: "Alisado", duration_minutes: 120, price_cents: 3_000_000 },
+    ]);
+
+    expect(html).toContain("Archivados");
+    expect(html).toContain("Alisado");
+    expect(html).toContain("Restaurar");
+  });
+
+  test("sin archivados no aparece la sección", () => {
+    expect(render(makeServices(2))).not.toContain("Archivados");
+  });
+
+  test("los archivados se ven aunque no quede ningún servicio activo", () => {
+    const html = render([], [{ id: "a-1", name: "Alisado", duration_minutes: 120, price_cents: 3_000_000 }]);
+
+    expect(html).toContain("Todavía no cargaste servicios");
+    expect(html).toContain("Alisado");
   });
 
   test("el formulario no aparece hasta que se pide", () => {

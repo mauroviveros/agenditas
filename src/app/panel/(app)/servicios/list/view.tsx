@@ -9,6 +9,7 @@ import { MAX_SERVICES } from "@/lib/services/schema";
 import { cn } from "cn";
 import { PanelFooter, PanelHeaderActions } from "../../panel-slots";
 import { type ServiceResult, deleteService, restoreService } from "../actions";
+import { ArchivedServices } from "./archived";
 import { ServiceEditor } from "./editor";
 import { ServicesTable } from "./table";
 
@@ -28,7 +29,7 @@ interface EditorState {
 }
 
 // Encabezado con «Nuevo servicio», la tabla (o el vacío) y el formulario en un Sheet/Drawer.
-export function ServicesView({ services }: { services: Service[] }) {
+export function ServicesView({ services, archived }: { services: Service[]; archived: Service[] }) {
   const [editor, setEditor] = useState<EditorState>({ open: false, service: null });
   const [notice, setNotice] = useState<Notice>(null);
   const isFull = services.length >= MAX_SERVICES;
@@ -115,6 +116,8 @@ export function ServicesView({ services }: { services: Service[] }) {
           onSelect={openEdit}
         />
       )}
+
+      {archived.length > 0 ? <ArchivedServices services={archived} onRestore={undo} /> : null}
 
       <ServiceEditor
         key={editor.service?.id ?? "new"}

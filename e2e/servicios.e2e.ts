@@ -131,6 +131,39 @@ test.describe("escritorio", () => {
     await expect(page.getByRole("button", { name: "Corte", exact: true })).toBeVisible();
   });
 
+  test("lo borrado queda en Archivados y se restaura desde ahí", async ({ page, context }) => {
+    const solista = await negocioNuevo(context);
+    await cargarServicios(solista, ["Corte", "Tintura"]);
+    await page.goto("/panel/servicios");
+    await page.getByRole("button", { name: "Corte", exact: true }).click();
+    await page.getByRole("button", { name: "Borrar servicio" }).click();
+    await expect(page.getByRole("status")).toContainText("Borraste Corte.");
+
+    // Con el aviso de Deshacer ya cerrado, el servicio sigue a la vista para restaurarlo.
+    await page.reload();
+    await expect(page.getByRole("heading", { name: "Archivados" })).toBeVisible();
+    await page.getByRole("button", { name: "Restaurar Corte" }).click();
+
+    await expect(page.getByRole("button", { name: "Corte", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Archivados" })).toHaveCount(0);
+  });
+
+  test("no se restaura si ya hay otro servicio con ese nombre", async ({ page, context }) => {
+    const solista = await negocioNuevo(context);
+    await cargarServicios(solista, ["Corte"]);
+    await page.goto("/panel/servicios");
+    await page.getByRole("button", { name: "Corte", exact: true }).click();
+    await page.getByRole("button", { name: "Borrar servicio" }).click();
+    await expect(page.getByRole("status")).toContainText("Borraste Corte.");
+    await cargarServicios(solista, ["Corte"]);
+    await page.reload();
+
+    await page.getByRole("button", { name: "Restaurar Corte" }).click();
+
+    await expect(page.getByText("Ya tenés un servicio con ese nombre.")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Archivados" })).toBeVisible();
+  });
+
   test("busca sin acentos ni mayúsculas, avisa si no hay y pagina de a 10", async ({ page, context }) => {
     const solista = await negocioNuevo(context);
     const nombres = Array.from({ length: 11 }, (_, i) => `Servicio ${i + 1}`);
