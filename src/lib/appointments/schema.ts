@@ -12,8 +12,8 @@ const TIME_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)$/;
 const daySchema = z.iso.date("Elegí un día.");
 
 const timeSchema = z
-  .string("Poné la hora como HH:mm, por ejemplo 14:45.")
-  .regex(TIME_PATTERN, "Poné la hora como HH:mm, por ejemplo 14:45.")
+  .string("Elegí la hora.")
+  .regex(TIME_PATTERN, "Elegí la hora.")
   .refine((time) => Number(time.slice(3)) % TIME_STEP_MINUTES === 0, {
     message: "Poné la hora de a 5 minutos: 14:45 o 14:50.",
   });

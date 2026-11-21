@@ -41,8 +41,8 @@ describe("appointmentSchema", () => {
     ["un cliente de más de 80 caracteres", { client_name: "a".repeat(81) }, "El nombre tiene hasta 80 caracteres."],
     ["un teléfono de más de 30 caracteres", { client_phone: "1".repeat(31) }, "El teléfono tiene hasta 30 caracteres."],
     ["un día que no existe", { day: "2027-02-30" }, "Elegí un día."],
-    ["una hora mal escrita", { time: "2:45pm" }, "Poné la hora como HH:mm, por ejemplo 14:45."],
-    ["una hora que no existe", { time: "25:00" }, "Poné la hora como HH:mm, por ejemplo 14:45."],
+    ["una hora mal escrita", { time: "2:45pm" }, "Elegí la hora."],
+    ["una hora que no existe", { time: "25:00" }, "Elegí la hora."],
     ["una hora que no es de a 5 minutos", { time: "14:47" }, "Poné la hora de a 5 minutos: 14:45 o 14:50."],
   ])("rechaza %s", (_caso, change, message) => {
     expect(messageOf({ ...valid, ...change })).toBe(message);

@@ -66,7 +66,7 @@ describe("parseMoveDraft", () => {
       ok: false,
       errors: {
         day: "Elegí un día.",
-        time: "Poné la hora como HH:mm, por ejemplo 14:45.",
+        time: "Elegí la hora.",
       },
     });
   });
