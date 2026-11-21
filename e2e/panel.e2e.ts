@@ -56,6 +56,7 @@ test("el título y la bajada de cada pantalla llegan en el primer HTML", async (
 
   const horarios = await (await page.request.get("/panel/horarios")).text();
   expect(horarios).toMatch(/<h1[^>]*>Horarios<\/h1>/);
+  expect(horarios).toContain("Prendé los días en que atendés y poné las horas.");
 });
 
 test("mientras carga la sesión, el panel manda un esqueleto y no una pantalla en blanco", async ({ page, context }) => {

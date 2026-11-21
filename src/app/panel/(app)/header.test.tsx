@@ -36,6 +36,12 @@ describe("PanelHeader", () => {
     expect(render()).toMatch(/<p[^>]*class="[^"]*hidden[^"]*md:block[^"]*"[^>]*>Lo que ofrecés/);
   });
 
+  test("Horarios lleva su bajada en el encabezado", () => {
+    navigation.pathname = "/panel/horarios";
+
+    expect(headerOf(render())).toContain("Prendé los días en que atendés y poné las horas.");
+  });
+
   test("sin bajada no dibuja un párrafo vacío", () => {
     navigation.pathname = "/panel";
 

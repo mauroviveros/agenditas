@@ -15,7 +15,12 @@ export interface Screen {
 // se define una sola vez. Cada rebanada suma la suya acá.
 export const SCREENS: readonly Screen[] = [
   { href: "/panel", label: "Inicio", titleIsBusinessName: true, icon: HouseIcon },
-  { href: "/panel/horarios", label: "Horarios", icon: ClockIcon },
+  {
+    href: "/panel/horarios",
+    label: "Horarios",
+    subtitle: "Prendé los días en que atendés y poné las horas.",
+    icon: ClockIcon,
+  },
   {
     href: "/panel/servicios",
     label: "Servicios",

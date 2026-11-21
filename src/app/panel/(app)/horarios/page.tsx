@@ -17,11 +17,6 @@ export default async function HoursPage() {
 
   return (
     <div className="flex w-full flex-col gap-8">
-      <p className="text-muted-foreground">
-        Prendé los días en que atendés y poné las horas. Si cortás para almorzar, tocá «+
-        Almuerzo».
-      </p>
-
       <BusinessHours />
 
       <UpcomingHolidays />

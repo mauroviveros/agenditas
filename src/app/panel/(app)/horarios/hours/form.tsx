@@ -157,6 +157,7 @@ export function HoursForm({
           <CardDescription>
             <span className="tabular-nums">{weekDuration(week)}</span> por
             semana · el almuerzo es el corte entre dos franjas
+            <span className="mt-1 block">Si cortás para almorzar, tocá «+ Almuerzo».</span>
           </CardDescription>
         </CardHeader>
         <CardContent className="px-0">
