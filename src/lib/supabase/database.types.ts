@@ -5,7 +5,33 @@ export type Database = {
   
   "public": {
           Tables: {
-            "business_hours": {
+            "appointments": {
+                  Row: {
+                    "business_id": string,"client_name": string | null,"client_phone": string | null,"created_at": string,"ends_at": string,"id": string,"kind": Database["public"]['Enums']["appointment_kind"],"service_duration_minutes": number | null,"service_id": string | null,"service_name": string | null,"service_price_cents": number | null,"starts_at": string,"status": Database["public"]['Enums']["appointment_status"]
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "business_id": string,"client_name"?: string | null,"client_phone"?: string | null,"created_at"?: string,"ends_at": string,"id"?: string,"kind"?: Database["public"]['Enums']["appointment_kind"],"service_duration_minutes"?: number | null,"service_id"?: string | null,"service_name"?: string | null,"service_price_cents"?: number | null,"starts_at": string,"status"?: Database["public"]['Enums']["appointment_status"]
+                  }
+                  Update: {
+                    "business_id"?: string,"client_name"?: string | null,"client_phone"?: string | null,"created_at"?: string,"ends_at"?: string,"id"?: string,"kind"?: Database["public"]['Enums']["appointment_kind"],"service_duration_minutes"?: number | null,"service_id"?: string | null,"service_name"?: string | null,"service_price_cents"?: number | null,"starts_at"?: string,"status"?: Database["public"]['Enums']["appointment_status"]
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "appointments_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "appointments_service_id_fkey"
+      columns: ["service_id"]
+isOneToOne: false
+      referencedRelation: "services"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"business_hours": {
                   Row: {
                     "business_id": string,"end_time": string,"id": string,"start_time": string,"weekday": number
                   }
@@ -55,14 +81,14 @@ isOneToOne: false
                   ]
                 },"services": {
                   Row: {
-                    "business_id": string,"created_at": string,"duration_minutes": number,"id": string,"name": string,"price_cents": number
+                    "archived_at": string | null,"business_id": string,"created_at": string,"duration_minutes": number,"id": string,"name": string,"price_cents": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "business_id": string,"created_at"?: string,"duration_minutes": number,"id"?: string,"name": string,"price_cents": number
+                    "archived_at"?: string | null,"business_id": string,"created_at"?: string,"duration_minutes": number,"id"?: string,"name": string,"price_cents": number
                   }
                   Update: {
-                    "business_id"?: string,"created_at"?: string,"duration_minutes"?: number,"id"?: string,"name"?: string,"price_cents"?: number
+                    "archived_at"?: string | null,"business_id"?: string,"created_at"?: string,"duration_minutes"?: number,"id"?: string,"name"?: string,"price_cents"?: number
                   }
                   Relationships: [
                     {
@@ -79,7 +105,16 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "create_business":
+            "block_time":
+{ Args: { "business_id": string,"minutes": number,"starts_at": string }; Returns: string
+                           },
+"cancel_appointment":
+{ Args: { "appointment_id": string,"business_id": string }; Returns: undefined
+                           },
+"create_appointment":
+{ Args: { "business_id": string,"client_name": string,"client_phone": string,"service_id": string,"starts_at": string }; Returns: string
+                           },
+"create_business":
 { Args: { "name": string,"slug": string }; Returns: string
                            },
 "delete_service":
@@ -91,6 +126,15 @@ isOneToOne: false
 "is_slug_available":
 { Args: { "slug": string }; Returns: boolean
                            },
+"move_appointment":
+{ Args: { "appointment_id": string,"business_id": string,"starts_at": string }; Returns: undefined
+                           },
+"restore_appointment":
+{ Args: { "appointment_id": string,"business_id": string }; Returns: undefined
+                           },
+"restore_service":
+{ Args: { "business_id": string,"service_id": string }; Returns: undefined
+                           },
 "save_service":
 { Args: { "business_id": string,"duration_minutes": number,"name": string,"price_cents": number,"service_id": string }; Returns: string
                            },
@@ -99,7 +143,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "holiday_kind": "fixed"|"movable"|"bridge"
+            "appointment_kind": "appointment"|"block","appointment_status": "confirmed"|"cancelled","holiday_kind": "fixed"|"movable"|"bridge"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -215,7 +259,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "holiday_kind": ["fixed", "movable", "bridge"]
+            "appointment_kind": ["appointment", "block"],"appointment_status": ["confirmed", "cancelled"],"holiday_kind": ["fixed", "movable", "bridge"]
           }
         }
 } as const

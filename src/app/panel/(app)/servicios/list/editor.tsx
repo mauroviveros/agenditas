@@ -24,13 +24,15 @@ interface ServiceEditorProps {
   open: boolean;
   /** El servicio que se edita; sin él, se crea uno nuevo. */
   service: Service | null;
+  /** Turnos por delante del servicio que se edita. */
+  upcoming?: number;
   onOpenChange: (open: boolean) => void;
   onDelete: (service: Service) => Promise<ServiceResult>;
 }
 
 // El formulario del servicio: un Sheet a la derecha en escritorio y un Drawer que sube desde
 // abajo en celu, donde se alcanza con el pulgar y se cierra arrastrando.
-export function ServiceEditor({ open, service, onOpenChange, onDelete }: ServiceEditorProps) {
+export function ServiceEditor({ open, service, upcoming, onOpenChange, onDelete }: ServiceEditorProps) {
   const isMobile = useIsMobile();
   const title = service ? "Editar servicio" : "Nuevo servicio";
   // El nombre ya está en el campo; lo que se viene a mirar es cuánto dura y cuánto cuesta.
@@ -43,6 +45,7 @@ export function ServiceEditor({ open, service, onOpenChange, onDelete }: Service
       service={service}
       onSaved={() => onOpenChange(false)}
       onCancel={() => onOpenChange(false)}
+      upcoming={upcoming}
       onDelete={onDelete}
     />
   );

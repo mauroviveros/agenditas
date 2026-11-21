@@ -29,6 +29,7 @@ import {
   type ServiceDraft,
   draftFrom,
   parseDraft,
+  upcomingNotice,
   withoutErrorsFor,
 } from "./draft";
 
@@ -40,13 +41,15 @@ interface ServiceFormProps {
   service: Service | null;
   onSaved: () => void;
   onCancel: () => void;
-  /** Borra el servicio; si falla, el aviso se muestra acá adentro, no detrás del panel. */
+  /** Turnos por delante de este servicio: se avisa que archivarlo no los toca. */
+  upcoming?: number;
+  /** Archiva el servicio; si falla, el aviso se muestra acá adentro, no detrás del panel. */
   onDelete: (service: Service) => Promise<ServiceResult>;
 }
 
 // Nombre, duración y precio de un servicio. Lo escrito se valida con las reglas del esquema
 // antes de enviar; lo que rechaza la base vuelve como un aviso arriba de los botones.
-export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFormProps) {
+export function ServiceForm({ service, onSaved, onCancel, upcoming, onDelete }: ServiceFormProps) {
   const [draft, setDraft] = useState<ServiceDraft>(() => draftFrom(service ?? undefined));
   const [errors, setErrors] = useState<DraftErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
@@ -110,7 +113,7 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
   }
 
   return (
-    <form ref={formRef} onSubmit={submit} noValidate className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-4 pb-4">
+    <form ref={formRef} onSubmit={submit} noValidate className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-4 pt-4 pb-4 md:pt-0">
       <FieldGroup>
         <Field data-invalid={Boolean(errors.name)}>
           <FieldLabel htmlFor={nameId}>Nombre</FieldLabel>
@@ -215,21 +218,24 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
             {formError}
           </p>
         ) : null}
+        {service && upcomingNotice(upcoming) ? (
+          <p className="rounded-lg border bg-muted p-3 text-sm">{upcomingNotice(upcoming)}</p>
+        ) : null}
         <div className="flex flex-col-reverse gap-2 md:flex-row md:items-center md:justify-between">
           {service ? (
             // En celu queda abajo y aparte, con una línea de por medio, lejos de Guardar.
             <div className="mt-2 border-t pt-4 md:mt-0 md:border-t-0 md:pt-0">
               <Button
                 type="button"
-                variant="destructive"
+                variant="outline"
                 size="lg"
-                className="w-full md:w-auto"
+                className="w-full text-destructive md:w-auto"
                 disabled={busy}
                 aria-busy={deleting}
                 onClick={remove}
               >
                 {deleting ? <Spinner aria-hidden /> : null}
-                {deleting ? "Borrando…" : "Borrar servicio"}
+                {deleting ? "Archivando…" : "Archivar"}
               </Button>
             </div>
           ) : (
@@ -241,7 +247,7 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
             </Button>
             <Button type="submit" size="lg" disabled={busy} aria-busy={saving}>
               {saving ? <Spinner aria-hidden /> : null}
-              {saving ? "Guardando…" : "Guardar servicio"}
+              {saving ? "Guardando…" : "Guardar"}
             </Button>
           </div>
         </div>

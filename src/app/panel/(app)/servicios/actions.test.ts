@@ -18,7 +18,7 @@ vi.mock("next/navigation", () => ({
   },
 }));
 
-const { deleteService, saveService } = await import("./actions");
+const { deleteService, restoreService, saveService } = await import("./actions");
 
 const SERVICE_ID = "a0000000-0000-4000-8000-000000000001";
 const newService = { name: "Corte", duration_minutes: 30, price_cents: 1_500_000 };
@@ -153,7 +153,7 @@ describe("saveService", () => {
 });
 
 describe("deleteService", () => {
-  test("borra el servicio del negocio de la sesión", async () => {
+  test("archiva el servicio del negocio de la sesión", async () => {
     rpc.mockResolvedValue({ error: null });
 
     await expect(deleteService(SERVICE_ID)).resolves.toEqual({ ok: true });
@@ -163,7 +163,7 @@ describe("deleteService", () => {
     });
   });
 
-  test("al borrar, vuelve a leer la pantalla", async () => {
+  test("al archivar, vuelve a leer la pantalla", async () => {
     rpc.mockResolvedValue({ error: null });
 
     await deleteService(SERVICE_ID);
@@ -203,7 +203,7 @@ describe("deleteService", () => {
 
     await expect(deleteService(SERVICE_ID)).resolves.toEqual({
       ok: false,
-      error: "No encontramos ese servicio. Quizás ya lo borraste.",
+      error: "No encontramos ese servicio. Quizás ya lo archivaste.",
     });
     expect(revalidatePath).not.toHaveBeenCalled();
   });
@@ -213,7 +213,61 @@ describe("deleteService", () => {
 
     await expect(deleteService(SERVICE_ID)).resolves.toEqual({
       ok: false,
-      error: "No pudimos borrar el servicio. Probá de nuevo.",
+      error: "No pudimos archivar el servicio. Probá de nuevo.",
+    });
+    expect(console.error).toHaveBeenCalled();
+  });
+});
+
+describe("restoreService", () => {
+  test("restaura el servicio del negocio de la sesión y vuelve a leer la pantalla", async () => {
+    rpc.mockResolvedValue({ error: null });
+
+    await expect(restoreService(SERVICE_ID)).resolves.toEqual({ ok: true });
+    expect(rpc).toHaveBeenCalledWith("restore_service", {
+      business_id: "biz-1",
+      service_id: SERVICE_ID,
+    });
+    expect(revalidatePath).toHaveBeenCalledWith("/panel/servicios");
+  });
+
+  test("un id que no es un uuid no llega a la base", async () => {
+    const result = await restoreService("abc");
+
+    expect(result).toEqual({ ok: false, error: "No encontramos ese servicio." });
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  test("sin negocio vuelve al panel", async () => {
+    getMyBusiness.mockResolvedValue(null);
+
+    await expect(restoreService(SERVICE_ID)).rejects.toThrow("redirect:/panel");
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  test("sin sesión lleva al login", async () => {
+    rpc.mockResolvedValue({ error: { message: "not_authenticated" } });
+
+    await expect(restoreService(SERVICE_ID)).rejects.toThrow("redirect:/login");
+  });
+
+  test.each([
+    ["duplicate_name", "Ya tenés un servicio con ese nombre."],
+    ["service_limit", "Llegaste al máximo de 50 servicios."],
+    ["not_business_owner", "No encontramos ese servicio."],
+  ])("traduce %s", async (code, error) => {
+    rpc.mockResolvedValue({ error: { message: code } });
+
+    await expect(restoreService(SERVICE_ID)).resolves.toEqual({ ok: false, error });
+    expect(revalidatePath).not.toHaveBeenCalled();
+  });
+
+  test("un error que no esperamos se loguea y se avisa en genérico", async () => {
+    rpc.mockResolvedValue({ error: { message: "connection refused" } });
+
+    await expect(restoreService(SERVICE_ID)).resolves.toEqual({
+      ok: false,
+      error: "No pudimos deshacer el archivado. Probá de nuevo.",
     });
     expect(console.error).toHaveBeenCalled();
   });

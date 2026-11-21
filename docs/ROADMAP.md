@@ -50,7 +50,9 @@ verificación.
   comodines. Que `Host` sea el dominio público detrás del proxy del hosting.
 - Cabeceras de seguridad en `next.config.ts`: `frame-ancestors 'none'`, `nosniff` y
   `Referrer-Policy` (hoy `/login` y `/panel` se pueden meter en un iframe).
-- Rate limit en `is_slug_available`, `create_business`, `save_service` y `delete_service`.
+- Rate limit en `is_slug_available`, `create_business`, `save_service`, `delete_service` y las
+  RPC de turnos (`create_appointment`, `move_appointment`, `block_time`). Esas tres aceptan
+  cualquier fecha: acotar `starts_at` (p. ej. hasta dos años).
 - `create_business`: nombres explícitos de los constraints de `businesses` (con un test
   por código) y traducir `not_null_violation`.
 - Un test pgTAP que recorra los grants de `public` para `anon` y `authenticated`.
@@ -91,6 +93,24 @@ verificación.
 - Movimiento reducido: ni el esqueleto ni el Sheet o Drawer respetan
   `prefers-reduced-motion`; resolverlo en los componentes compartidos.
 
+**Agenda (R4)**
+- Bloqueos: otra duración además de los 30 min de «Salgo» y acortar uno hasta «ahora» (hoy
+  «Ya volví» lo cancela entero; hace falta una RPC que cambie `ends_at`). Si ganan motivo o
+  repetición, separarlos de `appointments`.
+- `getUpcomingCounts` cuenta en la app y PostgREST corta en 1000 filas: pasar a una RPC que
+  agrupe, y un índice parcial sobre los turnos confirmados.
+- Hora en 24 h: el campo nativo sigue el formato del navegador. Si se reporta, dos selectores
+  (hora y minutos de a 5) con `native-select` de shadcn.
+- `create_appointment` no bloquea la fila del servicio (un archivado simultáneo es inofensivo);
+  `restore_service` revisa el tope antes que el id.
+- Sin salto a una fecha (solo anterior, hoy y siguiente); sin aviso de feriado en la pantalla
+  del día; un turno de 5 minutos mide menos de 44 px de toque.
+- Editar un servicio no cambia sus turnos futuros: si se quiere, es una decisión (la duración
+  puede pisar al siguiente).
+- Archivados en Servicios: lista completa, sin plegar ni paginar. Sin revisar en modo oscuro.
+- e2e inestables: `horarios.e2e.ts:348` (y a veces `:87`), desde antes de R4; y el de agenda
+  «avisa el almuerzo…», que falló una vez bajo carga.
+
 **Horarios (R2):** verificar en un dispositivo real con región es-AR que las horas se
 muestran en 24 h (en un navegador en inglés se ven en 12 h).
 
@@ -108,14 +128,6 @@ muestran en 24 h (en un navegador en inglés se ven en 12 h).
   fijar cuál va primero.
 - Sin "Copiar link" ni compartir por WhatsApp, el link de reservas en celu solo se ve
   abriendo el cajón.
-
-## R4 · Agenda del día
-
-Cargar un turno a mano, moverlo, cancelar con deshacer y "salgo 30 min".
-
-Al empezar, decidir el borrado de servicios: hoy es real y Deshacer los recrea con otro id.
-Con turnos apuntando a servicios pasa a archivar, y cada turno guarda su copia de nombre,
-duración y precio. Borrar uno con turnos futuros pide confirmar (hay un cliente avisado).
 
 ## R5 · Página pública y reserva
 

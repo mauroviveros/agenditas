@@ -1,20 +1,21 @@
 "use client";
 
-import { CircleAlertIcon, PlusIcon } from "lucide-react";
-import { useCallback, useEffect, useId, useState } from "react";
+import { PlusIcon } from "lucide-react";
+import { useCallback, useId, useState } from "react";
+import { NoticeBar } from "@/components/notice-bar";
 import { Button } from "@/components/ui/button";
 import type { Service } from "@/lib/services/queries";
 import { MAX_SERVICES } from "@/lib/services/schema";
 import { cn } from "cn";
 import { PanelFooter, PanelHeaderActions } from "../../panel-slots";
-import { type ServiceResult, deleteService, saveService } from "../actions";
+import { type ServiceResult, deleteService, restoreService } from "../actions";
+import { ArchivedServices } from "./archived";
 import { ServiceEditor } from "./editor";
 import { ServicesTable } from "./table";
 
-const UNDO_WINDOW_MS = 6000;
 const LIMIT_MESSAGE = `Llegaste al máximo de ${MAX_SERVICES} servicios.`;
 
-// Lo que se ve tras borrar: el servicio para recrearlo, o el motivo por el que no se pudo.
+// Lo que se ve tras archivar: el servicio para restaurarlo, o el motivo por el que no se pudo.
 type Notice =
   | { kind: "deleted"; service: Service }
   | { kind: "error"; message: string }
@@ -28,12 +29,21 @@ interface EditorState {
 }
 
 // Encabezado con «Nuevo servicio», la tabla (o el vacío) y el formulario en un Sheet/Drawer.
-export function ServicesView({ services }: { services: Service[] }) {
+export function ServicesView({
+  services,
+  archived,
+  upcoming = {},
+}: {
+  services: Service[];
+  archived: Service[];
+  /** Turnos por delante de cada servicio, por id. */
+  upcoming?: Record<string, number>;
+}) {
   const [editor, setEditor] = useState<EditorState>({ open: false, service: null });
   const [notice, setNotice] = useState<Notice>(null);
   const isFull = services.length >= MAX_SERVICES;
   const limitId = useId();
-  // Lo que se edita se lee de la lista al día; si ya no está (se borró desde otro lado), el
+  // Lo que se edita se lee de la lista al día; si ya no está (se archivó desde otro lado), el
   // editor se cierra solo.
   const editing = editor.service
     ? (services.find(({ id }) => id === editor.service?.id) ?? null)
@@ -45,7 +55,7 @@ export function ServicesView({ services }: { services: Service[] }) {
   const openEdit = (service: Service) => setEditor({ open: true, service });
   const closeEditor = (open: boolean) => setEditor((current) => ({ ...current, open }));
 
-  // El error de un borrado lo muestra el formulario, que sigue abierto; acá solo se cierra el
+  // El error de un archivado lo muestra el formulario, que sigue abierto; acá solo se cierra el
   // editor y se avisa con Deshacer cuando salió bien.
   async function remove(service: Service): Promise<ServiceResult> {
     const result = await deleteService(service.id);
@@ -58,8 +68,7 @@ export function ServicesView({ services }: { services: Service[] }) {
 
   async function undo(service: Service) {
     setNotice(null);
-    const { name, duration_minutes, price_cents } = service;
-    const result = await saveService({ name, duration_minutes, price_cents });
+    const result = await restoreService(service.id);
     if (!result.ok) {
       setNotice({ kind: "error", message: result.error });
     }
@@ -92,7 +101,20 @@ export function ServicesView({ services }: { services: Service[] }) {
         </p>
       ) : null}
 
-      {notice ? <NoticeBar notice={notice} onUndo={undo} onDismiss={dismissNotice} /> : null}
+      {notice?.kind === "deleted" ? (
+        <NoticeBar
+          message={
+            <>
+              Archivaste <span className="font-medium">{notice.service.name}</span>.
+            </>
+          }
+          onUndo={() => undo(notice.service)}
+          onDismiss={dismissNotice}
+        />
+      ) : null}
+      {notice?.kind === "error" ? (
+        <NoticeBar message={notice.message} onDismiss={dismissNotice} />
+      ) : null}
 
       {services.length === 0 ? (
         <ServicesEmpty onCreate={openNew} />
@@ -104,11 +126,14 @@ export function ServicesView({ services }: { services: Service[] }) {
         />
       )}
 
+      {archived.length > 0 ? <ArchivedServices services={archived} onRestore={undo} /> : null}
+
       <ServiceEditor
         key={editor.service?.id ?? "new"}
         open={editorOpen}
         service={editing ?? editor.service}
         onOpenChange={closeEditor}
+        upcoming={editor.service ? upcoming[editor.service.id] : undefined}
         onDelete={remove}
       />
     </section>
@@ -137,65 +162,6 @@ function NewServiceButton({
       <PlusIcon aria-hidden />
       Nuevo servicio
     </Button>
-  );
-}
-
-function NoticeBar({
-  notice,
-  onUndo,
-  onDismiss,
-}: {
-  notice: NonNullable<Notice>;
-  onUndo: (service: Service) => void;
-  onDismiss: () => void;
-}) {
-  // El tiempo para deshacer corre solo mientras nadie apunta ni enfoca el aviso: quien lo
-  // lee con calma o con un lector de pantalla no lo ve desaparecer.
-  const [paused, setPaused] = useState(false);
-  const isDeleted = notice.kind === "deleted";
-
-  useEffect(() => {
-    if (!isDeleted || paused) {
-      return;
-    }
-    const timer = setTimeout(onDismiss, UNDO_WINDOW_MS);
-    return () => clearTimeout(timer);
-  }, [isDeleted, paused, onDismiss]);
-
-  if (notice.kind === "error") {
-    return (
-      <div
-        role="alert"
-        className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4"
-      >
-        <CircleAlertIcon aria-hidden className="mt-0.5 size-5 shrink-0 text-destructive" />
-        <p className="flex-1 font-medium">{notice.message}</p>
-        <Button variant="ghost" size="sm" onClick={onDismiss}>
-          Cerrar
-        </Button>
-      </div>
-    );
-  }
-  return (
-    <div
-      role="status"
-      className="flex items-center gap-3 rounded-lg border bg-muted p-4"
-      onPointerEnter={() => setPaused(true)}
-      onPointerLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
-    >
-      <p className="flex-1">
-        Borraste <span className="font-medium">{notice.service.name}</span>.
-      </p>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => onUndo(notice.service)}
-      >
-        Deshacer
-      </Button>
-    </div>
   );
 }
 

@@ -6,6 +6,10 @@ describe("findScreen", () => {
     expect(findScreen("/panel/servicios")?.label).toBe("Servicios");
   });
 
+  test("encuentra la agenda", () => {
+    expect(findScreen("/panel/agenda")?.label).toBe("Agenda");
+  });
+
   test("Inicio es /panel y no se come a las demás por ser prefijo", () => {
     expect(findScreen("/panel")?.label).toBe("Inicio");
     expect(findScreen("/panel/horarios")?.label).toBe("Horarios");

@@ -5,6 +5,69 @@
 
 ---
 
+## R4 · Agenda del día — 2026-11-21
+
+Branch `feat/agenda` · PR pendiente
+
+**Qué quedó:** `/panel/agenda`, el día del solista en una línea de tiempo vertical (1,6 px por
+minuto) con sus turnos y bloqueos, la franja de almuerzo, lo que no atiende, la hora actual y
+la navegación entre días. Desde ahí carga un turno («Nuevo turno», o tocando un hueco de la
+línea), lo mueve (tocándolo) o lo cancela con Deshacer; con «Salgo 30 min» bloquea el horario
+desde ahora, y tocando el bloqueo lo libera («Ya volví» o «Quitar bloqueo»). Los servicios
+pasaron de borrarse a **archivarse**: se ven en «Archivados» y se restauran. Datos: tabla
+`appointments`, RPC `create`, `move`, `cancel` y `restore_appointment`, `block_time`, y
+`archived_at` en `services`. 278 pruebas pgTAP, 418 de Vitest y 87 de 88 e2e (el que falla es
+el inestable de Horarios, ver abajo).
+
+**Decisiones**
+- **El turno guarda su copia** del nombre, la duración y el precio del servicio. Editar o
+  archivar el servicio no cambia lo ya agendado, ni lo pasado ni lo futuro: un turno agendado
+  conserva el precio y la duración con que se dio.
+- **Cero superposición en la base.** Una exclusión (`gist`) sobre los turnos y bloqueos
+  confirmados; los cancelados no cuentan. La RPC la traduce a `overlap` y la pantalla dice
+  «Ese horario se acaba de ocupar. Elegí otro.». Cancelar y restaurar son estados, no
+  borrados: Deshacer vuelve con el mismo id, o avisa si el horario se ocupó mientras tanto.
+- **El cliente es texto** (nombre y teléfono opcional); R6 crea `clients` y migra.
+- **Fuera de horario, almuerzo o feriado: avisa y deja guardar.** Es una línea bajo la hora,
+  no un freno.
+- **Bloqueos en la misma tabla** (`kind = 'block'`), para que entren en el mismo constraint
+  de no superposición. Si ganan campos propios (motivo, repetición) se separan resolviendo la
+  exclusión entre tablas.
+- **«Salgo 30 min» sale de la hora del servidor**, no del celu, y no mueve turnos: si pisa uno
+  avisa y no crea nada. Se libera cancelando el bloqueo; no se puede acortar hasta «ahora».
+- **Archivar en vez de borrar.** El botón y los avisos dicen «Archivar». Los archivados no
+  cuentan para el tope de 50 ni bloquean el nombre; restaurar puede chocar con un nombre
+  repetido o con el tope, y lo dice. Al editar un servicio con turnos por delante, una nota
+  avisa cuántos son y que no se tocan (informa, no frena: se puede restaurar).
+- **Una línea de tiempo y no un calendario grande**, a 1,6 px por minuto. El formulario va en
+  Drawer (celu) o Sheet (escritorio); el selector de servicio se pliega y desde 6 servicios
+  suma buscador (mismo `matchesQuery` que Servicios).
+- **La hora y el desfase de Buenos Aires viven en `src/lib/time.ts`** (`dayBounds`,
+  `startsAtOf`). Atajo conocido: UTC-3 fijo, porque Argentina no usa horario de verano.
+- **Un solo aviso de Deshacer** (`components/notice-bar.tsx`), compartido con Servicios, que
+  se cierra solo a los 6 segundos, al abrir un formulario o al cambiar de día.
+- **Los e2e de agenda no esperan el reloj:** el de la hora actual usa `expect.poll` y los
+  turnos «de ahora» se arman con la fecha del momento.
+
+**Auditoría:** `code-reviewer` y `security-reviewer` sin hallazgos CRITICAL ni HIGH; el segundo
+verificó que el navegador no escribe en `appointments`, que mover, cancelar y restaurar
+filtran por negocio y que un servicio ajeno no se puede usar. Se arreglaron cinco puntos de
+la revisión (zona horaria en un solo lugar, hora del servidor en «salgo», avisos de Deshacer
+viejos, log sin datos del cliente, sugerencia de hora sin hueco). El diseño se revisó con
+capturas en celu y escritorio, no con los comandos `critique`, `audit` y `polish`: se
+arreglaron el aire arriba de los paneles, «Cerrar» en Mover turno con «Cancelar turno»
+aparte, «Archivar» con borde y la lista de servicios de 3 filas y media. Sin revisar: modo
+oscuro y la sección «Archivados».
+
+**Pendiente (ver ROADMAP)**
+- Bloqueos de otra duración y acortar un bloqueo hasta «ahora» (hace falta una RPC).
+- Límite de fechas y de uso en las RPC de turnos; conteo de turnos por delante con una RPC.
+- Hora en 24 h si se reporta: el campo nativo sigue el formato del navegador.
+- `horarios.e2e.ts:348` (y a veces `:87`) es inestable desde antes de R4; el de agenda
+  «avisa el almuerzo…» falló una vez bajo carga y no se reprodujo.
+
+---
+
 ## R3b · Marco del panel — 2026-11-21
 
 Branch `feat/panel-frame` · PR pendiente (se abre con el push)
