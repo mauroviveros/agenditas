@@ -1,25 +1,31 @@
 {
-  "version": 1,
+  "version": 2,
   "skills": {
     "accessibility": {
       "source": "addyosmani/web-quality-skills",
-      "sourceType": "autoskills-registry",
-      "computedHash": "2174f783a038a7ca4869c4c18e14726ec13b9c6b705d59253f647d0ca37cb78d"
+      "commit": "afa8da942115f2961fdbfa80807ea0b232ff6c00",
+      "sourceType": "github",
+      "skillPath": "skills/accessibility/SKILL.md",
+      "computedHash": "c668809f5df57feb87cc06f1bc37fb340d1d92e26bacb6edbeab9258d22e76a5"
     },
     "oxlint": {
       "source": "delexw/claude-code-misc",
-      "sourceType": "autoskills-registry",
-      "computedHash": "e7100a83d3cfbcec1322c9eff5c8aabab08550ff8808fe444bc674545c8a176b"
+      "commit": "c729be07588f3b64a3878cc9f5e99c362388554c",
+      "sourceType": "github",
+      "skillPath": "skills/oxlint/SKILL.md",
+      "computedHash": "7e89f7fc1dc4639a61e1df0fcafe4260f2cf84525369975beac9a84e8b9bc61e"
     },
     "playwright-best-practices": {
       "source": "currents-dev/playwright-best-practices-skill",
-      "sourceType": "autoskills-registry",
-      "computedHash": "e561c4afbeb78350e32621b505a1e5f42194e8df33d8d03ed77b16bf06651862"
+      "commit": "0b75b5835a87de1fdd202ba965f3bc5a27738fdf",
+      "sourceType": "github",
+      "skillPath": "playwright-best-practices/SKILL.md",
+      "computedHash": "111e9d3e9d63dea34814120fb6583c0b28ee45371662801d8e8d8bdf4b05dcb0"
     },
     "react-best-practices": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "autoskills-registry",
-      "computedHash": "502eb06700e2c3cb1bd7f710860528f72281320bd5171a2087b05a090b573dc1"
+      "computedHash": ""
     },
     "shadcn": {
       "source": "shadcn/ui",
@@ -28,13 +34,17 @@
     },
     "supabase-postgres-best-practices": {
       "source": "supabase/agent-skills",
-      "sourceType": "autoskills-registry",
-      "computedHash": "7be4ec62e989dc425e13c0be40951f1aa81f6578483c2d2416e5c6d3c6263d42"
+      "commit": "c9be0e931b7930f7d02126d04774d904c381e7d7",
+      "sourceType": "github",
+      "skillPath": "skills/supabase-postgres-best-practices/SKILL.md",
+      "computedHash": "3eb972c2d7c818e544e35cc33ea8d7147d4d78ae08142ef40037b0fbac7a2505"
     },
     "typescript-advanced-types": {
       "source": "wshobson/agents",
-      "sourceType": "autoskills-registry",
-      "computedHash": "cb5d18bc19191b388cc49c15ff98dcbc714fa343373d078be00833e8a18ef291"
+      "commit": "91ff75307f5668916f3eb77d5ba556266c961376",
+      "sourceType": "github",
+      "skillPath": "plugins/javascript-typescript/skills/typescript-advanced-types/SKILL.md",
+      "computedHash": "34c5b3863fde1fc85981ac583ecaf0140471b374d0b7002ac5bc0bea2cf38b24"
     },
     "vitest": {
       "source": "antfu/skills",
@@ -43,8 +53,10 @@
     },
     "zod": {
       "source": "pproenca/dot-skills",
-      "sourceType": "autoskills-registry",
-      "computedHash": "2e6455bb2c68a46f88db0fef1151cdb4d0a50b57b6a0cdbe7fa3b68641adf45b"
+      "commit": "cf93c57cac89d6fc3e4194686000411567f5caf3",
+      "sourceType": "github",
+      "skillPath": "skills/.curated/zod/SKILL.md",
+      "computedHash": "0dda8a9c32affa99f4981924798d7399f0f5bd3ecc37910cfc4b05f260f442cd"
     }
   }
 }
