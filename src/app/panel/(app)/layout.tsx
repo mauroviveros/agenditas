@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getMyBusiness } from "@/lib/business/queries";
 import { getCurrentUser } from "@/lib/user";
+import { PanelHeader } from "./header";
 import { FooterSlot, PanelSlotsProvider } from "./panel-slots";
 import { PanelSkeleton } from "./skeleton";
 
@@ -35,8 +36,11 @@ async function Shell({ children }: { children: ReactNode }) {
         />
 
         <SidebarInset className="bg-card">
-          {/* Encabezado y <main> los dibuja cada pantalla con PanelPage. */}
-          {children}
+          <PanelHeader businessName={business.name} />
+
+          <main data-slot="panel-content" className="flex-1 px-5 py-8 md:px-10">
+            {children}
+          </main>
 
           {/* Acciones de la pantalla (guardar, descartar): se muestra solo si una pantalla pone algo con PanelFooter. */}
           <FooterSlot className="sticky bottom-0 z-10 border-t border-border bg-card px-5 py-3 empty:hidden md:px-10" />

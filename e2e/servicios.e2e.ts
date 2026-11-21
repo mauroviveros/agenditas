@@ -3,6 +3,11 @@ import { signUpNewUser } from "./support/session";
 
 const sufijo = () => Date.now().toString(36);
 
+// Los textos de la lista se buscan dentro de su región: getByRole ignora lo oculto, y por un
+// instante después del load React deja el tramo oculto del streaming (#S:n) junto al contenido
+// ya visible, así que un getByText suelto de la página encuentra el mismo texto dos veces.
+const lista = (page: Page) => page.getByRole("region", { name: "Tus servicios" });
+
 async function negocioNuevo(context: Parameters<typeof signUpNewUser>[0]) {
   const solista = await signUpNewUser(context);
   const { error } = await solista.rpc("create_business", {
@@ -55,7 +60,7 @@ test.describe("escritorio", () => {
     await negocioNuevo(context);
     await page.goto("/panel/servicios");
 
-    await expect(page.getByText("Todavía no cargaste servicios")).toBeVisible();
+    await expect(lista(page).getByText("Todavía no cargaste servicios")).toBeVisible();
     await page.getByRole("button", { name: "Cargar el primero" }).click();
     const formulario = await completarFormulario(page, { nombre: "Corte", duracion: "30 min", precio: "1500" });
     await formulario.getByRole("button", { name: "Guardar" }).click();
@@ -63,7 +68,7 @@ test.describe("escritorio", () => {
     await expect(formulario).toBeHidden();
     await expect(page.getByRole("button", { name: "Corte", exact: true })).toBeVisible();
     await expect(page.getByRole("cell", { name: "$ 1.500" })).toBeVisible();
-    await expect(page.getByText("1 servicio", { exact: true })).toBeVisible();
+    await expect(lista(page).getByText("1 servicio", { exact: true })).toBeVisible();
   });
 
   test("guardar vacío avisa campo por campo y no cierra el formulario", async ({ page, context }) => {
@@ -132,18 +137,18 @@ test.describe("escritorio", () => {
     await cargarServicios(solista, [...nombres, "Tintura de raíz"]);
     await page.goto("/panel/servicios");
 
-    await expect(page.getByText("1–10 de 12 servicios")).toBeVisible();
+    await expect(lista(page).getByText("1–10 de 12 servicios")).toBeVisible();
     await page.getByRole("button", { name: "Siguiente" }).click();
-    await expect(page.getByText("11–12 de 12 servicios")).toBeVisible();
+    await expect(lista(page).getByText("11–12 de 12 servicios")).toBeVisible();
 
     await page.getByRole("searchbox", { name: "Buscar servicio" }).fill("RAIZ");
     await expect(page.getByRole("button", { name: "Tintura de raíz" })).toBeVisible();
-    await expect(page.getByText("1 servicio", { exact: true })).toBeVisible();
+    await expect(lista(page).getByText("1 servicio", { exact: true })).toBeVisible();
 
     await page.getByRole("searchbox", { name: "Buscar servicio" }).fill("zzz");
-    await expect(page.getByText("No encontramos servicios con «zzz»")).toBeVisible();
+    await expect(lista(page).getByText("No encontramos servicios con «zzz»")).toBeVisible();
     await page.getByRole("button", { name: "Borrar la búsqueda" }).click();
-    await expect(page.getByText("1–10 de 12 servicios")).toBeVisible();
+    await expect(lista(page).getByText("1–10 de 12 servicios")).toBeVisible();
   });
 
   test("tocar dos veces «Borrar» borra una sola vez y deja el Deshacer", async ({ page, context }) => {
@@ -156,7 +161,7 @@ test.describe("escritorio", () => {
 
     await expect(page.getByRole("status")).toContainText("Borraste Corte.");
     // Sin el segundo borrado fallido encima: no aparece «Quizás ya lo borraste».
-    await expect(page.getByText("Quizás ya lo borraste")).toHaveCount(0);
+    await expect(lista(page).getByText("Quizás ya lo borraste")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Deshacer" })).toBeVisible();
   });
 
@@ -171,7 +176,7 @@ test.describe("escritorio", () => {
     await formulario.getByRole("button", { name: "Guardar" }).click();
 
     await expect(formulario).toBeHidden();
-    await expect(page.getByText("11–12 de 12 servicios")).toBeVisible();
+    await expect(lista(page).getByText("11–12 de 12 servicios")).toBeVisible();
   });
 
   test("al borrar todo lo de la última página vuelve a la anterior", async ({ page, context }) => {
@@ -183,7 +188,7 @@ test.describe("escritorio", () => {
     await page.getByRole("button", { name: "Servicio 11", exact: true }).click();
     await page.getByRole("button", { name: "Borrar servicio" }).click();
 
-    await expect(page.getByText("10 servicios", { exact: true })).toBeVisible();
+    await expect(lista(page).getByText("10 servicios", { exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Servicio 01", exact: true })).toBeVisible();
   });
 
@@ -192,7 +197,7 @@ test.describe("escritorio", () => {
     await cargarServicios(solista, Array.from({ length: 50 }, (_, i) => `Servicio ${i + 1}`));
     await page.goto("/panel/servicios");
 
-    await expect(page.getByText("Llegaste al máximo de 50 servicios.")).toBeVisible();
+    await expect(lista(page).getByText("Llegaste al máximo de 50 servicios.")).toBeVisible();
     const nuevo = page.getByRole("button", { name: "Nuevo servicio" });
     await expect(nuevo).toBeDisabled();
     // Apagado pero enfocable: con el teclado se llega y se lee el motivo.
