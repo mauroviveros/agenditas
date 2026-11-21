@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { dayBounds, resolveDay } from "./day";
+import { dayBounds, resolveDay, shiftDay } from "./day";
 
 const TODAY = "2027-03-01";
 
@@ -42,5 +42,17 @@ describe("dayBounds", () => {
 
   test("un 29 de febrero bisiesto existe", () => {
     expect(dayBounds("2028-02-29").to).toBe("2028-03-01T03:00:00.000Z");
+  });
+});
+
+describe("shiftDay", () => {
+  test("suma y resta días", () => {
+    expect(shiftDay("2027-03-01", 1)).toBe("2027-03-02");
+    expect(shiftDay("2027-03-01", -1)).toBe("2027-02-28");
+  });
+
+  test("cruza el fin de mes y de año", () => {
+    expect(shiftDay("2027-12-31", 1)).toBe("2028-01-01");
+    expect(shiftDay("2028-03-01", -1)).toBe("2028-02-29");
   });
 });

@@ -46,3 +46,13 @@ const timeFormat = new Intl.DateTimeFormat("es-AR", {
 export function formatTime(instant: string): string {
   return timeFormat.format(new Date(instant));
 }
+
+/** Cuánto falta, de menos de una hora a varias: "28 min", "1 h 13 min", "2 h". */
+export function formatUntil(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  if (hours === 0) {
+    return `${rest} min`;
+  }
+  return rest === 0 ? `${hours} h` : `${hours} h ${rest} min`;
+}

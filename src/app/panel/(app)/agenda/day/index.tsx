@@ -1,7 +1,12 @@
 import { Suspense } from "react";
 import { getDayAgenda } from "@/lib/appointments/queries";
-import { formatDate, formatTime } from "@/lib/time";
+import { describeDay } from "@/lib/appointments/summary";
+import { buildTimeline, openSpans } from "@/lib/appointments/timeline";
+import { getMyHours } from "@/lib/hours/queries";
+import { AutoRefresh } from "./auto-refresh";
+import { DayHeader } from "./header";
 import { DayAgendaSkeleton } from "./skeleton";
+import { Timeline } from "./timeline";
 
 // El día con su esqueleto mientras carga.
 export function DayAgenda({ day, today }: { day: string; today: string }) {
@@ -12,29 +17,24 @@ export function DayAgenda({ day, today }: { day: string; today: string }) {
   );
 }
 
-// Lee los turnos del día. Sin try/catch a propósito: si la lectura falla, el error sube a
-// (app)/error.tsx; mostrar un día vacío invitaría a agendar sobre turnos que sí existen.
-// shortcut: lista sin diseño, con los datos reales; el bloque de la pantalla del día la reemplaza.
+// Lee los turnos del día y los horarios del negocio. Sin try/catch a propósito: si una lectura
+// falla, el error sube a (app)/error.tsx; mostrar un día vacío invitaría a agendar sobre turnos
+// que sí existen.
 async function DayAgendaLoader({ day, today }: { day: string; today: string }) {
-  const items = await getDayAgenda(day);
+  const now = new Date();
+  const [items, ranges] = await Promise.all([getDayAgenda(day), getMyHours()]);
+  const timeline = buildTimeline(day, items, ranges, now);
+  const appointments = items.filter(({ kind }) => kind === "appointment").length;
 
   return (
     <section aria-labelledby="agenda-heading" className="flex flex-col gap-4">
-      <h2 id="agenda-heading" className="font-medium">
-        {formatDate(day, today)}
-      </h2>
-      {items.length === 0 ? (
-        <p>No hay turnos este día.</p>
-      ) : (
-        <ul className="flex flex-col gap-2">
-          {items.map((item) => (
-            <li key={item.id}>
-              {formatTime(item.startsAt)}–{formatTime(item.endsAt)} ·{" "}
-              {item.kind === "block" ? "Bloqueado" : `${item.clientName} · ${item.serviceName}`}
-            </li>
-          ))}
-        </ul>
-      )}
+      <DayHeader
+        day={day}
+        today={today}
+        summary={describeDay(appointments, openSpans(day, ranges))}
+      />
+      <Timeline timeline={timeline} now={now} />
+      {day === today ? <AutoRefresh /> : null}
     </section>
   );
 }

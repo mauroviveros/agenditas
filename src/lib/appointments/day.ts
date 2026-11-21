@@ -22,3 +22,9 @@ export function dayBounds(day: string): { from: string; to: string } {
     new Date(Date.UTC(year, month - 1, dayOfMonth, BUENOS_AIRES_OFFSET_HOURS)).toISOString();
   return { from: at(date), to: at(date + 1) };
 }
+
+// El día de al lado ("AAAA-MM-DD"), hacia atrás (-1) o adelante (+1).
+export function shiftDay(day: string, delta: number): string {
+  const [year, month, date] = day.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, date + delta)).toISOString().slice(0, 10);
+}

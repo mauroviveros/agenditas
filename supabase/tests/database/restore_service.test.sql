@@ -76,7 +76,8 @@ select throws_ok(
 
 -- Con 50 activos no se restaura otro.
 reset role;
-delete from public.services where name = 'Corte' and archived_at is null;
+delete from public.services
+where business_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' and name = 'Corte' and archived_at is null;
 insert into public.services (business_id, name, duration_minutes, price_cents)
 select 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Servicio ' || n, 30, 100
 from generate_series(1, 49) as n;

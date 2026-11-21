@@ -44,7 +44,7 @@ values ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'a0000000-0000-0000-0000-0000000
   '2027-03-01 10:00-03', '2027-03-01 10:30-03');
 
 select is(
-  (select status::text from public.appointments), 'confirmed',
+  (select status::text from public.appointments where business_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'), 'confirmed',
   'un turno nuevo nace confirmado');
 
 -- Cliente.
@@ -160,7 +160,8 @@ select lives_ok(
   'dos negocios distintos pueden tener turnos a la misma hora');
 
 -- Un turno cancelado libera el horario.
-update public.appointments set status = 'cancelled' where client_name = 'Lucía';
+update public.appointments set status = 'cancelled'
+where business_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' and client_name = 'Lucía';
 select lives_ok(
   $$ insert into public.appointments (business_id, service_id, service_name,
        service_duration_minutes, service_price_cents, client_name, starts_at, ends_at)
@@ -168,7 +169,8 @@ select lives_ok(
        'Corte', 30, 100, 'Reemplazo', '2027-03-01 10:00-03', '2027-03-01 10:30-03') $$,
   'el horario de un turno cancelado queda libre');
 select throws_ok(
-  $$ update public.appointments set status = 'confirmed' where client_name = 'Lucía' $$,
+  $$ update public.appointments set status = 'confirmed'
+       where business_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' and client_name = 'Lucía' $$,
   '23P01', null, 'no se puede reconfirmar un turno si su horario se ocupó');
 
 -- Bloqueos: ocupan horario como un turno, pero sin servicio ni cliente.
@@ -205,7 +207,8 @@ select throws_ok(
      values ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'block',
        '2027-03-10 10:20-03', '2027-03-10 10:50-03') $$,
   '23P01', null, 'un bloqueo no puede pisar otro bloqueo');
-update public.appointments set status = 'cancelled' where kind = 'block';
+update public.appointments set status = 'cancelled'
+where business_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' and kind = 'block';
 select lives_ok(
   $$ insert into public.appointments (business_id, service_id, service_name,
        service_duration_minutes, service_price_cents, client_name, starts_at, ends_at)

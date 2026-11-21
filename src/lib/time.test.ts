@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { dateInBuenosAires, formatDate, formatTime, weekdayIndex } from "./time";
+import { dateInBuenosAires, formatDate, formatTime, formatUntil, weekdayIndex } from "./time";
 
 describe("weekdayIndex", () => {
   test("cuenta desde el lunes (0) hasta el domingo (6)", () => {
@@ -51,5 +51,19 @@ describe("formatTime", () => {
 
   test("la medianoche es 00:00 y no 24:00", () => {
     expect(formatTime("2027-03-01T03:00:00Z")).toBe("00:00");
+  });
+});
+
+describe("formatUntil", () => {
+  test("menos de una hora son minutos", () => {
+    expect(formatUntil(28)).toBe("28 min");
+  });
+
+  test("una hora o más suma las horas", () => {
+    expect(formatUntil(73)).toBe("1 h 13 min");
+  });
+
+  test("una hora justa no lleva minutos", () => {
+    expect(formatUntil(120)).toBe("2 h");
   });
 });
