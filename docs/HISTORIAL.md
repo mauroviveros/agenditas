@@ -7,7 +7,7 @@
 
 ## R3b · Marco del panel — 2026-11-21
 
-Branch `feat/panel-frame` · PR pendiente (se abre al cerrar la auditoría)
+Branch `feat/panel-frame` · PR pendiente (se abre con el push)
 
 **Qué quedó:** todas las pantallas del panel se definen de una sola manera. Un registro
 (`src/lib/panel/screens.ts`) da a cada pantalla su ruta, nombre, bajada e ícono, y lo leen el
@@ -15,8 +15,8 @@ menú y el encabezado. El encabezado (`(app)/header.tsx`) dibuja el título y la
 la ruta, en el servidor, así que llegan en el primer HTML. Una sola regla de tamaños
 (44 px en celu, 32 px desde `md`) escrita en `Button`, `Input` e `InputGroup`. Un solo aviso
 de error de lectura (`(app)/error.tsx`) que deja el menú y el encabezado en pantalla. Dos
-recetas de cuerpo: `SectionCard` para formularios y una caja con borde para listas. 254
-tests de Vitest y 55 e2e.
+recetas de cuerpo: `SectionCard` para formularios y una caja con borde para listas. 257
+tests de Vitest y 64 e2e.
 
 **Decisiones**
 - **Registro en vez de wrapper por página.** Una primera versión usaba un `PanelPage` que
@@ -43,8 +43,19 @@ tests de Vitest y 55 e2e.
   `load`, React deja un instante el tramo oculto del streaming (`#S:n`) junto al contenido
   visible, y un `getByText` suelto encontraba el mismo texto dos veces.
 
-**Auditoría:** pendiente (`code-reviewer` y, por pantalla, `/impeccable critique`, `audit`
-y `polish`).
+**Auditoría:** `code-reviewer` e `/impeccable critique` sobre Horarios y Servicios. Se
+arreglaron todos los cierres de R3b y estos puntos de diseño:
+- **Menú en celu:** al navegar desde el cajón, este se cierra.
+- **Servicios:** botón propio para borrar la búsqueda (44 px en celu, 32 px en escritorio, sin
+  el nativo); «Nuevo servicio» en el pie, al alcance del pulgar, en celu (desde `md` queda en
+  el encabezado); la fila entera abre el editor en escritorio. `PanelFooter` pone la caja del
+  pie (borde, fondo y margen) para que cada pantalla solo aporte su contenido.
+- **Horarios, almuerzo:** «+ Almuerzo» parte el día de 13 a 14 h cuando la franja lo
+  contiene (si no, cerca de la mitad). El chip es un botón con rayado diagonal hecho con
+  tokens: tocarlo saca el almuerzo, sin la X suelta; su nombre accesible incluye el texto
+  visible.
+- Lo que espera una decisión quedó en el ROADMAP (jerarquía h1/h2, una sola lista de filas,
+  contraste de `--input`, formato del precio, señal en `DaySummary`).
 
 **Pendiente (ver ROADMAP)**
 - Las acciones del encabezado siguen entrando por portal y aparecen después de hidratar.

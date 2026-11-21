@@ -72,10 +72,14 @@ Todas se definen igual; solo cambia el cuerpo.
   título sale del registro según la ruta (Inicio muestra el nombre del negocio) y llega en
   el primer HTML. La bajada es de una línea, se ve desde `md` y dice qué es la pantalla; la
   ayuda de uso va en el cuerpo, porque en celu el encabezado no la muestra. Las acciones de
-  la pantalla entran por portal (`PanelHeaderActions`) y las de pie por `PanelFooter`: viven
-  en el árbol de quien tiene el estado.
+  la pantalla entran por portal (`PanelHeaderActions`) y las de pie por `PanelFooter`, que
+  dibuja la caja del pie: viven en el árbol de quien tiene el estado. En celu una acción
+  principal (como «Nuevo servicio») va en el pie, al alcance del pulgar; desde `md`, en el
+  encabezado. Al navegar desde el menú en celu, el cajón se cierra.
 - **Cuerpo de formulario:** una `SectionCard` (`src/components/section-card.tsx`) por
   sección, con su título, su descripción y las filas sin padding lateral.
+- **Almuerzo (Horarios):** el hueco entre dos franjas se muestra como un chip punteado con
+  rayas diagonales (solo tokens) y es el botón que lo saca.
 - **Cuerpo de lista:** el buscador, una caja `rounded-xl border bg-card` que sirve a la tabla
   de escritorio y a la lista de celu, y el contador y la paginación debajo.
 - **Esqueletos:** la misma caja y filas de la misma altura que las reales, para que la
