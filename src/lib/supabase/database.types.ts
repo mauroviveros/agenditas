@@ -105,7 +105,16 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "create_business":
+            "block_time":
+{ Args: { "business_id": string,"minutes": number,"starts_at": string }; Returns: string
+                           },
+"cancel_appointment":
+{ Args: { "appointment_id": string,"business_id": string }; Returns: undefined
+                           },
+"create_appointment":
+{ Args: { "business_id": string,"client_name": string,"client_phone": string,"service_id": string,"starts_at": string }; Returns: string
+                           },
+"create_business":
 { Args: { "name": string,"slug": string }; Returns: string
                            },
 "delete_service":
@@ -116,6 +125,12 @@ isOneToOne: false
                            },
 "is_slug_available":
 { Args: { "slug": string }; Returns: boolean
+                           },
+"move_appointment":
+{ Args: { "appointment_id": string,"business_id": string,"starts_at": string }; Returns: undefined
+                           },
+"restore_appointment":
+{ Args: { "appointment_id": string,"business_id": string }; Returns: undefined
                            },
 "restore_service":
 { Args: { "business_id": string,"service_id": string }; Returns: undefined
