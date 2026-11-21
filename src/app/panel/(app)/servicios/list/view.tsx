@@ -8,7 +8,6 @@ import { MAX_SERVICES } from "@/lib/services/schema";
 import { PanelHeaderActions } from "../../panel-slots";
 import { type ServiceResult, deleteService, saveService } from "../actions";
 import { ServiceEditor } from "./editor";
-import { ServicesEmpty } from "./empty";
 import { ServicesTable } from "./table";
 
 const UNDO_WINDOW_MS = 6000;
@@ -168,6 +167,21 @@ function NoticeBar({
         onClick={() => onUndo(notice.service)}
       >
         Deshacer
+      </Button>
+    </div>
+  );
+}
+
+// Sin servicios no hay agenda que armar: el aviso dice por dónde empezar.
+function ServicesEmpty({ onCreate }: { onCreate: () => void }) {
+  return (
+    <div className="flex flex-col items-start gap-3 rounded-xl border bg-card p-6">
+      <p className="font-medium">Todavía no cargaste servicios</p>
+      <p className="text-muted-foreground">
+        Sin servicios tus clientes no pueden sacar turno. Cargá el primero.
+      </p>
+      <Button size="lg" className="h-11 md:h-9" onClick={onCreate}>
+        Cargar el primero
       </Button>
     </div>
   );

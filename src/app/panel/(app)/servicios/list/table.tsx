@@ -33,8 +33,8 @@ import {
 } from "@/components/ui/table";
 import type { Service } from "@/lib/services/queries";
 import { formatDuration, formatPrice } from "@/lib/services/schema";
+import { matchesQuery } from "@/lib/services/search";
 import { TableFooter } from "./footer";
-import { matchesQuery } from "./search";
 
 // Fuera del componente: TanStack pide que features y columnas sean estables.
 const features = tableFeatures({
