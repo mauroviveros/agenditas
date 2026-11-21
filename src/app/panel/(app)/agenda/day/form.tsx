@@ -40,6 +40,8 @@ interface AppointmentFormProps {
   holidays: HolidayRow[];
   /** Se llama con el día en que quedó el turno. */
   onSaved: (day: string) => void;
+  /** Cancela el turno que se mueve; si falla, el aviso se muestra acá. */
+  onCancelAppointment: () => Promise<AppointmentResult>;
   onCancel: () => void;
 }
 
@@ -53,12 +55,14 @@ export function AppointmentForm({
   ranges,
   holidays,
   onSaved,
+  onCancelAppointment,
   onCancel,
 }: AppointmentFormProps) {
   const [draft, setDraft] = useState<AppointmentDraft>(initial);
   const [errors, setErrors] = useState<DraftErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [saving, startSaving] = useTransition();
+  const [cancelling, startCancelling] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
   const [failedAttempts, setFailedAttempts] = useState(0);
   const groupName = useId();
@@ -105,6 +109,16 @@ export function AppointmentForm({
       if (result.ok) {
         onSaved(parsed.data.day);
       } else {
+        setFormError(result.error);
+      }
+    });
+  }
+
+  function cancelAppointment() {
+    setFormError(null);
+    startCancelling(async () => {
+      const result = await onCancelAppointment();
+      if (!result.ok) {
         setFormError(result.error);
       }
     });
@@ -235,6 +249,20 @@ export function AppointmentForm({
             <CircleAlertIcon aria-hidden className="mt-0.5 size-5 shrink-0 text-destructive" />
             {formError}
           </p>
+        ) : null}
+        {isMove ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            className="text-destructive"
+            disabled={saving || cancelling}
+            aria-busy={cancelling}
+            onClick={cancelAppointment}
+          >
+            {cancelling ? <Spinner aria-hidden /> : null}
+            Cancelar turno
+          </Button>
         ) : null}
         <div className="flex flex-col-reverse gap-2 md:flex-row md:justify-end">
           <Button type="button" variant="outline" size="lg" onClick={onCancel}>

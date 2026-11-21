@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 import { startsAtOf } from "@/lib/appointments/day";
 import { appointmentSchema, moveSchema } from "@/lib/appointments/schema";
 import { getMyBusiness } from "@/lib/business/queries";
@@ -26,6 +27,20 @@ const MOVE_ERRORS = new Map([
   ["invalid_appointment", INVALID_ERROR],
   ["not_business_owner", "No encontramos ese turno. Quizás ya lo cancelaste."],
 ]);
+
+const CANCEL_GENERIC_ERROR = "No pudimos cancelar el turno. Probá de nuevo.";
+const RESTORE_GENERIC_ERROR = "No pudimos deshacer la cancelación. Probá de nuevo.";
+const APPOINTMENT_NOT_FOUND = "No encontramos ese turno.";
+const CANCEL_ERRORS = new Map([
+  ["not_business_owner", "No encontramos ese turno. Quizás ya lo cancelaste."],
+]);
+// Deshacer puede chocar con un turno que entró en ese horario mientras tanto.
+const RESTORE_ERRORS = new Map([
+  ["overlap", "Ese horario se ocupó mientras tanto, no se puede deshacer."],
+  ["not_business_owner", APPOINTMENT_NOT_FOUND],
+]);
+
+const appointmentIdSchema = z.uuid(APPOINTMENT_NOT_FOUND);
 
 // El negocio sale de la sesión, no de lo que mande el navegador.
 async function getBusinessId(): Promise<string> {
@@ -100,4 +115,35 @@ export async function moveAppointment(input: unknown): Promise<AppointmentResult
   });
 
   return resultOf(error, MOVE_ERRORS, MOVE_GENERIC_ERROR, "move appointment");
+}
+
+// Cancela un turno: libera el horario pero queda registrado, así que se puede deshacer.
+export async function cancelAppointment(input: unknown): Promise<AppointmentResult> {
+  return changeStatus("cancel_appointment", input, CANCEL_ERRORS, CANCEL_GENERIC_ERROR);
+}
+
+// Deshace una cancelación: el turno vuelve con el mismo id si su horario sigue libre.
+export async function restoreAppointment(input: unknown): Promise<AppointmentResult> {
+  return changeStatus("restore_appointment", input, RESTORE_ERRORS, RESTORE_GENERIC_ERROR);
+}
+
+async function changeStatus(
+  rpcName: "cancel_appointment" | "restore_appointment",
+  input: unknown,
+  translations: Map<string, string>,
+  genericError: string,
+): Promise<AppointmentResult> {
+  const parsed = appointmentIdSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: APPOINTMENT_NOT_FOUND };
+  }
+  const businessId = await getBusinessId();
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc(rpcName, {
+    business_id: businessId,
+    appointment_id: parsed.data,
+  });
+
+  return resultOf(error, translations, genericError, rpcName);
 }

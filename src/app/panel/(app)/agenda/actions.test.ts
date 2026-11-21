@@ -18,7 +18,7 @@ vi.mock("next/navigation", () => ({
   },
 }));
 
-const { createAppointment, moveAppointment } = await import("./actions");
+const { cancelAppointment, createAppointment, moveAppointment, restoreAppointment } = await import("./actions");
 
 const SERVICE_ID = "a0000000-0000-4000-8000-000000000001";
 const APPOINTMENT_ID = "b0000000-0000-4000-8000-000000000001";
@@ -183,5 +183,69 @@ describe("moveAppointment", () => {
       error: "No pudimos mover el turno. Probá de nuevo.",
     });
     expect(console.error).toHaveBeenCalled();
+  });
+});
+
+describe.each([
+  ["cancelAppointment", cancelAppointment, "cancel_appointment", "No pudimos cancelar el turno. Probá de nuevo."],
+  ["restoreAppointment", restoreAppointment, "restore_appointment", "No pudimos deshacer la cancelación. Probá de nuevo."],
+])("%s", (_name, action, rpcName, genericError) => {
+  test("actúa sobre el turno del negocio de la sesión y vuelve a leer la agenda", async () => {
+    rpc.mockResolvedValue({ error: null });
+
+    await expect(action(APPOINTMENT_ID)).resolves.toEqual({ ok: true });
+    expect(rpc).toHaveBeenCalledWith(rpcName, { business_id: "biz-1", appointment_id: APPOINTMENT_ID });
+    expect(revalidatePath).toHaveBeenCalledWith("/panel/agenda");
+  });
+
+  test("un id que no es un uuid no llega a la base", async () => {
+    const result = await action("abc");
+
+    expect(result.ok).toBe(false);
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  test("sin sesión lleva al login", async () => {
+    rpc.mockResolvedValue({ error: { message: "not_authenticated" } });
+
+    await expect(action(APPOINTMENT_ID)).rejects.toThrow("redirect:/login");
+  });
+
+  test("un error que no esperamos se loguea y se avisa en genérico", async () => {
+    rpc.mockResolvedValue({ error: { message: "connection refused" } });
+
+    await expect(action(APPOINTMENT_ID)).resolves.toEqual({ ok: false, error: genericError });
+    expect(console.error).toHaveBeenCalled();
+  });
+});
+
+describe("cancelAppointment, errores conocidos", () => {
+  test("un turno que ya no está se avisa", async () => {
+    rpc.mockResolvedValue({ error: { message: "not_business_owner" } });
+
+    await expect(cancelAppointment(APPOINTMENT_ID)).resolves.toEqual({
+      ok: false,
+      error: "No encontramos ese turno. Quizás ya lo cancelaste.",
+    });
+  });
+});
+
+describe("restoreAppointment, errores conocidos", () => {
+  test("si el horario se ocupó mientras tanto, se dice", async () => {
+    rpc.mockResolvedValue({ error: { message: "overlap" } });
+
+    await expect(restoreAppointment(APPOINTMENT_ID)).resolves.toEqual({
+      ok: false,
+      error: "Ese horario se ocupó mientras tanto, no se puede deshacer.",
+    });
+  });
+
+  test("un turno que ya no está se avisa", async () => {
+    rpc.mockResolvedValue({ error: { message: "not_business_owner" } });
+
+    await expect(restoreAppointment(APPOINTMENT_ID)).resolves.toEqual({
+      ok: false,
+      error: "No encontramos ese turno.",
+    });
   });
 });

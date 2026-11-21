@@ -280,3 +280,35 @@ test("tocar un hueco de la línea abre el formulario con esa hora", async ({ pag
 
   await expect(formulario(page).getByLabel("Hora")).toHaveValue("10:00");
 });
+
+test("cancela un turno desde el formulario y lo deshace", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  const ids = await negocioConCorte(solista);
+  await agendar(solista, ids, "Lucía", "10:00:00");
+  await page.goto(`/panel/agenda?dia=${DIA}`);
+
+  await page.getByRole("button", { name: /Lucía/ }).click();
+  await formulario(page).getByRole("button", { name: "Cancelar turno" }).click();
+
+  await expect(page.getByRole("status").getByText("Cancelaste el turno de Lucía.")).toBeVisible();
+  await expect(turnos(page)).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Deshacer" }).click();
+  await expect(turnos(page)).toHaveText(["10:00–10:30 Lucía Corte"]);
+});
+
+test("deshacer avisa si el horario se ocupó mientras tanto", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  const ids = await negocioConCorte(solista);
+  await agendar(solista, ids, "Lucía", "10:00:00");
+  await page.goto(`/panel/agenda?dia=${DIA}`);
+  await page.getByRole("button", { name: /Lucía/ }).click();
+  await formulario(page).getByRole("button", { name: "Cancelar turno" }).click();
+  await expect(page.getByText("Cancelaste el turno de Lucía.")).toBeVisible();
+  await expect(turnos(page)).toHaveCount(0);
+
+  await agendar(solista, ids, "Mateo", "10:00:00");
+  await page.getByRole("button", { name: "Deshacer" }).click();
+
+  await expect(page.getByText("Ese horario se ocupó mientras tanto, no se puede deshacer.")).toBeVisible();
+});

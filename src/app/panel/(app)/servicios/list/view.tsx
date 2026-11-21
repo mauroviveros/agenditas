@@ -1,7 +1,8 @@
 "use client";
 
-import { CircleAlertIcon, PlusIcon } from "lucide-react";
-import { useCallback, useEffect, useId, useState } from "react";
+import { PlusIcon } from "lucide-react";
+import { useCallback, useId, useState } from "react";
+import { NoticeBar } from "@/components/notice-bar";
 import { Button } from "@/components/ui/button";
 import type { Service } from "@/lib/services/queries";
 import { MAX_SERVICES } from "@/lib/services/schema";
@@ -11,7 +12,6 @@ import { type ServiceResult, deleteService, restoreService } from "../actions";
 import { ServiceEditor } from "./editor";
 import { ServicesTable } from "./table";
 
-const UNDO_WINDOW_MS = 6000;
 const LIMIT_MESSAGE = `Llegaste al máximo de ${MAX_SERVICES} servicios.`;
 
 // Lo que se ve tras borrar: el servicio para restaurarlo, o el motivo por el que no se pudo.
@@ -91,7 +91,20 @@ export function ServicesView({ services }: { services: Service[] }) {
         </p>
       ) : null}
 
-      {notice ? <NoticeBar notice={notice} onUndo={undo} onDismiss={dismissNotice} /> : null}
+      {notice?.kind === "deleted" ? (
+        <NoticeBar
+          message={
+            <>
+              Borraste <span className="font-medium">{notice.service.name}</span>.
+            </>
+          }
+          onUndo={() => undo(notice.service)}
+          onDismiss={dismissNotice}
+        />
+      ) : null}
+      {notice?.kind === "error" ? (
+        <NoticeBar message={notice.message} onDismiss={dismissNotice} />
+      ) : null}
 
       {services.length === 0 ? (
         <ServicesEmpty onCreate={openNew} />
@@ -136,65 +149,6 @@ function NewServiceButton({
       <PlusIcon aria-hidden />
       Nuevo servicio
     </Button>
-  );
-}
-
-function NoticeBar({
-  notice,
-  onUndo,
-  onDismiss,
-}: {
-  notice: NonNullable<Notice>;
-  onUndo: (service: Service) => void;
-  onDismiss: () => void;
-}) {
-  // El tiempo para deshacer corre solo mientras nadie apunta ni enfoca el aviso: quien lo
-  // lee con calma o con un lector de pantalla no lo ve desaparecer.
-  const [paused, setPaused] = useState(false);
-  const isDeleted = notice.kind === "deleted";
-
-  useEffect(() => {
-    if (!isDeleted || paused) {
-      return;
-    }
-    const timer = setTimeout(onDismiss, UNDO_WINDOW_MS);
-    return () => clearTimeout(timer);
-  }, [isDeleted, paused, onDismiss]);
-
-  if (notice.kind === "error") {
-    return (
-      <div
-        role="alert"
-        className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4"
-      >
-        <CircleAlertIcon aria-hidden className="mt-0.5 size-5 shrink-0 text-destructive" />
-        <p className="flex-1 font-medium">{notice.message}</p>
-        <Button variant="ghost" size="sm" onClick={onDismiss}>
-          Cerrar
-        </Button>
-      </div>
-    );
-  }
-  return (
-    <div
-      role="status"
-      className="flex items-center gap-3 rounded-lg border bg-muted p-4"
-      onPointerEnter={() => setPaused(true)}
-      onPointerLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
-    >
-      <p className="flex-1">
-        Borraste <span className="font-medium">{notice.service.name}</span>.
-      </p>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => onUndo(notice.service)}
-      >
-        Deshacer
-      </Button>
-    </div>
   );
 }
 

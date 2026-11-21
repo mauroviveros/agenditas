@@ -17,6 +17,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { HolidayRow } from "@/lib/holidays/parse";
 import type { HourRange } from "@/lib/hours/schema";
+import type { AppointmentResult } from "../actions";
 import type { Service } from "@/lib/services/queries";
 import type { AppointmentDraft } from "./draft";
 import { AppointmentForm } from "./form";
@@ -32,6 +33,7 @@ interface AppointmentEditorProps {
   holidays: HolidayRow[];
   onOpenChange: (open: boolean) => void;
   onSaved: (day: string) => void;
+  onCancelAppointment: () => Promise<AppointmentResult>;
 }
 
 // El formulario del turno: un Sheet a la derecha en escritorio y un Drawer que sube desde abajo en
@@ -45,6 +47,7 @@ export function AppointmentEditor({
   holidays,
   onOpenChange,
   onSaved,
+  onCancelAppointment,
 }: AppointmentEditorProps) {
   const isMobile = useIsMobile();
   const title = appointment ? "Mover turno" : "Nuevo turno";
@@ -60,6 +63,7 @@ export function AppointmentEditor({
       ranges={ranges}
       holidays={holidays}
       onSaved={onSaved}
+      onCancelAppointment={onCancelAppointment}
       onCancel={() => onOpenChange(false)}
     />
   );

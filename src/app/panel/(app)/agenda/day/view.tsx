@@ -2,7 +2,8 @@
 
 import { PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { NoticeBar } from "@/components/notice-bar";
 import { Button } from "@/components/ui/button";
 import type { AgendaItem } from "@/lib/appointments/parse";
 import { suggestTime } from "@/lib/appointments/suggest";
@@ -12,6 +13,7 @@ import type { HolidayRow } from "@/lib/holidays/parse";
 import type { HourRange } from "@/lib/hours/schema";
 import type { Service } from "@/lib/services/queries";
 import { dateInBuenosAires, formatTime } from "@/lib/time";
+import { type AppointmentResult, cancelAppointment, restoreAppointment } from "../actions";
 import { PanelFooter, PanelHeaderActions } from "../../panel-slots";
 import type { AppointmentDraft } from "./draft";
 import { AppointmentEditor } from "./editor";
@@ -41,6 +43,9 @@ interface EditorState {
   nonce: number;
 }
 
+// Lo que se ve tras cancelar: el turno para deshacerlo, o el motivo por el que no se pudo.
+type Notice = { kind: "cancelled"; appointment: AppointmentItem } | { kind: "error"; message: string } | null;
+
 // La línea de tiempo del día con su formulario de turno en un Sheet/Drawer, y «Nuevo turno» en el
 // encabezado (desde md) o en el pie (en celu).
 export function AgendaView({
@@ -60,6 +65,9 @@ export function AgendaView({
     initial: { serviceId: "", clientName: "", clientPhone: "", day, time: "" },
     nonce: 0,
   });
+
+  const [notice, setNotice] = useState<Notice>(null);
+  const dismissNotice = useCallback(() => setNotice(null), []);
 
   const openEditor = (appointment: AppointmentItem | null, initial: AppointmentDraft) =>
     setEditor((current) => ({ open: true, appointment, initial, nonce: current.nonce + 1 }));
@@ -89,6 +97,25 @@ export function AgendaView({
     }
   }
 
+  // Si sale bien, el editor se cierra y se avisa con Deshacer; si no, el error lo muestra el
+  // formulario, que sigue abierto.
+  async function cancel(appointment: AppointmentItem): Promise<AppointmentResult> {
+    const result = await cancelAppointment(appointment.id);
+    if (result.ok) {
+      setEditor((current) => ({ ...current, open: false }));
+      setNotice({ kind: "cancelled", appointment });
+    }
+    return result;
+  }
+
+  async function undo(appointment: AppointmentItem) {
+    setNotice(null);
+    const result = await restoreAppointment(appointment.id);
+    if (!result.ok) {
+      setNotice({ kind: "error", message: result.error });
+    }
+  }
+
   return (
     <>
       <PanelHeaderActions>
@@ -103,6 +130,22 @@ export function AgendaView({
           Nuevo turno
         </Button>
       </PanelFooter>
+
+      {notice?.kind === "cancelled" ? (
+        <NoticeBar
+          message={
+            <>
+              Cancelaste el turno de{" "}
+              <span className="font-medium">{notice.appointment.clientName}</span>.
+            </>
+          }
+          onUndo={() => undo(notice.appointment)}
+          onDismiss={dismissNotice}
+        />
+      ) : null}
+      {notice?.kind === "error" ? (
+        <NoticeBar message={notice.message} onDismiss={dismissNotice} />
+      ) : null}
 
       <Timeline
         timeline={timeline}
@@ -121,6 +164,9 @@ export function AgendaView({
         holidays={holidays}
         onOpenChange={(open) => setEditor((current) => ({ ...current, open }))}
         onSaved={saved}
+        onCancelAppointment={() =>
+          editor.appointment ? cancel(editor.appointment) : Promise.resolve({ ok: true })
+        }
       />
     </>
   );
