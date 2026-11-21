@@ -7,14 +7,14 @@ import type { Service } from "@/lib/services/queries";
 import { MAX_SERVICES } from "@/lib/services/schema";
 import { cn } from "cn";
 import { PanelFooter, PanelHeaderActions } from "../../panel-slots";
-import { type ServiceResult, deleteService, saveService } from "../actions";
+import { type ServiceResult, deleteService, restoreService } from "../actions";
 import { ServiceEditor } from "./editor";
 import { ServicesTable } from "./table";
 
 const UNDO_WINDOW_MS = 6000;
 const LIMIT_MESSAGE = `Llegaste al máximo de ${MAX_SERVICES} servicios.`;
 
-// Lo que se ve tras borrar: el servicio para recrearlo, o el motivo por el que no se pudo.
+// Lo que se ve tras borrar: el servicio para restaurarlo, o el motivo por el que no se pudo.
 type Notice =
   | { kind: "deleted"; service: Service }
   | { kind: "error"; message: string }
@@ -58,8 +58,7 @@ export function ServicesView({ services }: { services: Service[] }) {
 
   async function undo(service: Service) {
     setNotice(null);
-    const { name, duration_minutes, price_cents } = service;
-    const result = await saveService({ name, duration_minutes, price_cents });
+    const result = await restoreService(service.id);
     if (!result.ok) {
       setNotice({ kind: "error", message: result.error });
     }

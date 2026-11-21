@@ -55,14 +55,14 @@ isOneToOne: false
                   ]
                 },"services": {
                   Row: {
-                    "business_id": string,"created_at": string,"duration_minutes": number,"id": string,"name": string,"price_cents": number
+                    "archived_at": string | null,"business_id": string,"created_at": string,"duration_minutes": number,"id": string,"name": string,"price_cents": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "business_id": string,"created_at"?: string,"duration_minutes": number,"id"?: string,"name": string,"price_cents": number
+                    "archived_at"?: string | null,"business_id": string,"created_at"?: string,"duration_minutes": number,"id"?: string,"name": string,"price_cents": number
                   }
                   Update: {
-                    "business_id"?: string,"created_at"?: string,"duration_minutes"?: number,"id"?: string,"name"?: string,"price_cents"?: number
+                    "archived_at"?: string | null,"business_id"?: string,"created_at"?: string,"duration_minutes"?: number,"id"?: string,"name"?: string,"price_cents"?: number
                   }
                   Relationships: [
                     {
@@ -90,6 +90,9 @@ isOneToOne: false
                            },
 "is_slug_available":
 { Args: { "slug": string }; Returns: boolean
+                           },
+"restore_service":
+{ Args: { "business_id": string,"service_id": string }; Returns: undefined
                            },
 "save_service":
 { Args: { "business_id": string,"duration_minutes": number,"name": string,"price_cents": number,"service_id": string }; Returns: string

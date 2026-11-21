@@ -1,7 +1,7 @@
--- RPC delete_service: quién la puede llamar, qué borra y qué errores devuelve.
+-- RPC delete_service: quién la puede llamar, qué archiva (no borra) y qué errores devuelve.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(14);
+select plan(16);
 
 select has_function('public', 'delete_service', array['uuid', 'uuid'],
   'existe delete_service(business_id, service_id)');
@@ -51,15 +51,22 @@ select lives_ok(
        'a0000000-0000-0000-0000-000000000001') $$,
   'Ana borra su Corte');
 select results_eq(
-  $$ select name from public.services $$,
+  $$ select name from public.services where archived_at is null $$,
   $$ values ('Barba') $$,
-  'a Ana le queda solo la Barba');
+  'a Ana le queda solo la Barba a la vista');
+select isnt(
+  (select archived_at from public.services
+   where id = 'a0000000-0000-0000-0000-000000000001'),
+  null, 'el Corte no se borró: quedó archivado');
+select lives_ok(
+  $$ select public.save_service('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', null, 'Corte', 20, 100) $$,
+  'el nombre de un servicio archivado queda libre para uno nuevo');
 
 -- Errores: todos dicen lo mismo, así no se revela qué existe.
 select throws_ok(
   $$ select public.delete_service('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
        'a0000000-0000-0000-0000-000000000001') $$,
-  'P0001', 'not_business_owner', 'borrar uno que ya no existe da error');
+  'P0001', 'not_business_owner', 'borrar uno que ya está archivado da error');
 select throws_ok(
   $$ select public.delete_service('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
        'b0000000-0000-0000-0000-000000000001') $$,
@@ -85,10 +92,10 @@ reset role;
 select results_eq(
   -- Solo los negocios de este test: la base local puede traer servicios de otras pruebas.
   $$ select name from public.services
-     where business_id in ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb')
+     where archived_at is null and business_id in ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb')
      order by name $$,
-  $$ values ('Barba'), ('Tatuaje chico') $$,
-  'solo se borró el Corte de Ana');
+  $$ values ('Barba'), ('Corte'), ('Tatuaje chico') $$,
+  'solo se archivó el Corte original de Ana (el Corte nuevo es otro)');
 
 select * from finish();
 rollback;

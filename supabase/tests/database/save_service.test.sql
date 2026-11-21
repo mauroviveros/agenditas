@@ -1,7 +1,7 @@
 -- RPC save_service: quién la puede llamar, cómo crea y edita, el tope y qué errores devuelve.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(27);
+select plan(30);
 
 select has_function('public', 'save_service',
   array['uuid', 'uuid', 'text', 'integer', 'integer'],
@@ -144,6 +144,23 @@ select results_eq(
   $$ select count(*)::int from public.services
      where business_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' $$,
   array[50], 'Ana terminó con 50 servicios');
+
+-- Archivados: no cuentan para el tope, no se editan y no se ven como duplicados.
+update public.services set archived_at = now()
+where name in ('Servicio 1', 'Servicio 2');
+set local role authenticated;
+select set_config('request.jwt.claims',
+  '{"sub": "11111111-1111-1111-1111-111111111111", "role": "authenticated"}', true);
+select lives_ok(
+  $$ select public.save_service('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', null, 'El 51', 30, 100) $$,
+  'un servicio archivado no cuenta para el tope de 50');
+select throws_ok(
+  $$ select public.save_service('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+       (select id from public.services where name = 'Servicio 1'), 'Revivido', 30, 100) $$,
+  'P0001', 'not_business_owner', 'un servicio archivado no se edita');
+select lives_ok(
+  $$ select public.save_service('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', null, 'servicio 1', 30, 100) $$,
+  'el nombre de un archivado se puede usar de nuevo');
 
 select * from finish();
 rollback;

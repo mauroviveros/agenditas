@@ -5,7 +5,8 @@ select plan(28);
 
 select has_table('public', 'services', 'existe la tabla services');
 select columns_are('public', 'services',
-  array['id', 'business_id', 'name', 'duration_minutes', 'price_cents', 'created_at'],
+  array['id', 'business_id', 'name', 'duration_minutes', 'price_cents', 'created_at',
+        'archived_at'],
   'services tiene solo las columnas esperadas');
 select col_not_null('public', 'services', 'price_cents', 'el precio es obligatorio');
 
