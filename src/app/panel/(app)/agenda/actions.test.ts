@@ -18,7 +18,7 @@ vi.mock("next/navigation", () => ({
   },
 }));
 
-const { cancelAppointment, createAppointment, moveAppointment, restoreAppointment } = await import("./actions");
+const { blockTime, cancelAppointment, createAppointment, moveAppointment, restoreAppointment } = await import("./actions");
 
 const SERVICE_ID = "a0000000-0000-4000-8000-000000000001";
 const APPOINTMENT_ID = "b0000000-0000-4000-8000-000000000001";
@@ -247,5 +247,54 @@ describe("restoreAppointment, errores conocidos", () => {
       ok: false,
       error: "No encontramos ese turno.",
     });
+  });
+});
+
+describe("blockTime", () => {
+  test("bloquea desde ahora, en el negocio de la sesión, y devuelve el id para poder deshacerlo", async () => {
+    vi.useFakeTimers({ now: new Date("2027-03-01T18:10:30.000Z") });
+    rpc.mockResolvedValue({ data: APPOINTMENT_ID, error: null });
+
+    await expect(blockTime(30)).resolves.toEqual({ ok: true, id: APPOINTMENT_ID });
+    expect(rpc).toHaveBeenCalledWith("block_time", {
+      business_id: "biz-1",
+      starts_at: "2027-03-01T18:10:30.000Z",
+      minutes: 30,
+    });
+    expect(revalidatePath).toHaveBeenCalledWith("/panel/agenda");
+    vi.useRealTimers();
+  });
+
+  test.each([0, 4, 481, 30.5, "30", null])("%s minutos no llega a la base", async (minutes) => {
+    const result = await blockTime(minutes);
+
+    expect(result.ok).toBe(false);
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  test("sin sesión lleva al login", async () => {
+    rpc.mockResolvedValue({ data: null, error: { message: "not_authenticated" } });
+
+    await expect(blockTime(30)).rejects.toThrow("redirect:/login");
+  });
+
+  test("si pisa un turno, lo dice y no crea nada", async () => {
+    rpc.mockResolvedValue({ data: null, error: { message: "overlap" } });
+
+    await expect(blockTime(30)).resolves.toEqual({
+      ok: false,
+      error: "Tenés un turno en ese horario. Movelo o cancelalo primero.",
+    });
+    expect(revalidatePath).not.toHaveBeenCalled();
+  });
+
+  test("un error que no esperamos se loguea y se avisa en genérico", async () => {
+    rpc.mockResolvedValue({ data: null, error: { message: "connection refused" } });
+
+    await expect(blockTime(30)).resolves.toEqual({
+      ok: false,
+      error: "No pudimos bloquear el horario. Probá de nuevo.",
+    });
+    expect(console.error).toHaveBeenCalled();
   });
 });

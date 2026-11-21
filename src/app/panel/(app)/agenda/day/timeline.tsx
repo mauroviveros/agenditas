@@ -9,6 +9,7 @@ import { formatTime, formatUntil } from "@/lib/time";
 import { cn } from "cn";
 
 export type AppointmentItem = Extract<AgendaItem, { kind: "appointment" }>;
+export type BlockItem = Extract<AgendaItem, { kind: "block" }>;
 
 // 1,6 px por minuto: 30 minutos miden 48 px y una hora, 96 px.
 // shortcut: escala fija; un turno de 5 minutos mide 8 px y se estira a 20 px (min-h-5), lo que lo
@@ -42,7 +43,7 @@ interface TimelineProps {
   /** La hora actual, como instante ISO: así llega igual del servidor al navegador. */
   nowIso: string;
   /** Tocar un turno. */
-  onSelectItem: (item: AppointmentItem) => void;
+  onSelectItem: (item: AgendaItem) => void;
   /** Tocar un hueco: el minuto desde la medianoche, redondeado al cuarto de hora. */
   onSelectSlot: (minute: number) => void;
 }
@@ -162,7 +163,7 @@ function TimelineItem({
   block: TimelineBlock;
   now: Date;
   top: number;
-  onSelect: (item: AppointmentItem) => void;
+  onSelect: (item: AgendaItem) => void;
 }) {
   const { item, startMinute, endMinute, status } = block;
   const highlighted = item.kind === "appointment" && (status === "current" || status === "next");
@@ -189,24 +190,26 @@ function TimelineItem({
       className="pointer-events-auto absolute inset-x-1.5 min-h-5"
       style={{ top, height: (endMinute - startMinute) * PX_PER_MINUTE }}
     >
-      {item.kind === "appointment" ? (
-        <button
-          type="button"
-          className={cn(rowClass, "cursor-pointer outline-none focus-visible:ring-3 focus-visible:ring-ring/50")}
-          onClick={() => onSelect(item)}
-        >
-          {time}{" "}
-          <span className={cn(status === "past" ? "font-medium" : "font-semibold")}>{item.clientName}</span>{" "}
-          <span className={cn("text-xs", highlighted ? "opacity-80" : "text-muted-foreground")}>
-            {item.serviceName}
-          </span>
-          {label ? <span className="ml-auto pl-2 text-xs font-semibold">{label}</span> : null}
-        </button>
-      ) : (
-        <div className={rowClass}>
-          {time} <span>Bloqueado</span>
-        </div>
-      )}
+      <button
+        type="button"
+        className={cn(rowClass, "cursor-pointer outline-none focus-visible:ring-3 focus-visible:ring-ring/50")}
+        onClick={() => onSelect(item)}
+      >
+        {item.kind === "appointment" ? (
+          <>
+            {time}{" "}
+            <span className={cn(status === "past" ? "font-medium" : "font-semibold")}>{item.clientName}</span>{" "}
+            <span className={cn("text-xs", highlighted ? "opacity-80" : "text-muted-foreground")}>
+              {item.serviceName}
+            </span>
+            {label ? <span className="ml-auto pl-2 text-xs font-semibold">{label}</span> : null}
+          </>
+        ) : (
+          <>
+            {time} <span>Bloqueado</span>
+          </>
+        )}
+      </button>
     </li>
   );
 }

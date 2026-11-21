@@ -312,3 +312,75 @@ test("deshacer avisa si el horario se ocupó mientras tanto", async ({ page, con
 
   await expect(page.getByText("Ese horario se ocupó mientras tanto, no se puede deshacer.")).toBeVisible();
 });
+
+test("«Salgo 30 min» bloquea desde ahora y se puede deshacer", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  await negocioConCorte(solista);
+  await page.goto("/panel/agenda");
+
+  await page.getByRole("button", { name: "Salgo 30 min" }).click();
+
+  await expect(page.getByRole("status").getByText(/Bloqueaste 30 min desde las \d\d:\d\d\./)).toBeVisible();
+  await expect(turnos(page)).toHaveText([/Bloqueado/]);
+
+  await page.getByRole("button", { name: "Deshacer" }).click();
+  await expect(turnos(page)).toHaveCount(0);
+});
+
+test("«Salgo 30 min» avisa si pisa un turno y no crea nada", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  const ids = await negocioConCorte(solista);
+  const { error } = await solista.rpc("create_appointment", {
+    business_id: ids.businessId,
+    service_id: ids.serviceId,
+    client_name: "Lucía",
+    client_phone: null as unknown as string,
+    starts_at: new Date(Date.now() - 5 * 60_000).toISOString(),
+  });
+  expect(error).toBeNull();
+  await page.goto("/panel/agenda");
+
+  await page.getByRole("button", { name: "Salgo 30 min" }).click();
+
+  await expect(page.getByText("Tenés un turno en ese horario. Movelo o cancelalo primero.")).toBeVisible();
+  await expect(turnos(page)).toHaveText([/Lucía/]);
+});
+
+test("«Salgo 30 min» no está en otro día", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  await negocioConCorte(solista);
+  await page.goto(`/panel/agenda?dia=${DIA}`);
+
+  await expect(page.getByRole("button", { name: "Nuevo turno" }).first()).toBeAttached();
+  await expect(page.getByRole("button", { name: "Salgo 30 min" })).toHaveCount(0);
+});
+
+test("tocar un bloqueo en curso deja liberarlo con «Ya volví»", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  await negocioConCorte(solista);
+  await page.goto("/panel/agenda");
+  await page.getByRole("button", { name: "Salgo 30 min" }).click();
+  await expect(page.getByText(/Bloqueaste 30 min/)).toBeVisible();
+
+  await page.getByRole("button", { name: /Bloqueado/ }).click();
+  await formulario(page).getByRole("button", { name: "Ya volví" }).click();
+
+  await expect(turnos(page)).toHaveCount(0);
+});
+
+test("un bloqueo que todavía no empezó se quita con «Quitar bloqueo»", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  const ids = await negocioConCorte(solista);
+  const { error } = await solista.rpc("block_time", {
+    business_id: ids.businessId,
+    starts_at: new Date(Date.now() + 60 * 60_000).toISOString(),
+    minutes: 30,
+  });
+  expect(error).toBeNull();
+  await page.goto("/panel/agenda");
+
+  await page.getByRole("button", { name: /Bloqueado/ }).click();
+  await formulario(page).getByRole("button", { name: "Quitar bloqueo" }).click();
+
+  await expect(turnos(page)).toHaveCount(0);
+});

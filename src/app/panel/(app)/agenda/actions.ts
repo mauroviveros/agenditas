@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { startsAtOf } from "@/lib/appointments/day";
 import { appointmentSchema, moveSchema } from "@/lib/appointments/schema";
+import { DURATION_MAX, DURATION_MIN } from "@/lib/services/schema";
 import { getMyBusiness } from "@/lib/business/queries";
 import { createClient } from "@/lib/supabase/server";
 
@@ -146,4 +147,34 @@ async function changeStatus(
   });
 
   return resultOf(error, translations, genericError, rpcName);
+}
+
+export type BlockResult = { ok: true; id: string } | { ok: false; error: string };
+
+const BLOCK_GENERIC_ERROR = "No pudimos bloquear el horario. Probá de nuevo.";
+const BLOCK_ERRORS = new Map([
+  ["overlap", "Tenés un turno en ese horario. Movelo o cancelalo primero."],
+  ["invalid_appointment", "Revisá la duración del bloqueo."],
+]);
+// Mismo rango que la RPC y que un servicio.
+const blockMinutesSchema = z.number().int().min(DURATION_MIN).max(DURATION_MAX);
+
+// «Salgo N min»: bloquea el horario desde ahora, sin mover turnos. Devuelve el id del bloqueo
+// para poder deshacerlo cancelándolo.
+export async function blockTime(input: unknown): Promise<BlockResult> {
+  const parsed = blockMinutesSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: BLOCK_GENERIC_ERROR };
+  }
+  const businessId = await getBusinessId();
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("block_time", {
+    business_id: businessId,
+    starts_at: new Date().toISOString(),
+    minutes: parsed.data,
+  });
+
+  const result = resultOf(error, BLOCK_ERRORS, BLOCK_GENERIC_ERROR, "block time");
+  return result.ok ? { ok: true, id: data as string } : result;
 }

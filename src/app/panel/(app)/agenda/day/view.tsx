@@ -2,7 +2,7 @@
 
 import { PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useTransition } from "react";
 import { NoticeBar } from "@/components/notice-bar";
 import { Button } from "@/components/ui/button";
 import type { AgendaItem } from "@/lib/appointments/parse";
@@ -13,12 +13,13 @@ import type { HolidayRow } from "@/lib/holidays/parse";
 import type { HourRange } from "@/lib/hours/schema";
 import type { Service } from "@/lib/services/queries";
 import { dateInBuenosAires, formatTime } from "@/lib/time";
-import { type AppointmentResult, cancelAppointment, restoreAppointment } from "../actions";
+import { type AppointmentResult, blockTime, cancelAppointment, restoreAppointment } from "../actions";
 import { PanelFooter, PanelHeaderActions } from "../../panel-slots";
 import type { AppointmentDraft } from "./draft";
 import { AppointmentEditor } from "./editor";
 import { agendaHref } from "./href";
-import { type AppointmentItem, Timeline } from "./timeline";
+import { BlockPanel } from "./block-panel";
+import { type AppointmentItem, type BlockItem, Timeline } from "./timeline";
 
 // Cuánto dura un turno mientras todavía no se eligió el servicio, para sugerir una hora libre.
 const DEFAULT_MINUTES = 30;
@@ -43,8 +44,20 @@ interface EditorState {
   nonce: number;
 }
 
-// Lo que se ve tras cancelar: el turno para deshacerlo, o el motivo por el que no se pudo.
-type Notice = { kind: "cancelled"; appointment: AppointmentItem } | { kind: "error"; message: string } | null;
+function isInProgress(block: BlockItem | null, nowIso: string): boolean {
+  const now = Date.parse(nowIso);
+  return block !== null && Date.parse(block.startsAt) <= now && now < Date.parse(block.endsAt);
+}
+
+// «Salgo N min» bloquea esta cantidad de minutos desde ahora.
+const AWAY_MINUTES = 30;
+
+// Lo que se ve tras cancelar o bloquear: lo necesario para deshacerlo, o el motivo del error.
+type Notice =
+  | { kind: "cancelled"; appointment: AppointmentItem }
+  | { kind: "blocked"; id: string; from: string }
+  | { kind: "error"; message: string }
+  | null;
 
 // La línea de tiempo del día con su formulario de turno en un Sheet/Drawer, y «Nuevo turno» en el
 // encabezado (desde md) o en el pie (en celu).
@@ -67,6 +80,12 @@ export function AgendaView({
   });
 
   const [notice, setNotice] = useState<Notice>(null);
+  // El bloqueo abierto se queda al cerrarse el panel, para que no se vacíe mientras se anima.
+  const [blockPanel, setBlockPanel] = useState<{ open: boolean; block: BlockItem | null }>({
+    open: false,
+    block: null,
+  });
+  const [blocking, startBlocking] = useTransition();
   const dismissNotice = useCallback(() => setNotice(null), []);
 
   const openEditor = (appointment: AppointmentItem | null, initial: AppointmentDraft) =>
@@ -108,6 +127,39 @@ export function AgendaView({
     return result;
   }
 
+  function stepOut() {
+    startBlocking(async () => {
+      const from = formatTime(new Date().toISOString());
+      const result = await blockTime(AWAY_MINUTES);
+      setNotice(result.ok ? { kind: "blocked", id: result.id, from } : { kind: "error", message: result.error });
+    });
+  }
+
+  async function removeBlock(block: BlockItem): Promise<AppointmentResult> {
+    const result = await cancelAppointment(block.id);
+    if (result.ok) {
+      setBlockPanel((current) => ({ ...current, open: false }));
+    }
+    return result;
+  }
+
+  function selectItem(item: AgendaItem) {
+    if (item.kind === "appointment") {
+      openMove(item);
+    } else {
+      setBlockPanel({ open: true, block: item });
+    }
+  }
+
+  // Deshacer un bloqueo es cancelarlo: libera el horario igual que un turno.
+  async function undoBlock(id: string) {
+    setNotice(null);
+    const result = await cancelAppointment(id);
+    if (!result.ok) {
+      setNotice({ kind: "error", message: result.error });
+    }
+  }
+
   async function undo(appointment: AppointmentItem) {
     setNotice(null);
     const result = await restoreAppointment(appointment.id);
@@ -119,16 +171,30 @@ export function AgendaView({
   return (
     <>
       <PanelHeaderActions>
-        <Button size="lg" className="hidden md:inline-flex" onClick={() => openNew()}>
-          <PlusIcon aria-hidden />
-          Nuevo turno
-        </Button>
+        <div className="hidden gap-2 md:flex">
+          {day === today ? (
+            <Button size="lg" variant="outline" disabled={blocking} aria-busy={blocking} onClick={stepOut}>
+              Salgo {AWAY_MINUTES} min
+            </Button>
+          ) : null}
+          <Button size="lg" onClick={() => openNew()}>
+            <PlusIcon aria-hidden />
+            Nuevo turno
+          </Button>
+        </div>
       </PanelHeaderActions>
       <PanelFooter className="md:hidden">
-        <Button size="lg" className="w-full" onClick={() => openNew()}>
-          <PlusIcon aria-hidden />
-          Nuevo turno
-        </Button>
+        <div className="flex gap-2">
+          {day === today ? (
+            <Button size="lg" className="flex-1" variant="outline" disabled={blocking} aria-busy={blocking} onClick={stepOut}>
+              Salgo {AWAY_MINUTES} min
+            </Button>
+          ) : null}
+          <Button size="lg" className="flex-1" onClick={() => openNew()}>
+            <PlusIcon aria-hidden />
+            Nuevo turno
+          </Button>
+        </div>
       </PanelFooter>
 
       {notice?.kind === "cancelled" ? (
@@ -143,6 +209,13 @@ export function AgendaView({
           onDismiss={dismissNotice}
         />
       ) : null}
+      {notice?.kind === "blocked" ? (
+        <NoticeBar
+          message={`Bloqueaste ${AWAY_MINUTES} min desde las ${notice.from}.`}
+          onUndo={() => undoBlock(notice.id)}
+          onDismiss={dismissNotice}
+        />
+      ) : null}
       {notice?.kind === "error" ? (
         <NoticeBar message={notice.message} onDismiss={dismissNotice} />
       ) : null}
@@ -150,8 +223,17 @@ export function AgendaView({
       <Timeline
         timeline={timeline}
         nowIso={nowIso}
-        onSelectItem={openMove}
+        onSelectItem={selectItem}
         onSelectSlot={(minute) => openNew(clock(minute))}
+      />
+
+      <BlockPanel
+        key={blockPanel.block?.id}
+        block={blockPanel.block}
+        inProgress={isInProgress(blockPanel.block, nowIso)}
+        open={blockPanel.open}
+        onOpenChange={(open) => setBlockPanel((current) => ({ ...current, open }))}
+        onRemove={removeBlock}
       />
 
       <AppointmentEditor

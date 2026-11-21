@@ -1,23 +1,9 @@
 "use client";
 
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { useIsMobile } from "@/hooks/use-mobile";
 import type { HolidayRow } from "@/lib/holidays/parse";
 import type { HourRange } from "@/lib/hours/schema";
 import type { AppointmentResult } from "../actions";
+import { AgendaPanel } from "./panel";
 import type { Service } from "@/lib/services/queries";
 import type { AppointmentDraft } from "./draft";
 import { AppointmentForm } from "./form";
@@ -36,8 +22,7 @@ interface AppointmentEditorProps {
   onCancelAppointment: () => Promise<AppointmentResult>;
 }
 
-// El formulario del turno: un Sheet a la derecha en escritorio y un Drawer que sube desde abajo en
-// celu, donde se alcanza con el pulgar y se cierra arrastrando.
+// El formulario del turno, en el panel de la agenda.
 export function AppointmentEditor({
   open,
   appointment,
@@ -49,7 +34,6 @@ export function AppointmentEditor({
   onSaved,
   onCancelAppointment,
 }: AppointmentEditorProps) {
-  const isMobile = useIsMobile();
   const title = appointment ? "Mover turno" : "Nuevo turno";
   const description = appointment
     ? "Elegí el día y la hora nuevos."
@@ -68,29 +52,9 @@ export function AppointmentEditor({
     />
   );
 
-  if (isMobile) {
-    return (
-      <Drawer open={open} onOpenChange={onOpenChange} showSwipeHandle>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>{title}</DrawerTitle>
-            <DrawerDescription>{description}</DrawerDescription>
-          </DrawerHeader>
-          {form}
-        </DrawerContent>
-      </Drawer>
-    );
-  }
-
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right">
-        <SheetHeader>
-          <SheetTitle>{title}</SheetTitle>
-          <SheetDescription>{description}</SheetDescription>
-        </SheetHeader>
-        {form}
-      </SheetContent>
-    </Sheet>
+    <AgendaPanel open={open} onOpenChange={onOpenChange} title={title} description={description}>
+      {form}
+    </AgendaPanel>
   );
 }
