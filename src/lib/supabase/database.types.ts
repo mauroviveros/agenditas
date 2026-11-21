@@ -5,7 +5,33 @@ export type Database = {
   
   "public": {
           Tables: {
-            "business_hours": {
+            "appointments": {
+                  Row: {
+                    "business_id": string,"client_name": string,"client_phone": string | null,"created_at": string,"ends_at": string,"id": string,"service_duration_minutes": number,"service_id": string,"service_name": string,"service_price_cents": number,"starts_at": string,"status": Database["public"]['Enums']["appointment_status"]
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "business_id": string,"client_name": string,"client_phone"?: string | null,"created_at"?: string,"ends_at": string,"id"?: string,"service_duration_minutes": number,"service_id": string,"service_name": string,"service_price_cents": number,"starts_at": string,"status"?: Database["public"]['Enums']["appointment_status"]
+                  }
+                  Update: {
+                    "business_id"?: string,"client_name"?: string,"client_phone"?: string | null,"created_at"?: string,"ends_at"?: string,"id"?: string,"service_duration_minutes"?: number,"service_id"?: string,"service_name"?: string,"service_price_cents"?: number,"starts_at"?: string,"status"?: Database["public"]['Enums']["appointment_status"]
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "appointments_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "appointments_service_id_fkey"
+      columns: ["service_id"]
+isOneToOne: false
+      referencedRelation: "services"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"business_hours": {
                   Row: {
                     "business_id": string,"end_time": string,"id": string,"start_time": string,"weekday": number
                   }
@@ -102,7 +128,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "holiday_kind": "fixed"|"movable"|"bridge"
+            "appointment_status": "confirmed"|"cancelled","holiday_kind": "fixed"|"movable"|"bridge"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -218,7 +244,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "holiday_kind": ["fixed", "movable", "bridge"]
+            "appointment_status": ["confirmed", "cancelled"],"holiday_kind": ["fixed", "movable", "bridge"]
           }
         }
 } as const
