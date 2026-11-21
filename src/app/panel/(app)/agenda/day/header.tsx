@@ -3,10 +3,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { shiftDay } from "@/lib/appointments/day";
 import { formatDate } from "@/lib/time";
-
-// Hoy no lleva ?dia: es la ruta sin parámetro, así «Hoy» y el día de hoy son la misma URL.
-const agendaHref = (day: string, today: string) =>
-  day === today ? "/panel/agenda" : `/panel/agenda?dia=${day}`;
+import { agendaHref } from "./href";
 
 // La fecha del día con su bajada, y los botones para ir al día anterior, a hoy y al siguiente.
 export function DayHeader({ day, today, summary }: { day: string; today: string; summary: string }) {

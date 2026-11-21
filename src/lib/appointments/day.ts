@@ -28,3 +28,10 @@ export function shiftDay(day: string, delta: number): string {
   const [year, month, date] = day.split("-").map(Number);
   return new Date(Date.UTC(year, month - 1, date + delta)).toISOString().slice(0, 10);
 }
+
+// El instante (UTC, ISO) de una hora de pared de Buenos Aires: "2027-03-01" y "14:45" son las
+// 14:45 de ese día allá, que en UTC son las 17:45.
+export function startsAtOf(day: string, time: string): string {
+  const offset = `-${String(BUENOS_AIRES_OFFSET_HOURS).padStart(2, "0")}:00`;
+  return new Date(`${day}T${time}:00${offset}`).toISOString();
+}

@@ -60,7 +60,7 @@ export function openSpans(day: string, ranges: HourRange[]): Span[] {
 }
 
 // Un instante como minutos desde la medianoche de `dayStart`, sin salirse del día.
-const minuteOfDay = (instant: number, dayStart: number) =>
+export const minuteOfDay = (instant: number, dayStart: number) =>
   Math.min(MINUTES_PER_DAY, Math.max(0, Math.round((instant - dayStart) / MS_PER_MINUTE)));
 
 function buildBands(open: Span[], from: number, to: number): Band[] {

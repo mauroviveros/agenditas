@@ -1,9 +1,14 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 import { signUpNewUser } from "./support/session";
 
 const sufijo = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 
 type Solista = Awaited<ReturnType<typeof signUpNewUser>>;
+
+// Los textos de la pantalla se buscan dentro de su región: getByRole ignora lo oculto, y por un
+// instante después del load React deja el tramo oculto del streaming (#S:n) junto al contenido ya
+// visible, así que un getByText o un locator suelto de la página encuentra lo mismo dos veces.
+const vacio = (page: Page) => page.getByRole("region").getByText(/No hay turnos este día/);
 
 async function negocioConCorte(solista: Solista) {
   const { error } = await solista.rpc("create_business", {
@@ -42,7 +47,7 @@ test("un día sin turnos lo dice", async ({ page, context }) => {
   await page.goto("/panel/agenda?dia=2027-03-01");
 
   await expect(page.getByRole("heading", { name: "Agenda", level: 1 })).toBeVisible();
-  await expect(page.getByText(/No hay turnos este día/)).toBeVisible();
+  await expect(vacio(page)).toBeVisible();
 });
 
 test("muestra los turnos y bloqueos del día por hora, en hora de Buenos Aires", async ({ page, context }) => {
@@ -87,7 +92,7 @@ test("no muestra los turnos de otro negocio ni los de otro día", async ({ page,
   await expect(turnos).toHaveText(["10:00–10:30 Lucía Corte"]);
 
   await page.goto("/panel/agenda?dia=2027-03-02");
-  await expect(page.getByText(/No hay turnos este día/)).toBeVisible();
+  await expect(vacio(page)).toBeVisible();
 });
 
 test("un día inválido en la URL no rompe la pantalla: muestra hoy", async ({ page, context }) => {
@@ -97,7 +102,7 @@ test("un día inválido en la URL no rompe la pantalla: muestra hoy", async ({ p
   await page.goto("/panel/agenda?dia=basura");
 
   await expect(page.getByRole("heading", { name: "Agenda", level: 1 })).toBeVisible();
-  await expect(page.getByText(/No hay turnos este día/)).toBeVisible();
+  await expect(vacio(page)).toBeVisible();
 });
 
 test("navega entre días con los botones y «Hoy» vuelve a la ruta sin día", async ({ page, context }) => {
@@ -131,14 +136,147 @@ test("hoy muestra la línea de ahora; otro día no, y hoy se vuelve a leer cada 
 
   await page.clock.install();
   await page.goto("/panel/agenda");
-  const ahora = page.locator("[data-slot=timeline-now]");
+  const ahora = page.locator("[data-slot=timeline-now]:visible");
   await expect(ahora).toBeVisible();
 
-  const recarga = page.waitForRequest((request) => request.url().includes("_rsc="));
-  await page.clock.fastForward(61_000);
-  await recarga;
+  // El temporizador nace al hidratar: se adelanta el reloj hasta que la pantalla vuelve a leerse.
+  let recargada = false;
+  page.on("request", (request) => {
+    recargada ||= request.url().includes("_rsc=");
+  });
+  await expect
+    .poll(async () => {
+      await page.clock.fastForward(61_000);
+      return recargada;
+    })
+    .toBe(true);
 
   await page.goto("/panel/agenda?dia=2027-03-01");
   await expect(page.getByRole("heading", { name: /marzo/ })).toBeVisible();
   await expect(ahora).toHaveCount(0);
+});
+
+const DIA = "2027-03-01"; // un lunes
+
+// El formulario del turno: Drawer en celu, Sheet en escritorio.
+const formulario = (page: Page) => page.getByRole("dialog");
+const turnos = (page: Page) => page.getByRole("list", { name: "Turnos del día" }).getByRole("listitem");
+
+async function agendarDesdeElFormulario(page: Page, cliente: string, hora: string) {
+  await page.getByRole("button", { name: "Nuevo turno" }).click();
+  await formulario(page).getByText("Corte", { exact: true }).click();
+  await formulario(page).getByLabel("Cliente").fill(cliente);
+  await formulario(page).getByLabel("Hora").fill(hora);
+  await formulario(page).getByRole("button", { name: "Guardar turno" }).click();
+}
+
+test("agenda un turno desde el formulario y aparece en la línea", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  await negocioConCorte(solista);
+  await page.goto(`/panel/agenda?dia=${DIA}`);
+
+  await agendarDesdeElFormulario(page, "Lucía", "10:00");
+
+  await expect(turnos(page)).toHaveText(["10:00–10:30 Lucía Corte"]);
+  await expect(formulario(page)).toHaveCount(0);
+});
+
+test("un turno en el mismo horario avisa que se ocupó y deja corregirlo", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  const ids = await negocioConCorte(solista);
+  await agendar(solista, ids, "Lucía", "10:00:00");
+  await page.goto(`/panel/agenda?dia=${DIA}`);
+
+  await agendarDesdeElFormulario(page, "Mateo", "10:15");
+
+  await expect(formulario(page).getByText("Ese horario se acaba de ocupar. Elegí otro.")).toBeVisible();
+  await formulario(page).getByLabel("Hora").fill("10:30");
+  await formulario(page).getByRole("button", { name: "Guardar turno" }).click();
+  await expect(turnos(page)).toHaveText(["10:00–10:30 Lucía Corte", "10:30–11:00 Mateo Corte"]);
+});
+
+test("avisa el almuerzo y el fuera de horario sin frenar el guardado", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  const ids = await negocioConCorte(solista);
+  const { error } = await solista.rpc("set_business_hours", {
+    business_id: ids.businessId,
+    ranges: [
+      { weekday: 1, start_time: "09:00", end_time: "13:00" },
+      { weekday: 1, start_time: "15:00", end_time: "19:00" },
+    ],
+  });
+  expect(error).toBeNull();
+  await page.goto(`/panel/agenda?dia=${DIA}`);
+
+  await page.getByRole("button", { name: "Nuevo turno" }).click();
+  await formulario(page).getByText("Corte", { exact: true }).click();
+  await formulario(page).getByLabel("Hora").fill("13:30");
+  await expect(formulario(page).getByText("Ese horario es tu almuerzo.")).toBeVisible();
+  await formulario(page).getByLabel("Hora").fill("20:00");
+  await expect(formulario(page).getByText("Ese horario está fuera de tu horario.")).toBeVisible();
+
+  await formulario(page).getByLabel("Cliente").fill("Lucía");
+  await formulario(page).getByRole("button", { name: "Guardar turno" }).click();
+  await expect(turnos(page).filter({ hasText: "20:00–20:30 Lucía" })).toHaveCount(1);
+});
+
+test("sin servicios el formulario manda a cargar uno y no deja guardar", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  const { error } = await solista.rpc("create_business", { name: `Vacío ${sufijo()}`, slug: `vacio-${sufijo()}` });
+  expect(error).toBeNull();
+  await page.goto(`/panel/agenda?dia=${DIA}`);
+
+  await page.getByRole("button", { name: "Nuevo turno" }).click();
+
+  await expect(formulario(page).getByRole("link", { name: "Ir a Servicios" })).toBeVisible();
+  await expect(formulario(page).getByRole("button", { name: "Guardar turno" })).toBeDisabled();
+});
+
+test("los datos que faltan se avisan campo por campo", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  await negocioConCorte(solista);
+  await page.goto(`/panel/agenda?dia=${DIA}`);
+
+  await page.getByRole("button", { name: "Nuevo turno" }).click();
+  await formulario(page).getByLabel("Hora").fill("14:47");
+  await formulario(page).getByRole("button", { name: "Guardar turno" }).click();
+
+  await expect(formulario(page).getByText("Elegí un servicio.")).toBeVisible();
+  await expect(formulario(page).getByText("Poné el nombre del cliente.")).toBeVisible();
+  await expect(formulario(page).getByText("Poné la hora de a 5 minutos: 14:45 o 14:50.")).toBeVisible();
+});
+
+test("mueve un turno a otra hora y a otro día", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  const ids = await negocioConCorte(solista);
+  await agendar(solista, ids, "Lucía", "10:00:00");
+  await page.goto(`/panel/agenda?dia=${DIA}`);
+
+  await page.getByRole("button", { name: /Lucía/ }).click();
+  await expect(formulario(page).getByRole("heading", { name: "Mover turno" })).toBeVisible();
+  await formulario(page).getByLabel("Hora").fill("11:00");
+  await formulario(page).getByRole("button", { name: "Mover turno" }).click();
+  await expect(turnos(page)).toHaveText(["11:00–11:30 Lucía Corte"]);
+
+  await page.getByRole("button", { name: /Lucía/ }).click();
+  await formulario(page).getByLabel("Día").fill("2027-03-02");
+  await formulario(page).getByRole("button", { name: "Mover turno" }).click();
+  await expect(page).toHaveURL(/dia=2027-03-02$/);
+  await expect(turnos(page)).toHaveText(["11:00–11:30 Lucía Corte"]);
+});
+
+test("tocar un hueco de la línea abre el formulario con esa hora", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  const ids = await negocioConCorte(solista);
+  const { error } = await solista.rpc("set_business_hours", {
+    business_id: ids.businessId,
+    ranges: [{ weekday: 1, start_time: "09:00", end_time: "18:00" }],
+  });
+  expect(error).toBeNull();
+  await page.goto(`/panel/agenda?dia=${DIA}`);
+
+  // La línea arranca a las 09:00 y mide 96 px por hora: a 96 px del borde es la hora siguiente.
+  await page.locator("button[aria-hidden=true][tabindex='-1']:visible").click({ position: { x: 40, y: 96 } });
+
+  await expect(formulario(page).getByLabel("Hora")).toHaveValue("10:00");
 });

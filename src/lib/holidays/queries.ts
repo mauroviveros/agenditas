@@ -18,3 +18,18 @@ export async function getUpcomingHolidays(today: string): Promise<HolidayRow[]> 
   }
   return data;
 }
+
+// Los feriados entre dos días ("AAAA-MM-DD", los dos incluidos), por fecha. Lectura pública por RLS.
+export async function getHolidaysBetween(from: string, to: string): Promise<HolidayRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("holidays")
+    .select("date, name, kind")
+    .gte("date", from)
+    .lte("date", to)
+    .order("date");
+  if (error) {
+    throw new Error(`No pudimos leer los feriados: ${error.message}`);
+  }
+  return data;
+}

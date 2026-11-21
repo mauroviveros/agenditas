@@ -1,12 +1,19 @@
+"use client";
+
+import type { MouseEvent } from "react";
+import type { AgendaItem } from "@/lib/appointments/parse";
+import { snapMinute } from "@/lib/appointments/suggest";
 import { clock } from "@/lib/appointments/summary";
 import type { Timeline as TimelineData, TimelineBlock } from "@/lib/appointments/timeline";
-import { cn } from "cn";
 import { formatTime, formatUntil } from "@/lib/time";
+import { cn } from "cn";
+
+export type AppointmentItem = Extract<AgendaItem, { kind: "appointment" }>;
 
 // 1,6 px por minuto: 30 minutos miden 48 px y una hora, 96 px.
 // shortcut: escala fija; un turno de 5 minutos mide 8 px y se estira a 20 px (min-h-5), lo que lo
 // puede encimar con el siguiente si vienen pegados, y no llega a los 44 px de toque. Resolverlo
-// cuando se cargue y mueva un turno desde esta pantalla.
+// cuando se defina cómo se toca un turno corto.
 const PX_PER_MINUTE = 1.6;
 const MINUTES_PER_HOUR = 60;
 const MS_PER_MINUTE = 60_000;
@@ -30,17 +37,35 @@ function statusLabel(block: TimelineBlock, now: Date): string | null {
   return null;
 }
 
+interface TimelineProps {
+  timeline: TimelineData;
+  /** La hora actual, como instante ISO: así llega igual del servidor al navegador. */
+  nowIso: string;
+  /** Tocar un turno. */
+  onSelectItem: (item: AppointmentItem) => void;
+  /** Tocar un hueco: el minuto desde la medianoche, redondeado al cuarto de hora. */
+  onSelectSlot: (minute: number) => void;
+}
+
 // El día como línea de tiempo: las horas a la izquierda y cada turno o bloqueo con la altura de su
 // duración. Lo cerrado y el almuerzo se pintan aparte; los turnos pasados se apagan y el que está
 // en curso o viene después va resaltado. Una línea roja marca la hora actual. Para el lector de
-// pantalla es una lista de turnos; las horas del costado son decoración.
-export function Timeline({ timeline, now }: { timeline: TimelineData; now: Date }) {
+// pantalla es una lista de turnos; las horas del costado son decoración, y tocar un hueco es un
+// atajo para el puntero (el botón «Nuevo turno» es la entrada para teclado y lector de pantalla).
+export function Timeline({ timeline, nowIso, onSelectItem, onSelectSlot }: TimelineProps) {
   const { fromMinute, toMinute, bands, blocks, nowMinute } = timeline;
+  const now = new Date(nowIso);
   const top = (minute: number) => (minute - fromMinute) * PX_PER_MINUTE;
   const hours = Array.from(
     { length: Math.floor((toMinute - fromMinute) / MINUTES_PER_HOUR) },
     (_, index) => fromMinute + index * MINUTES_PER_HOUR,
   );
+
+  function selectSlot(event: MouseEvent<HTMLButtonElement>) {
+    const { top: columnTop } = event.currentTarget.getBoundingClientRect();
+    const minute = fromMinute + (event.clientY - columnTop) / PX_PER_MINUTE;
+    onSelectSlot(Math.min(snapMinute(minute), toMinute));
+  }
 
   return (
     <div
@@ -63,15 +88,28 @@ export function Timeline({ timeline, now }: { timeline: TimelineData; now: Date 
       </div>
 
       <div className="relative border-l">
+        <button
+          type="button"
+          tabIndex={-1}
+          aria-hidden
+          className="absolute inset-0 cursor-pointer"
+          onClick={selectSlot}
+        />
+
         {hours.slice(1).map((minute) => (
-          <i key={minute} aria-hidden className="absolute inset-x-0 border-t" style={{ top: top(minute) }} />
+          <i
+            key={minute}
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 border-t"
+            style={{ top: top(minute) }}
+          />
         ))}
 
         {bands.map((band) => (
           <div
             key={band.from}
             className={cn(
-              "absolute inset-x-0 px-2.5 py-1 text-xs text-muted-foreground",
+              "pointer-events-none absolute inset-x-0 px-2.5 py-1 text-xs text-muted-foreground",
               BAND_STYLES[band.kind],
             )}
             style={{ top: top(band.from), height: (band.to - band.from) * PX_PER_MINUTE }}
@@ -82,9 +120,15 @@ export function Timeline({ timeline, now }: { timeline: TimelineData; now: Date 
           </div>
         ))}
 
-        <ol aria-label="Turnos del día" className="absolute inset-0">
+        <ol aria-label="Turnos del día" className="pointer-events-none absolute inset-0">
           {blocks.map((block) => (
-            <TimelineItem key={block.item.id} block={block} now={now} top={top(block.startMinute)} />
+            <TimelineItem
+              key={block.item.id}
+              block={block}
+              now={now}
+              top={top(block.startMinute)}
+              onSelect={onSelectItem}
+            />
           ))}
         </ol>
       </div>
@@ -106,45 +150,63 @@ export function Timeline({ timeline, now }: { timeline: TimelineData; now: Date 
   );
 }
 
-function TimelineItem({ block, now, top }: { block: TimelineBlock; now: Date; top: number }) {
+const ROW =
+  "box-border flex size-full flex-wrap items-baseline gap-x-2 gap-y-0.5 overflow-hidden rounded-lg border px-2.5 py-1 text-left text-sm leading-tight";
+
+function TimelineItem({
+  block,
+  now,
+  top,
+  onSelect,
+}: {
+  block: TimelineBlock;
+  now: Date;
+  top: number;
+  onSelect: (item: AppointmentItem) => void;
+}) {
   const { item, startMinute, endMinute, status } = block;
-  const isBlock = item.kind === "block";
-  const highlighted = !isBlock && (status === "current" || status === "next");
-  const label = isBlock ? null : statusLabel(block, now);
+  const highlighted = item.kind === "appointment" && (status === "current" || status === "next");
+  const label = item.kind === "appointment" ? statusLabel(block, now) : null;
+  const rowClass = cn(
+    ROW,
+    endMinute - startMinute <= SHORT_MINUTES && "flex-nowrap items-center py-0 text-xs whitespace-nowrap",
+    item.kind === "block"
+      ? "border-dashed bg-[repeating-linear-gradient(135deg,var(--card)_0_6px,var(--muted)_6px_7px)] text-muted-foreground"
+      : highlighted
+        ? "border-primary bg-primary text-primary-foreground"
+        : status === "past"
+          ? "bg-secondary text-muted-foreground"
+          : "bg-secondary text-foreground",
+  );
+  const time = (
+    <span className={cn("text-xs tabular-nums", highlighted ? "opacity-80" : "text-muted-foreground")}>
+      {formatTime(item.startsAt)}–{formatTime(item.endsAt)}
+    </span>
+  );
 
   return (
     <li
-      className={cn(
-        "absolute inset-x-1.5 box-border flex min-h-5 flex-wrap items-baseline gap-x-2 gap-y-0.5 overflow-hidden rounded-lg border px-2.5 py-1 text-sm leading-tight",
-        endMinute - startMinute <= SHORT_MINUTES && "flex-nowrap items-center py-0 text-xs whitespace-nowrap",
-        isBlock
-          ? "border-dashed bg-[repeating-linear-gradient(135deg,var(--card)_0_6px,var(--muted)_6px_7px)] text-muted-foreground"
-          : highlighted
-            ? "border-primary bg-primary text-primary-foreground"
-            : status === "past"
-              ? "bg-secondary text-muted-foreground"
-              : "bg-secondary text-foreground",
-      )}
+      className="pointer-events-auto absolute inset-x-1.5 min-h-5"
       style={{ top, height: (endMinute - startMinute) * PX_PER_MINUTE }}
     >
-      <span className={cn("text-xs tabular-nums", highlighted ? "opacity-80" : "text-muted-foreground")}>
-        {formatTime(item.startsAt)}–{formatTime(item.endsAt)}
-      </span>
       {item.kind === "appointment" ? (
-        <>
-          {" "}
+        <button
+          type="button"
+          className={cn(rowClass, "cursor-pointer outline-none focus-visible:ring-3 focus-visible:ring-ring/50")}
+          onClick={() => onSelect(item)}
+        >
+          {time}{" "}
           <span className={cn(status === "past" ? "font-medium" : "font-semibold")}>{item.clientName}</span>{" "}
           <span className={cn("text-xs", highlighted ? "opacity-80" : "text-muted-foreground")}>
             {item.serviceName}
           </span>
-        </>
+          {label ? <span className="ml-auto pl-2 text-xs font-semibold">{label}</span> : null}
+        </button>
       ) : (
-        <>
-          {" "}
-          <span>Bloqueado</span>
-        </>
+        <div className={rowClass}>
+          {time} <span>Bloqueado</span>
+        </div>
       )}
-      {label ? <span className="ml-auto pl-2 text-xs font-semibold">{label}</span> : null}
     </li>
   );
 }
