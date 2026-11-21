@@ -14,6 +14,9 @@
   },
   "enabledPlugins": {
     "gsap-skills@gsap-skills": false,
-    "frontend-design@claude-plugins-official": false
+    "frontend-design@claude-plugins-official": false,
+    "claude-mem@thedotmack": false,
+    "playwright@claude-plugins-official": false,
+    "ecc@ecc": false
   }
 }
