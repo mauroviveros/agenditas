@@ -190,9 +190,9 @@ test.describe("escritorio", () => {
 
     await page.getByRole("switch", { name: "Lunes: no atiende" }).click();
     await page.getByRole("button", { name: "Almuerzo" }).first().click();
-    await expect(
-      page.getByText(/^almuerzo \d\d:\d\d–\d\d:\d\d$/),
-    ).toBeVisible();
+    const chip = page.getByRole("button", { name: /^Sacar almuerzo 13:00–14:00/ });
+    await expect(chip).toHaveText("almuerzo 13:00–14:00");
+    await expect(chip).toHaveCSS("background-image", /repeating-linear-gradient/);
 
     await page.getByRole("button", { name: "Guardar horarios" }).click();
     await expect(page.getByRole("status")).toHaveText(
@@ -200,6 +200,23 @@ test.describe("escritorio", () => {
     );
     await page.reload();
     await expect(page.getByText(/^almuerzo /)).toBeVisible();
+  });
+
+  test("tocar el chip del almuerzo lo saca y vuelve la franja corrida", async ({
+    page,
+    context,
+  }) => {
+    await negocioNuevo(context);
+    await page.goto("/panel/horarios");
+
+    await page.getByRole("switch", { name: "Lunes: no atiende" }).click();
+    await page.getByRole("button", { name: "Almuerzo" }).first().click();
+    await page.getByRole("button", { name: /^Sacar almuerzo/ }).click();
+
+    await expect(page.getByText(/^almuerzo /)).toHaveCount(0);
+    await expect(
+      page.getByRole("button", { name: "Almuerzo" }).first(),
+    ).toBeEnabled();
   });
 });
 

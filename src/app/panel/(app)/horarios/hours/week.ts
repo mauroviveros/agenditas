@@ -44,6 +44,7 @@ export const MAX_SLOTS_PER_DAY = 2;
 const OPEN_AT = "09:00";
 const CLOSE_AT = "18:00";
 const LUNCH_MINUTES = 60;
+const DEFAULT_LUNCH_START = 13 * 60;
 // Menos que esto no entra una franja de cada lado del almuerzo.
 const MIN_MINUTES_TO_SPLIT = 2 * 60;
 
@@ -67,7 +68,8 @@ export function toggleDay(week: Week, day: number): Week {
 export const replaceDay = (week: Week, day: number, slots: readonly Slot[]): Week =>
   week.map((current, index) => (index === day ? slots : current));
 
-// Corta una franja corrida en dos, con una hora de almuerzo cerca de la mitad.
+// Corta una franja corrida en dos con una hora de almuerzo: de 13 a 14 si cabe, si no
+// cerca de la mitad.
 export function splitLunch(slots: readonly Slot[]): readonly Slot[] {
   const [only] = slots;
   if (slots.length !== 1 || !only) {
@@ -78,7 +80,11 @@ export function splitLunch(slots: readonly Slot[]): readonly Slot[] {
   if (end - start < MIN_MINUTES_TO_SPLIT) {
     return slots;
   }
-  const lunchStart = Math.round((start + end) / 120) * 60;
+  const fitsDefault =
+    start < DEFAULT_LUNCH_START && end > DEFAULT_LUNCH_START + LUNCH_MINUTES;
+  const lunchStart = fitsDefault
+    ? DEFAULT_LUNCH_START
+    : Math.round((start + end) / 120) * 60;
   const afterLunch = lunchStart + LUNCH_MINUTES;
   // Si el almuerzo se come toda la segunda franja, no hay de dónde cortar.
   if (afterLunch >= end) {

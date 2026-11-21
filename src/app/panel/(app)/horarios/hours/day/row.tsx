@@ -92,12 +92,16 @@ export function DayRow({
                   className="flex flex-wrap items-center gap-x-3 gap-y-2 min-[1400px]:flex-nowrap"
                 >
                   {index === 1 && hasLunch && first ? (
-                    <span
+                    <button
+                      type="button"
                       data-slot="lunch-chip"
-                      className="whitespace-nowrap inline-flex h-8 items-center rounded-full border border-dashed border-input px-4 text-sm font-medium tabular-nums text-muted-foreground"
+                      aria-label={`Sacar almuerzo ${first.end_time}–${slot.start_time} del ${dayName?.toLowerCase()}`}
+                      onClick={() => onChange(joinLunch(slots))}
+                      className="group inline-flex h-11 items-center gap-2 whitespace-nowrap rounded-full border border-dashed border-input bg-[repeating-linear-gradient(135deg,transparent_0_6px,var(--border)_6px_7px)] px-4 text-sm font-medium tabular-nums text-foreground/70 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 md:h-8"
                     >
                       almuerzo {first.end_time}–{slot.start_time}
-                    </span>
+                      <XIcon aria-hidden className="size-3.5" />
+                    </button>
                   ) : null}
                   <SlotFields
                     label={dayName ?? ""}
@@ -121,17 +125,7 @@ export function DayRow({
                 <PlusIcon aria-hidden data-icon="inline-start" />
                 Almuerzo
               </Button>
-            ) : (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label={`Sacar el almuerzo del ${dayName?.toLowerCase()}`}
-                onClick={() => onChange(joinLunch(slots))}
-              >
-                <XIcon aria-hidden />
-              </Button>
-            )}
+            ) : null}
           </div>
 
           {errors.size > 0 ? (
