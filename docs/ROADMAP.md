@@ -69,9 +69,15 @@ verificación.
 - Crear negocio: si se escribe el nombre antes de que hidrate la página, el campo
   muestra el texto pero el link no lo toma (queda en `tu-negocio`).
 
-- `PanelHeader` (título y acciones): entran por portal, así que aparecen después de
-  hidratar y no en el primer pintado (pasa en Horarios y en Servicios). Renderizar el
-  título en el servidor.
+- Las acciones del encabezado («Nuevo servicio») entran por portal y aparecen después de
+  hidratar; el título ya llega en el primer HTML. Resolverlo cuando se decida cómo definir
+  las acciones por pantalla.
+- `metadata.title` de cada página repite el nombre del registro de pantallas: derivarlo con
+  `generateMetadata`.
+- `/panel/servicios` mostraba el error de hidratación de React #418 en ~1 de cada 3 cargas
+  del e2e en `main`; con R3b no apareció en las corridas de diagnóstico. Confirmarlo con un
+  test que falle ante errores de consola.
+- Los e2e arman el slug del negocio con `Date.now()` y chocan con `--repeat-each`.
 - Servicios: sin aviso al guardar («Guardaste X»); si se suma sonner, usarlo también para
   el Deshacer. Nombres con caracteres de control (`\n`, `\t`): rechazarlos en Zod y en el
   constraint. Test del tope de 50 con dos sesiones (pgTAP no puede). Sin sesión, las
@@ -84,39 +90,15 @@ muestran en 24 h (en un navegador en inglés se ven en 12 h).
 
 **Para decidir con Mauro**
 - DESIGN.md: oscurecer `--input` (los bordes de campos y chips miden 1,26:1 y WCAG pide
-  3:1), si el título del panel sigue `text-base` o pasa a la receta del h1 (`text-2xl`), y
-  si los controles de escritorio miden 44 px como en Horarios o `md:h-8` como en Servicios.
+  3:1).
+- Servicios: una sola lista de filas en vez de tabla (escritorio) y lista (celu) a la vez, y
+  ver si con el tope de 50 servicios hace falta paginar de a 10.
+- El texto de DESIGN.md «Las pantallas de formulario usan dos columnas, formulario y vista
+  previa» no describe Horarios (una columna): corregirlo o decir a qué pantallas aplica.
 - ¿"Desktop first" vale para toda la app? DESIGN.md ahora dice "celu y escritorio" sin
   fijar cuál va primero.
 - Sin "Copiar link" ni compartir por WhatsApp, el link de reservas en celu solo se ve
   abriendo el cajón.
-
-## ▶ R3b · Marco del panel
-
-Que todas las pantallas del panel se definan de una sola manera. Branch `feat/panel-frame`.
-Brief: header con título y bajada desde un registro de pantallas (`src/lib/panel/screens.ts`,
-lo leen el header y el menú); la bajada es de una línea y se ve desde `md`; la ayuda de uso va
-en el cuerpo; el título de card baja a `text-base font-semibold`; controles de 44 px en celu y
-de 32 px desde `md`, filas de ~56 px en escritorio.
-
-1. **Registro y header.** Hecho: `SCREENS`, `findScreen`, `PanelHeader` en el layout, páginas
-   y `loading.tsx` sin wrapper, menú alimentado por el registro. Sin commitear.
-   También: `search.ts` a `lib/services/` y `empty.tsx` dentro de `view.tsx`.
-2. **Densidad única.** 44 px en celu y 32 px desde `md` en filas, chips, footer y botones.
-   *Listo cuando:* las filas de Horarios miden ~56 px en escritorio y 44 px en celu, medido
-   en el navegador.
-3. **Receta de formulario (Horarios).** Título de card a `text-base`; la ayuda pasa a la
-   card y Horarios gana su bajada en el registro. Misma estructura de carpeta que Servicios
-   (`index.tsx` con Suspense y lectura, `skeleton.tsx`, `view.tsx`).
-4. **Receta de lista (Servicios).** Buscador, contenedor de tabla y contador alineados a la
-   receta. Un solo `(app)/error.tsx` con «Probá de nuevo» para todas las pantallas (el error
-   de lectura sube ahí; el sidebar y el header quedan): se van `failed.tsx` y el `try/catch`
-   del loader, que pasa a `index.tsx`.
-5. **Documentos.** `DESIGN.md` (h1 `text-base`, bajada, densidad, recetas, registro), este
-   ROADMAP y el HISTORIAL.
-
-Para después, si Mauro lo decide: una sola lista de filas en vez de tabla y lista de celu a
-la vez, y ver si con tope de 50 servicios hace falta paginar.
 
 ## R4 · Agenda del día
 
@@ -142,7 +124,7 @@ decide la identidad: restaurar Mate (está en `main` en el commit `9afb39d`, ver
 `globals.css` y el `DESIGN.md` de esa fecha) o probar otras variantes. Como las pantallas
 usan solo tokens y componentes de shadcn, el cambio debería quedar en `globals.css` y en
 las fuentes de `layout.tsx`. Al empezar, resolver también lo pendiente de `DESIGN.md`:
-alto táctil de 44 px, contraste de bordes y foco, y modo oscuro.
+contraste de bordes y foco, y modo oscuro.
 
 ## ⏸ Estacionado
 
