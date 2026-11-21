@@ -63,7 +63,7 @@ test.describe("escritorio", () => {
     await expect(lista(page).getByText("Todavía no cargaste servicios")).toBeVisible();
     await page.getByRole("button", { name: "Cargar el primero" }).click();
     const formulario = await completarFormulario(page, { nombre: "Corte", duracion: "30 min", precio: "1500" });
-    await formulario.getByRole("button", { name: "Guardar" }).click();
+    await formulario.getByRole("button", { name: "Guardar", exact: true }).click();
 
     await expect(formulario).toBeHidden();
     await expect(page.getByRole("button", { name: "Corte", exact: true })).toBeVisible();
@@ -77,7 +77,7 @@ test.describe("escritorio", () => {
 
     await page.getByRole("button", { name: "Nuevo servicio" }).click();
     const formulario = page.getByRole("dialog");
-    await formulario.getByRole("button", { name: "Guardar" }).click();
+    await formulario.getByRole("button", { name: "Guardar", exact: true }).click();
 
     await expect(formulario.getByText("Poné un nombre.")).toBeVisible();
     await expect(formulario.getByText("Elegí cuánto dura.")).toBeVisible();
@@ -93,7 +93,7 @@ test.describe("escritorio", () => {
 
     await page.getByRole("button", { name: "Nuevo servicio" }).click();
     const formulario = await completarFormulario(page, { nombre: "corte", duracion: "30 min", precio: "1000" });
-    await formulario.getByRole("button", { name: "Guardar" }).click();
+    await formulario.getByRole("button", { name: "Guardar", exact: true }).click();
 
     await expect(formulario.getByRole("alert")).toHaveText("Ya tenés un servicio con ese nombre.");
     await expect(formulario).toBeVisible();
@@ -109,7 +109,7 @@ test.describe("escritorio", () => {
     await expect(formulario.getByLabel("Nombre")).toHaveValue("Corte");
     await expect(formulario.getByText("30 min · $ 15.000")).toBeVisible();
     await expect(formulario.getByRole("button", { name: "Cerrar" })).toBeVisible();
-    await formulario.getByRole("button", { name: "Guardar" }).click();
+    await formulario.getByRole("button", { name: "Guardar", exact: true }).click();
     await expect(formulario).toBeHidden();
 
     await page.reload();
@@ -234,7 +234,7 @@ test.describe("escritorio", () => {
     await page.getByRole("button", { name: "Siguiente" }).click();
     await page.getByRole("button", { name: "Servicio 11", exact: true }).click();
     const formulario = await completarFormulario(page, { precio: "2000" });
-    await formulario.getByRole("button", { name: "Guardar" }).click();
+    await formulario.getByRole("button", { name: "Guardar", exact: true }).click();
 
     await expect(formulario).toBeHidden();
     await expect(lista(page).getByText("11–12 de 12 servicios")).toBeVisible();
@@ -274,7 +274,7 @@ test("en celu el formulario sube como Drawer y el servicio queda en la lista", a
   // En celu el botón es solo el ícono, pero tiene nombre para lectores de pantalla.
   await page.getByRole("button", { name: "Cargar el primero" }).click();
   const formulario = await completarFormulario(page, { nombre: "Corte", duracion: "45 min", precio: "1500" });
-  await formulario.getByRole("button", { name: "Guardar" }).click();
+  await formulario.getByRole("button", { name: "Guardar", exact: true }).click();
 
   await expect(formulario).toBeHidden();
   await expect(page.locator("[data-slot=item]", { hasText: "Corte" })).toContainText("45 min");
