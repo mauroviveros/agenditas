@@ -45,6 +45,19 @@ test("el link de reservas llega en el primer HTML, con el dominio del entorno", 
   expect(html).not.toContain("agenditas.app/reservar");
 });
 
+test("el título y la bajada de cada pantalla llegan en el primer HTML", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  await solista.rpc("create_business", { name: "Primer título", slug: `titulo-${sufijo()}` });
+
+  // Sin hidratar: el encabezado lo dibuja el servidor, no un portal que espera al navegador.
+  const servicios = await (await page.request.get("/panel/servicios")).text();
+  expect(servicios).toMatch(/<h1[^>]*>Servicios<\/h1>/);
+  expect(servicios).toContain("Lo que ofrecés, cuánto dura y cuánto cuesta.");
+
+  const horarios = await (await page.request.get("/panel/horarios")).text();
+  expect(horarios).toMatch(/<h1[^>]*>Horarios<\/h1>/);
+});
+
 test("mientras carga la sesión, el panel manda un esqueleto y no una pantalla en blanco", async ({ page, context }) => {
   await signUpNewUser(context);
 

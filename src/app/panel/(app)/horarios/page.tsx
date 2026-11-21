@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getUserId } from "@/lib/user";
-import { PanelHeader } from "../panel-slots";
+import { PanelPage } from "../panel-page";
 import { UpcomingHolidays } from "./holidays";
 import { BusinessHours } from "./hours";
 
@@ -17,17 +17,17 @@ export default async function HoursPage() {
   }
 
   return (
-    <div className="flex w-full flex-col gap-8">
-      <PanelHeader title="Horarios" />
+    <PanelPage title="Horarios">
+      <div className="flex w-full flex-col gap-8">
+        <p className="text-muted-foreground">
+          Prendé los días en que atendés y poné las horas. Si cortás para almorzar, tocá «+
+          Almuerzo».
+        </p>
 
-      <p className="text-muted-foreground">
-        Prendé los días en que atendés y poné las horas. Si cortás para almorzar, tocá «+
-        Almuerzo».
-      </p>
+        <BusinessHours />
 
-      <BusinessHours />
-
-      <UpcomingHolidays />
-    </div>
+        <UpcomingHolidays />
+      </div>
+    </PanelPage>
   );
 }

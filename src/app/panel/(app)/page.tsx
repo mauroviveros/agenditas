@@ -4,6 +4,7 @@ import { cn } from "cn";
 import { buttonVariants } from "@/components/ui/button";
 import { getMyBusiness } from "@/lib/business/queries";
 import { getUserId } from "@/lib/user";
+import { PanelPage as Frame } from "./panel-page";
 
 export const metadata: Metadata = {
   title: "Panel · Agenditas",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 
 // El layout ya redirige si falta sesión o negocio; acá solo se muestra.
 // Mientras carga, Next muestra loading.tsx.
-export default async function PanelPage() {
+export default async function HomePage() {
   // Layout y página renderizan en paralelo: sin sesión no se toca la tabla.
   if (!(await getUserId())) {
     return null;
@@ -20,13 +21,10 @@ export default async function PanelPage() {
   if (!business) {
     return null;
   }
+  // El título es el nombre del negocio: en celu el sidebar está cerrado y es el único lugar donde se ve.
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-8">
-      <h1 className="font-heading text-2xl font-semibold tracking-tight text-balance">
-        {business.name}
-      </h1>
-
-      <section className="rounded-xl border border-dashed border-border p-6">
+    <Frame title={business.name}>
+      <section className="mx-auto max-w-3xl rounded-xl border border-dashed border-border p-6">
         <h2 className="text-base font-semibold">Tu agenda aparece acá</h2>
         <p className="mt-1 text-muted-foreground">
           Cuando cargues tus horarios y tus servicios, vas a ver los turnos del día en este lugar.
@@ -35,6 +33,6 @@ export default async function PanelPage() {
           Cargar mis horarios
         </Link>
       </section>
-    </div>
+    </Frame>
   );
 }
