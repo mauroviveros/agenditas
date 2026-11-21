@@ -31,6 +31,9 @@ import {
 import { ServicePicker } from "./service-picker";
 import type { AppointmentItem } from "./timeline";
 
+// El campo de hora avanza de a 5 minutos, como el esquema.
+const TIME_STEP_SECONDS = 300;
+
 interface AppointmentFormProps {
   /** El turno que se mueve; sin él, el formulario agenda uno nuevo. */
   appointment: AppointmentItem | null;
@@ -208,12 +211,10 @@ export function AppointmentForm({
             <FieldLabel htmlFor={timeId}>Hora</FieldLabel>
             <Input
               id={timeId}
+              type="time"
+              step={TIME_STEP_SECONDS}
               value={draft.time}
               onChange={(event) => update({ time: event.target.value })}
-              inputMode="numeric"
-              placeholder="14:45"
-              maxLength={5}
-              autoComplete="off"
               className="tabular-nums"
               aria-invalid={errors.time ? true : undefined}
             />

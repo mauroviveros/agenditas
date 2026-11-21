@@ -45,7 +45,9 @@ async function DayAgendaLoader({ day, today }: { day: string; today: string }) {
         today={today}
         summary={describeDay(appointments, openSpans(day, ranges))}
       />
+      {/* Con `key`, cada día arranca con la pantalla limpia: sin avisos ni formularios del anterior. */}
       <AgendaView
+        key={day}
         day={day}
         today={today}
         nowIso={now.toISOString()}

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { dayBounds } from "./day";
+import { dayBounds } from "@/lib/time";
 import { type AgendaItem, parseAgenda } from "./parse";
 
 // La agenda de un día ("AAAA-MM-DD" en hora de Buenos Aires): turnos y bloqueos confirmados,

@@ -1,5 +1,4 @@
-import { dateInBuenosAires } from "@/lib/time";
-import { dayBounds } from "./day";
+import { dateInBuenosAires, dayBounds } from "@/lib/time";
 import type { AgendaItem } from "./parse";
 import { clock } from "./summary";
 import { minuteOfDay } from "./timeline";
@@ -21,7 +20,7 @@ export function snapMinute(minute: number, step = SLOT_STEP): number {
 
 // La hora con la que abre el formulario de un turno nuevo: hoy, el próximo cuarto de hora; otro
 // día, cuando abre (o las 09:00 si no atiende). Si cae sobre un turno o bloqueo, se corre hasta
-// donde termina, y así hasta el primer hueco en que entra `minutes`. Nunca pasa de las 23:55.
+// donde termina, y así hasta el primer hueco en que entra `minutes`. Si no queda hueco hasta las 23:55, devuelve "".
 export function suggestTime(
   day: string,
   items: AgendaItem[],
@@ -38,14 +37,16 @@ export function suggestTime(
     .sort((a, b) => a.from - b.from);
 
   const isToday = dateInBuenosAires(now) === day;
-  let candidate = isToday
+  const first = isToday
     ? roundUp(Math.round((now.getTime() - dayStart) / MS_PER_MINUTE), SLOT_STEP)
     : (open[0]?.from ?? DEFAULT_START);
+  let candidate = Math.min(first, LAST_START);
 
   for (const block of busy) {
     if (candidate < block.to && candidate + minutes > block.from) {
       candidate = roundUp(block.to, TIME_STEP);
     }
   }
-  return clock(Math.min(candidate, LAST_START));
+  // Sin hueco en lo que queda del día: mejor vacío que una hora que pisa otro turno.
+  return candidate > LAST_START ? "" : clock(candidate);
 }

@@ -1,6 +1,5 @@
 import type { HourRange } from "@/lib/hours/schema";
-import { dateInBuenosAires, weekdayIndex } from "@/lib/time";
-import { dayBounds } from "./day";
+import { dateInBuenosAires, dayBounds, weekdayIndex } from "@/lib/time";
 import type { AgendaItem } from "./parse";
 
 const MINUTES_PER_HOUR = 60;

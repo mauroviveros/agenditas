@@ -138,6 +138,21 @@ describe("createAppointment", () => {
   });
 });
 
+describe("el log de errores inesperados", () => {
+  test("no deja datos del cliente: solo el código y el mensaje", async () => {
+    rpc.mockResolvedValue({
+      error: { message: "boom", code: "XX000", details: "Failing row contains (Lucía Pérez, 11 5555-1234)" },
+    });
+
+    await createAppointment(newAppointment);
+
+    const logged = JSON.stringify(vi.mocked(console.error).mock.calls);
+    expect(logged).toContain("boom");
+    expect(logged).toContain("XX000");
+    expect(logged).not.toContain("Lucía Pérez");
+  });
+});
+
 describe("moveAppointment", () => {
   test("mueve el turno del negocio de la sesión a la hora nueva", async () => {
     rpc.mockResolvedValue({ error: null });
@@ -255,7 +270,11 @@ describe("blockTime", () => {
     vi.useFakeTimers({ now: new Date("2027-03-01T18:10:30.000Z") });
     rpc.mockResolvedValue({ data: APPOINTMENT_ID, error: null });
 
-    await expect(blockTime(30)).resolves.toEqual({ ok: true, id: APPOINTMENT_ID });
+    await expect(blockTime(30)).resolves.toEqual({
+      ok: true,
+      id: APPOINTMENT_ID,
+      startsAt: "2027-03-01T18:10:30.000Z",
+    });
     expect(rpc).toHaveBeenCalledWith("block_time", {
       business_id: "biz-1",
       starts_at: "2027-03-01T18:10:30.000Z",

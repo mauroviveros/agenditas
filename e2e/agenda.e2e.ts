@@ -279,6 +279,8 @@ test("tocar un hueco de la línea abre el formulario con esa hora", async ({ pag
   await page.locator("button[aria-hidden=true][tabindex='-1']:visible").click({ position: { x: 40, y: 96 } });
 
   await expect(formulario(page).getByLabel("Hora")).toHaveValue("10:00");
+  // Un campo de hora de verdad (teclado de horas en el celu), no uno de texto.
+  await expect(formulario(page).getByLabel("Hora")).toHaveAttribute("type", "time");
 });
 
 test("cancela un turno desde el formulario y lo deshace", async ({ page, context }) => {
@@ -383,4 +385,27 @@ test("un bloqueo que todavía no empezó se quita con «Quitar bloqueo»", async
   await formulario(page).getByRole("button", { name: "Quitar bloqueo" }).click();
 
   await expect(turnos(page)).toHaveCount(0);
+});
+
+test("el aviso de Deshacer se va al abrir un turno nuevo y al cambiar de día", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  const ids = await negocioConCorte(solista);
+  await agendar(solista, ids, "Lucía", "10:00:00");
+  await agendar(solista, ids, "Mateo", "11:00:00");
+  await page.goto(`/panel/agenda?dia=${DIA}`);
+  await page.getByRole("button", { name: /Lucía/ }).click();
+  await formulario(page).getByRole("button", { name: "Cancelar turno" }).click();
+  const aviso = page.getByText("Cancelaste el turno de Lucía.");
+  await expect(aviso).toBeVisible();
+
+  await page.getByRole("button", { name: "Nuevo turno" }).click();
+  await expect(aviso).toHaveCount(0);
+  await formulario(page).getByRole("button", { name: "Cancelar", exact: true }).click();
+
+  await page.getByRole("button", { name: /Mateo/ }).click();
+  await formulario(page).getByRole("button", { name: "Cancelar turno" }).click();
+  await expect(page.getByText("Cancelaste el turno de Mateo.")).toBeVisible();
+  await page.getByRole("link", { name: "Día siguiente" }).click();
+  await expect(page).toHaveURL(/dia=2027-03-02$/);
+  await expect(page.getByText("Cancelaste el turno de Mateo.")).toHaveCount(0);
 });

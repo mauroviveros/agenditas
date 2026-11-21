@@ -1,5 +1,13 @@
 import { describe, expect, test } from "vitest";
-import { dateInBuenosAires, formatDate, formatTime, formatUntil, weekdayIndex } from "./time";
+import {
+  dateInBuenosAires,
+  dayBounds,
+  formatDate,
+  formatTime,
+  formatUntil,
+  startsAtOf,
+  weekdayIndex,
+} from "./time";
 
 describe("weekdayIndex", () => {
   test("cuenta desde el lunes (0) hasta el domingo (6)", () => {
@@ -65,5 +73,32 @@ describe("formatUntil", () => {
 
   test("una hora justa no lleva minutos", () => {
     expect(formatUntil(120)).toBe("2 h");
+  });
+});
+
+describe("dayBounds", () => {
+  test("el día arranca a medianoche de Buenos Aires (03:00 UTC) y dura 24 horas", () => {
+    expect(dayBounds("2027-03-01")).toEqual({
+      from: "2027-03-01T03:00:00.000Z",
+      to: "2027-03-02T03:00:00.000Z",
+    });
+  });
+
+  test("el último día del mes pasa al mes siguiente", () => {
+    expect(dayBounds("2027-12-31").to).toBe("2028-01-01T03:00:00.000Z");
+  });
+
+  test("un 29 de febrero bisiesto existe", () => {
+    expect(dayBounds("2028-02-29").to).toBe("2028-03-01T03:00:00.000Z");
+  });
+});
+
+describe("startsAtOf", () => {
+  test("pasa el día y la hora de Buenos Aires al instante UTC", () => {
+    expect(startsAtOf("2027-03-01", "14:45")).toBe("2027-03-01T17:45:00.000Z");
+  });
+
+  test("pasada la medianoche UTC, cambia el día", () => {
+    expect(startsAtOf("2027-03-01", "22:30")).toBe("2027-03-02T01:30:00.000Z");
   });
 });

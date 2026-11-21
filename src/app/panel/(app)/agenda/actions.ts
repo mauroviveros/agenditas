@@ -3,11 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { startsAtOf } from "@/lib/appointments/day";
 import { appointmentSchema, moveSchema } from "@/lib/appointments/schema";
 import { DURATION_MAX, DURATION_MIN } from "@/lib/services/schema";
 import { getMyBusiness } from "@/lib/business/queries";
 import { createClient } from "@/lib/supabase/server";
+import { startsAtOf } from "@/lib/time";
 
 export type AppointmentResult = { ok: true } | { ok: false; error: string };
 
@@ -54,7 +54,7 @@ async function getBusinessId(): Promise<string> {
 
 // Corta con el login si la RPC dice que no hay sesión; si no, devuelve el aviso que corresponde.
 function resultOf(
-  error: { message: string } | null,
+  error: { message: string; code?: string } | null,
   translations: Map<string, string>,
   genericError: string,
   context: string,
@@ -71,7 +71,8 @@ function resultOf(
   if (message) {
     return { ok: false, error: message };
   }
-  console.error(`${context}: rpc failed`, error);
+  // Solo el código y el mensaje: el detalle de Postgres puede traer el nombre y el teléfono del cliente.
+  console.error(`${context}: rpc failed`, { code: error?.code, message: error?.message });
   return { ok: false, error: genericError };
 }
 
@@ -149,7 +150,7 @@ async function changeStatus(
   return resultOf(error, translations, genericError, rpcName);
 }
 
-export type BlockResult = { ok: true; id: string } | { ok: false; error: string };
+export type BlockResult = { ok: true; id: string; startsAt: string } | { ok: false; error: string };
 
 const BLOCK_GENERIC_ERROR = "No pudimos bloquear el horario. Probá de nuevo.";
 const BLOCK_ERRORS = new Map([
@@ -168,13 +169,15 @@ export async function blockTime(input: unknown): Promise<BlockResult> {
   }
   const businessId = await getBusinessId();
 
+  // La hora de inicio la fija el servidor, y esa misma vuelve para mostrarla.
+  const startsAt = new Date().toISOString();
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("block_time", {
     business_id: businessId,
-    starts_at: new Date().toISOString(),
+    starts_at: startsAt,
     minutes: parsed.data,
   });
 
   const result = resultOf(error, BLOCK_ERRORS, BLOCK_GENERIC_ERROR, "block time");
-  return result.ok ? { ok: true, id: data as string } : result;
+  return result.ok ? { ok: true, id: data as string, startsAt } : result;
 }

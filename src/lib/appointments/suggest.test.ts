@@ -13,6 +13,13 @@ const blockAt = (start: string, end: string): AgendaItem => ({
   endsAt: `2027-03-01T${end}:00Z`,
 });
 
+const blockOn = (date: string, start: string, end: string): AgendaItem => ({
+  kind: "block",
+  id: `${date}-${start}`,
+  startsAt: `${date}T${start}:00Z`,
+  endsAt: `${date}T${end}:00Z`,
+});
+
 describe("suggestTime", () => {
   test("hoy arranca en el próximo cuarto de hora desde ahora", () => {
     expect(suggestTime(TODAY, [], open, NOW, 30)).toBe("14:30");
@@ -50,6 +57,19 @@ describe("suggestTime", () => {
     const late = new Date("2027-03-02T02:50:00Z");
 
     expect(suggestTime("2027-03-01", [], open, late, 30)).toBe("23:55");
+  });
+
+  test("si no queda hueco en el día, no sugiere una hora que pise algo", () => {
+    const late = new Date("2027-03-02T02:50:00Z"); // 23:50 en Buenos Aires
+    const ocupado = [blockOn("2027-03-02", "02:40", "03:00")]; // 23:40–24:00 en Buenos Aires
+
+    expect(suggestTime("2027-03-01", ocupado, open, late, 30)).toBe("");
+  });
+
+  test("si lo ocupado termina justo en 23:55, sigue siendo una hora válida", () => {
+    const late = new Date("2027-03-02T02:50:00Z");
+
+    expect(suggestTime("2027-03-01", [blockOn("2027-03-02", "02:30", "02:55")], open, late, 5)).toBe("23:55");
   });
 });
 

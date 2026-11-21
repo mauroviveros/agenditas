@@ -88,8 +88,12 @@ export function AgendaView({
   const [blocking, startBlocking] = useTransition();
   const dismissNotice = useCallback(() => setNotice(null), []);
 
-  const openEditor = (appointment: AppointmentItem | null, initial: AppointmentDraft) =>
+  // Abrir el formulario deja atrás el aviso: el horario liberado puede ocuparse y el Deshacer ya
+  // no vale.
+  const openEditor = (appointment: AppointmentItem | null, initial: AppointmentDraft) => {
+    setNotice(null);
     setEditor((current) => ({ open: true, appointment, initial, nonce: current.nonce + 1 }));
+  };
 
   function openNew(time?: string) {
     const suggested =
@@ -129,9 +133,12 @@ export function AgendaView({
 
   function stepOut() {
     startBlocking(async () => {
-      const from = formatTime(new Date().toISOString());
       const result = await blockTime(AWAY_MINUTES);
-      setNotice(result.ok ? { kind: "blocked", id: result.id, from } : { kind: "error", message: result.error });
+      setNotice(
+        result.ok
+          ? { kind: "blocked", id: result.id, from: formatTime(result.startsAt) }
+          : { kind: "error", message: result.error },
+      );
     });
   }
 

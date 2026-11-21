@@ -1,5 +1,4 @@
 import { describe, expect, test } from "vitest";
-import { startsAtOf } from "./day";
 import { appointmentSchema, moveSchema } from "./schema";
 
 const SERVICE_ID = "a0000000-0000-4000-8000-000000000001";
@@ -69,15 +68,5 @@ describe("moveSchema", () => {
 
   test("rechaza una hora fuera de los pasos de 5", () => {
     expect(moveSchema.safeParse({ id: SERVICE_ID, day: "2027-03-01", time: "10:03" }).success).toBe(false);
-  });
-});
-
-describe("startsAtOf", () => {
-  test("pasa el día y la hora de Buenos Aires al instante UTC", () => {
-    expect(startsAtOf("2027-03-01", "14:45")).toBe("2027-03-01T17:45:00.000Z");
-  });
-
-  test("pasada la medianoche UTC, cambia el día", () => {
-    expect(startsAtOf("2027-03-01", "22:30")).toBe("2027-03-02T01:30:00.000Z");
   });
 });
