@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import type { Service } from "@/lib/services/queries";
-import { DURATION_PRESETS, draftFrom, parseDraft, withoutErrorsFor } from "./draft";
+import { DURATION_PRESETS, draftFrom, parseDraft, upcomingNotice, withoutErrorsFor } from "./draft";
 
 const SERVICE_ID = "a0000000-0000-4000-8000-000000000001";
 const corte: Service = { id: SERVICE_ID, name: "Corte", duration_minutes: 30, price_cents: 1_500_000 };
@@ -162,5 +162,20 @@ describe("withoutErrorsFor", () => {
     withoutErrorsFor(errors, { name: "C" });
 
     expect(errors).toEqual(original);
+  });
+});
+
+describe("upcomingNotice", () => {
+  test("sin turnos por delante no hay aviso", () => {
+    expect(upcomingNotice(0)).toBeNull();
+    expect(upcomingNotice(undefined)).toBeNull();
+  });
+
+  test("con uno, habla en singular", () => {
+    expect(upcomingNotice(1)).toBe("Tiene 1 turno por delante. No se toca: sigue en tu agenda aunque lo borres.");
+  });
+
+  test("con varios, habla en plural", () => {
+    expect(upcomingNotice(3)).toBe("Tiene 3 turnos por delante. No se tocan: siguen en tu agenda aunque lo borres.");
   });
 });

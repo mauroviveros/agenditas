@@ -29,6 +29,7 @@ import {
   type ServiceDraft,
   draftFrom,
   parseDraft,
+  upcomingNotice,
   withoutErrorsFor,
 } from "./draft";
 
@@ -40,13 +41,15 @@ interface ServiceFormProps {
   service: Service | null;
   onSaved: () => void;
   onCancel: () => void;
+  /** Turnos por delante de este servicio: se avisa que borrarlo no los toca. */
+  upcoming?: number;
   /** Borra el servicio; si falla, el aviso se muestra acá adentro, no detrás del panel. */
   onDelete: (service: Service) => Promise<ServiceResult>;
 }
 
 // Nombre, duración y precio de un servicio. Lo escrito se valida con las reglas del esquema
 // antes de enviar; lo que rechaza la base vuelve como un aviso arriba de los botones.
-export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFormProps) {
+export function ServiceForm({ service, onSaved, onCancel, upcoming, onDelete }: ServiceFormProps) {
   const [draft, setDraft] = useState<ServiceDraft>(() => draftFrom(service ?? undefined));
   const [errors, setErrors] = useState<DraftErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
@@ -214,6 +217,9 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
             <CircleAlertIcon aria-hidden className="mt-0.5 size-5 shrink-0 text-destructive" />
             {formError}
           </p>
+        ) : null}
+        {service && upcomingNotice(upcoming) ? (
+          <p className="rounded-lg border bg-muted p-3 text-sm">{upcomingNotice(upcoming)}</p>
         ) : null}
         <div className="flex flex-col-reverse gap-2 md:flex-row md:items-center md:justify-between">
           {service ? (

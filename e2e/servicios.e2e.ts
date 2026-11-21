@@ -164,6 +164,34 @@ test.describe("escritorio", () => {
     await expect(page.getByRole("heading", { name: "Archivados" })).toBeVisible();
   });
 
+  test("al borrar un servicio con turnos por delante avisa que no se tocan", async ({ page, context }) => {
+    const solista = await negocioNuevo(context);
+    await cargarServicios(solista, ["Corte", "Tintura"]);
+    const { data: negocio } = await solista.from("businesses").select("id").single();
+    const { data: corte } = await solista.from("services").select("id").eq("name", "Corte").single();
+    for (const [cliente, minutos] of [["Lucía", 120], ["Mateo", 240]] as const) {
+      const { error } = await solista.rpc("create_appointment", {
+        business_id: negocio?.id,
+        service_id: corte?.id,
+        client_name: cliente,
+        client_phone: null as unknown as string,
+        starts_at: new Date(Date.now() + minutos * 60_000).toISOString(),
+      });
+      expect(error).toBeNull();
+    }
+    await page.goto("/panel/servicios");
+
+    await page.getByRole("button", { name: "Tintura", exact: true }).click();
+    await expect(page.getByRole("dialog").getByRole("button", { name: "Borrar servicio" })).toBeVisible();
+    await expect(page.getByText(/por delante/)).toHaveCount(0);
+    await page.getByRole("dialog").getByRole("button", { name: "Cancelar" }).click();
+
+    await page.getByRole("button", { name: "Corte", exact: true }).click();
+    await expect(
+      page.getByText("Tiene 2 turnos por delante. No se tocan: siguen en tu agenda aunque lo borres."),
+    ).toBeVisible();
+  });
+
   test("busca sin acentos ni mayúsculas, avisa si no hay y pagina de a 10", async ({ page, context }) => {
     const solista = await negocioNuevo(context);
     const nombres = Array.from({ length: 11 }, (_, i) => `Servicio ${i + 1}`);

@@ -29,7 +29,16 @@ interface EditorState {
 }
 
 // Encabezado con «Nuevo servicio», la tabla (o el vacío) y el formulario en un Sheet/Drawer.
-export function ServicesView({ services, archived }: { services: Service[]; archived: Service[] }) {
+export function ServicesView({
+  services,
+  archived,
+  upcoming = {},
+}: {
+  services: Service[];
+  archived: Service[];
+  /** Turnos por delante de cada servicio, por id. */
+  upcoming?: Record<string, number>;
+}) {
   const [editor, setEditor] = useState<EditorState>({ open: false, service: null });
   const [notice, setNotice] = useState<Notice>(null);
   const isFull = services.length >= MAX_SERVICES;
@@ -124,6 +133,7 @@ export function ServicesView({ services, archived }: { services: Service[]; arch
         open={editorOpen}
         service={editing ?? editor.service}
         onOpenChange={closeEditor}
+        upcoming={editor.service ? upcoming[editor.service.id] : undefined}
         onDelete={remove}
       />
     </section>

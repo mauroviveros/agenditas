@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { getUpcomingCounts } from "@/lib/appointments/upcoming";
 import { getMyArchivedServices, getMyServices } from "@/lib/services/queries";
 import { ServicesSkeleton } from "./skeleton";
 import { ServicesView } from "./view";
@@ -16,6 +17,10 @@ export function ServicesList() {
 // try/catch a propósito: si la lectura falla, el error sube a (app)/error.tsx. Mostrar el vacío
 // invitaría a cargar el primero sobre servicios que sí existen.
 export async function ServicesLoader() {
-  const [services, archived] = await Promise.all([getMyServices(), getMyArchivedServices()]);
-  return <ServicesView services={services} archived={archived} />;
+  const [services, archived, upcoming] = await Promise.all([
+    getMyServices(),
+    getMyArchivedServices(),
+    getUpcomingCounts(),
+  ]);
+  return <ServicesView services={services} archived={archived} upcoming={upcoming} />;
 }
