@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { getUserId } from "@/lib/user";
-import { PanelHeader } from "../panel-slots";
 import { UpcomingHolidays } from "./holidays";
 import { BusinessHours } from "./hours";
 
@@ -18,13 +17,6 @@ export default async function HoursPage() {
 
   return (
     <div className="flex w-full flex-col gap-8">
-      <PanelHeader title="Horarios" />
-
-      <p className="text-muted-foreground">
-        Prendé los días en que atendés y poné las horas. Si cortás para almorzar, tocá «+
-        Almuerzo».
-      </p>
-
       <BusinessHours />
 
       <UpcomingHolidays />

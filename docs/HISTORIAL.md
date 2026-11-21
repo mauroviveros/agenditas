@@ -5,6 +5,65 @@
 
 ---
 
+## R3b · Marco del panel — 2026-11-21
+
+Branch `feat/panel-frame` · PR pendiente (se abre con el push)
+
+**Qué quedó:** todas las pantallas del panel se definen de una sola manera. Un registro
+(`src/lib/panel/screens.ts`) da a cada pantalla su ruta, nombre, bajada e ícono, y lo leen el
+menú y el encabezado. El encabezado (`(app)/header.tsx`) dibuja el título y la bajada según
+la ruta, en el servidor, así que llegan en el primer HTML. Una sola regla de tamaños
+(44 px en celu, 32 px desde `md`) escrita en `Button`, `Input` e `InputGroup`. Un solo aviso
+de error de lectura (`(app)/error.tsx`) que deja el menú y el encabezado en pantalla. Dos
+recetas de cuerpo: `SectionCard` para formularios y una caja con borde para listas. 257
+tests de Vitest y 64 e2e.
+
+**Decisiones**
+- **Registro en vez de wrapper por página.** Una primera versión usaba un `PanelPage` que
+  cada página envolvía; se reemplazó por el registro porque centraliza título, bajada y
+  menú, y el encabezado deja de re-montarse al navegar. El costo: el nombre queda también en
+  el `metadata.title` de cada página (ver ROADMAP).
+- **Bajada y ayuda separadas.** La bajada es de una línea y solo se ve desde `md`; la ayuda
+  de uso va en el cuerpo, porque en celu el encabezado no la muestra.
+- **Inicio titula con el nombre del negocio** (`titleIsBusinessName`): en celu el menú está
+  cerrado y es el único lugar donde se ve.
+- **La densidad se escribió una vez en la base de shadcn** en vez de repetir `h-11 md:h-N`
+  en 25 lugares. Efecto fuera del panel: los botones y campos de login y de crear negocio
+  miden 44 px en celu, y «Cambiar link» mide 32 px en escritorio.
+- **Título de card igual al del h1.** Los dos miden 16 px (medium el h1, semibold el h2); la
+  jerarquía la da el lugar.
+- **La lista de Servicios en celu pasa a la caja con borde**, igual que en escritorio y que
+  las cards de Horarios. Reemplaza la decisión de R3 de filas planas de borde a borde.
+- **Los errores de lectura suben a `(app)/error.tsx`:** se fueron `ServicesFailed` y el
+  `try/catch` del loader. En Horarios cambia el efecto: antes un error reemplazaba todo el
+  panel, ahora queda dentro del marco.
+- **Lógica sin UI a `lib/`:** la búsqueda sin acentos pasó a `src/lib/services/search.ts`.
+  `draft.ts` se queda en `servicios/list/`: solo lo usa su formulario.
+- **Los e2e de Servicios buscan los textos de la lista dentro de su región.** Tras el
+  `load`, React deja un instante el tramo oculto del streaming (`#S:n`) junto al contenido
+  visible, y un `getByText` suelto encontraba el mismo texto dos veces.
+
+**Auditoría:** `code-reviewer` e `/impeccable critique` sobre Horarios y Servicios. Se
+arreglaron todos los cierres de R3b y estos puntos de diseño:
+- **Menú en celu:** al navegar desde el cajón, este se cierra.
+- **Servicios:** botón propio para borrar la búsqueda (44 px en celu, 32 px en escritorio, sin
+  el nativo); «Nuevo servicio» en el pie, al alcance del pulgar, en celu (desde `md` queda en
+  el encabezado); la fila entera abre el editor en escritorio. `PanelFooter` pone la caja del
+  pie (borde, fondo y margen) para que cada pantalla solo aporte su contenido.
+- **Horarios, almuerzo:** «+ Almuerzo» parte el día de 13 a 14 h cuando la franja lo
+  contiene (si no, cerca de la mitad). El chip es un botón con rayado diagonal hecho con
+  tokens: tocarlo saca el almuerzo, sin la X suelta; su nombre accesible incluye el texto
+  visible.
+- Lo que espera una decisión quedó en el ROADMAP (jerarquía h1/h2, una sola lista de filas,
+  contraste de `--input`, formato del precio, señal en `DaySummary`).
+
+**Pendiente (ver ROADMAP)**
+- Las acciones del encabezado siguen entrando por portal y aparecen después de hidratar.
+- Una sola lista de filas en Servicios y decidir si hace falta paginar con tope de 50.
+- `metadata.title` repite el registro; el error de hidratación #418 visto en `main`.
+
+---
+
 ## R3 · Servicios — 2026-11-18
 
 Branch `feat/r3-servicios-v2` (la primera quedó con commits sin firma tras un rebase de GitHub) · PR pendiente (se abre con el push)

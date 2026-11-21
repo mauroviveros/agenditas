@@ -36,7 +36,7 @@ export function TableFooter({
         <div className="flex gap-2">
           <Button
             variant="outline"
-            className="size-11 px-0 md:h-8 md:w-auto md:px-2.5"
+            className="w-11 px-0 md:w-auto md:px-2.5"
             disabled={!canPrevious}
             onClick={onPrevious}
           >
@@ -45,7 +45,7 @@ export function TableFooter({
           </Button>
           <Button
             variant="outline"
-            className="size-11 px-0 md:h-8 md:w-auto md:px-2.5"
+            className="w-11 px-0 md:w-auto md:px-2.5"
             disabled={!canNext}
             onClick={onNext}
           >

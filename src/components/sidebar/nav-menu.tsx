@@ -7,43 +7,38 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
-import { ClockIcon, HouseIcon, TagIcon, type LucideIcon } from "lucide-react";
-
-export interface NavItem {
-  title: string;
-  href: string;
-  icon: LucideIcon;
-}
-
-// Cada rebanada suma su destino acá.
-const NAV_ITEMS: readonly NavItem[] = [
-  { title: "Inicio", href: "/panel", icon: HouseIcon },
-  { title: "Horarios", href: "/panel/horarios", icon: ClockIcon },
-  { title: "Servicios", href: "/panel/servicios", icon: TagIcon },
-];
+import { findScreen, SCREENS } from "@/lib/panel/screens";
 
 export function NavMenu() {
   const pathname = usePathname();
+  const { setOpenMobile } = useSidebar();
+  // El mismo criterio que el encabezado: una ruta anidada marca la pantalla de la que cuelga.
+  const activeHref = findScreen(pathname)?.href;
 
   return (
     <SidebarGroup>
       <SidebarMenu>
-        {NAV_ITEMS.map(({ title, href, icon: Icon }) => {
-          const isActive = pathname === href;
+        {SCREENS.map(({ label, href, icon: Icon }) => {
+          const isActive = activeHref === href;
 
           return (
             <SidebarMenuItem key={href}>
               <SidebarMenuButton
                 isActive={isActive}
-                // className="h-11 border border-transparent data-active:border-sidebar-border md:h-8"
-                tooltip={title}
+                tooltip={label}
                 render={
-                  <Link href={href} aria-current={isActive ? "page" : undefined} />
+                  <Link
+                    href={href}
+                    aria-current={isActive ? "page" : undefined}
+                    // En celu el menú es un cajón: al elegir una pantalla se cierra.
+                    onClick={() => setOpenMobile(false)}
+                  />
                 }
               >
                 <Icon aria-hidden />
-                <span>{title}</span>
+                <span>{label}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           );

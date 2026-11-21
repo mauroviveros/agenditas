@@ -1,7 +1,12 @@
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Locator, type Page, test } from "@playwright/test";
 import { signUpNewUser } from "./support/session";
 
 const sufijo = () => Date.now().toString(36);
+
+// Los textos de la lista se buscan dentro de su región: getByRole ignora lo oculto, y por un
+// instante después del load React deja el tramo oculto del streaming (#S:n) junto al contenido
+// ya visible, así que un getByText suelto de la página encuentra el mismo texto dos veces.
+const lista = (page: Page) => page.getByRole("region", { name: "Tus servicios" });
 
 async function negocioNuevo(context: Parameters<typeof signUpNewUser>[0]) {
   const solista = await signUpNewUser(context);
@@ -55,7 +60,7 @@ test.describe("escritorio", () => {
     await negocioNuevo(context);
     await page.goto("/panel/servicios");
 
-    await expect(page.getByText("Todavía no cargaste servicios")).toBeVisible();
+    await expect(lista(page).getByText("Todavía no cargaste servicios")).toBeVisible();
     await page.getByRole("button", { name: "Cargar el primero" }).click();
     const formulario = await completarFormulario(page, { nombre: "Corte", duracion: "30 min", precio: "1500" });
     await formulario.getByRole("button", { name: "Guardar" }).click();
@@ -63,7 +68,7 @@ test.describe("escritorio", () => {
     await expect(formulario).toBeHidden();
     await expect(page.getByRole("button", { name: "Corte", exact: true })).toBeVisible();
     await expect(page.getByRole("cell", { name: "$ 1.500" })).toBeVisible();
-    await expect(page.getByText("1 servicio", { exact: true })).toBeVisible();
+    await expect(lista(page).getByText("1 servicio", { exact: true })).toBeVisible();
   });
 
   test("guardar vacío avisa campo por campo y no cierra el formulario", async ({ page, context }) => {
@@ -132,18 +137,18 @@ test.describe("escritorio", () => {
     await cargarServicios(solista, [...nombres, "Tintura de raíz"]);
     await page.goto("/panel/servicios");
 
-    await expect(page.getByText("1–10 de 12 servicios")).toBeVisible();
+    await expect(lista(page).getByText("1–10 de 12 servicios")).toBeVisible();
     await page.getByRole("button", { name: "Siguiente" }).click();
-    await expect(page.getByText("11–12 de 12 servicios")).toBeVisible();
+    await expect(lista(page).getByText("11–12 de 12 servicios")).toBeVisible();
 
     await page.getByRole("searchbox", { name: "Buscar servicio" }).fill("RAIZ");
     await expect(page.getByRole("button", { name: "Tintura de raíz" })).toBeVisible();
-    await expect(page.getByText("1 servicio", { exact: true })).toBeVisible();
+    await expect(lista(page).getByText("1 servicio", { exact: true })).toBeVisible();
 
     await page.getByRole("searchbox", { name: "Buscar servicio" }).fill("zzz");
-    await expect(page.getByText("No encontramos servicios con «zzz»")).toBeVisible();
+    await expect(lista(page).getByText("No encontramos servicios con «zzz»")).toBeVisible();
     await page.getByRole("button", { name: "Borrar la búsqueda" }).click();
-    await expect(page.getByText("1–10 de 12 servicios")).toBeVisible();
+    await expect(lista(page).getByText("1–10 de 12 servicios")).toBeVisible();
   });
 
   test("tocar dos veces «Borrar» borra una sola vez y deja el Deshacer", async ({ page, context }) => {
@@ -156,7 +161,7 @@ test.describe("escritorio", () => {
 
     await expect(page.getByRole("status")).toContainText("Borraste Corte.");
     // Sin el segundo borrado fallido encima: no aparece «Quizás ya lo borraste».
-    await expect(page.getByText("Quizás ya lo borraste")).toHaveCount(0);
+    await expect(lista(page).getByText("Quizás ya lo borraste")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Deshacer" })).toBeVisible();
   });
 
@@ -171,7 +176,7 @@ test.describe("escritorio", () => {
     await formulario.getByRole("button", { name: "Guardar" }).click();
 
     await expect(formulario).toBeHidden();
-    await expect(page.getByText("11–12 de 12 servicios")).toBeVisible();
+    await expect(lista(page).getByText("11–12 de 12 servicios")).toBeVisible();
   });
 
   test("al borrar todo lo de la última página vuelve a la anterior", async ({ page, context }) => {
@@ -183,7 +188,7 @@ test.describe("escritorio", () => {
     await page.getByRole("button", { name: "Servicio 11", exact: true }).click();
     await page.getByRole("button", { name: "Borrar servicio" }).click();
 
-    await expect(page.getByText("10 servicios", { exact: true })).toBeVisible();
+    await expect(lista(page).getByText("10 servicios", { exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Servicio 01", exact: true })).toBeVisible();
   });
 
@@ -192,7 +197,7 @@ test.describe("escritorio", () => {
     await cargarServicios(solista, Array.from({ length: 50 }, (_, i) => `Servicio ${i + 1}`));
     await page.goto("/panel/servicios");
 
-    await expect(page.getByText("Llegaste al máximo de 50 servicios.")).toBeVisible();
+    await expect(lista(page).getByText("Llegaste al máximo de 50 servicios.")).toBeVisible();
     const nuevo = page.getByRole("button", { name: "Nuevo servicio" });
     await expect(nuevo).toBeDisabled();
     // Apagado pero enfocable: con el teclado se llega y se lee el motivo.
@@ -206,10 +211,148 @@ test("en celu el formulario sube como Drawer y el servicio queda en la lista", a
   await page.goto("/panel/servicios");
 
   // En celu el botón es solo el ícono, pero tiene nombre para lectores de pantalla.
-  await page.getByRole("button", { name: "Nuevo servicio" }).click();
+  await page.getByRole("button", { name: "Cargar el primero" }).click();
   const formulario = await completarFormulario(page, { nombre: "Corte", duracion: "45 min", precio: "1500" });
   await formulario.getByRole("button", { name: "Guardar" }).click();
 
   await expect(formulario).toBeHidden();
   await expect(page.locator("[data-slot=item]", { hasText: "Corte" })).toContainText("45 min");
+});
+
+// La misma regla de densidad que Horarios: 44 px en celu, 32 px (36 la acción principal)
+// desde md.
+const alto = async (locator: Locator) => (await locator.boundingBox())?.height ?? 0;
+const buscador = (page: Page) => page.getByRole("group").filter({ has: page.getByRole("searchbox") });
+
+test.describe("densidad", () => {
+  test.describe("escritorio", () => {
+    test.use({ viewport: { width: 1280, height: 800 } });
+
+    test("«Nuevo servicio» mide 36 px y el buscador 32 px", async ({ page, context }) => {
+      const solista = await negocioNuevo(context);
+      await cargarServicios(solista, ["Corte"]);
+      await page.goto("/panel/servicios");
+
+      expect(await alto(page.getByRole("button", { name: "Nuevo servicio" }))).toBe(36);
+      expect(await alto(buscador(page))).toBe(32);
+    });
+
+    test("los chips de duración del editor miden 32 px", async ({ page, context }) => {
+      await negocioNuevo(context);
+      await page.goto("/panel/servicios");
+      await page.getByRole("button", { name: "Cargar el primero" }).click();
+
+      const chip = page.getByRole("dialog").locator("label", { hasText: /^30 min$/ });
+      await expect(chip).toBeVisible();
+      expect(await alto(chip)).toBe(32);
+    });
+
+    test("las filas de la tabla miden 56 px y llevan 24 px de padding, como las de Horarios", async ({ page, context }) => {
+      const solista = await negocioNuevo(context);
+      await cargarServicios(solista, ["Corte"]);
+      await page.goto("/panel/servicios");
+
+      const fila = page.locator("tbody tr").first();
+      await expect(fila).toBeVisible();
+      expect(await alto(fila)).toBeGreaterThanOrEqual(56);
+      expect(await alto(fila)).toBeLessThanOrEqual(57);
+      const padding = await fila.locator("td").first().evaluate((el) => getComputedStyle(el).paddingLeft);
+      expect(padding).toBe("24px");
+    });
+  });
+
+  test("celu: la lista va en el mismo contenedor con borde y sus filas miden 64 px", async ({ page, context }) => {
+    const solista = await negocioNuevo(context);
+    await cargarServicios(solista, ["Corte"]);
+    await page.goto("/panel/servicios");
+
+    const item = page.getByRole("list").getByRole("button", { name: /Corte/ });
+    await expect(item).toBeVisible();
+    expect(await alto(item)).toBe(64);
+    const borde = await page.getByRole("list").evaluate((el) => getComputedStyle(el.parentElement as Element).borderTopWidth);
+    expect(borde).toBe("1px");
+  });
+
+  test("celu: «Nuevo servicio» y el buscador miden al menos 44 px", async ({ page, context }) => {
+    const solista = await negocioNuevo(context);
+    await cargarServicios(solista, ["Corte"]);
+    await page.goto("/panel/servicios");
+
+    expect(await alto(page.getByRole("button", { name: "Nuevo servicio" }))).toBeGreaterThanOrEqual(44);
+    expect(await alto(buscador(page))).toBeGreaterThanOrEqual(44);
+  });
+});
+
+test.describe("acciones y buscador", () => {
+  test("celu: «Nuevo servicio» va en el pie, de ancho completo y al alcance del pulgar", async ({ page, context }) => {
+    const solista = await negocioNuevo(context);
+    await cargarServicios(solista, ["Corte"]);
+    await page.goto("/panel/servicios");
+
+    const boton = page.getByRole("group", { name: "Acciones de la pantalla" }).getByRole("button", { name: "Nuevo servicio" });
+    await expect(boton).toBeVisible();
+    const caja = await boton.boundingBox();
+    const pantalla = page.viewportSize();
+    expect(caja?.width ?? 0).toBeGreaterThan((pantalla?.width ?? 0) * 0.8);
+    expect((caja?.y ?? 0) + (caja?.height ?? 0)).toBeGreaterThan((pantalla?.height ?? 0) * 0.85);
+    // El del encabezado queda solo desde md.
+    await expect(page.getByRole("banner").getByRole("button", { name: "Nuevo servicio" })).toBeHidden();
+  });
+
+  test.describe("escritorio", () => {
+    test.use({ viewport: { width: 1280, height: 800 } });
+
+    test("«Nuevo servicio» vive en el encabezado y no hay pie", async ({ page, context }) => {
+      const solista = await negocioNuevo(context);
+      await cargarServicios(solista, ["Corte"]);
+      await page.goto("/panel/servicios");
+
+      await expect(page.getByRole("banner").getByRole("button", { name: "Nuevo servicio" })).toBeVisible();
+      await expect(page.getByRole("group", { name: "Acciones de la pantalla" })).toBeHidden();
+    });
+
+    test("tocar cualquier parte de la fila abre el editor", async ({ page, context }) => {
+      const solista = await negocioNuevo(context);
+      await cargarServicios(solista, ["Corte"]);
+      await page.goto("/panel/servicios");
+
+      await page.locator("tbody tr").first().locator("td").last().click();
+
+      await expect(page.getByRole("dialog").getByLabel("Nombre")).toHaveValue("Corte");
+    });
+
+    test("el buscador usa su propio botón para limpiar, de 32 px", async ({ page, context }) => {
+      const solista = await negocioNuevo(context);
+      await cargarServicios(solista, ["Corte"]);
+      await page.goto("/panel/servicios");
+
+      const buscador = page.getByRole("searchbox", { name: "Buscar servicio" });
+      await buscador.fill("zz");
+      const limpiar = page.getByRole("button", { name: "Limpiar el buscador" });
+      expect(await alto(limpiar)).toBe(32);
+      await limpiar.click();
+      await expect(buscador).toHaveValue("");
+      await expect(buscador).toBeFocused();
+    });
+  });
+
+  test("celu: el botón de limpiar el buscador mide 44 px y el nativo no se ve", async ({ page, context }) => {
+    const solista = await negocioNuevo(context);
+    await cargarServicios(solista, ["Corte"]);
+    await page.goto("/panel/servicios");
+
+    const buscador = page.getByRole("searchbox", { name: "Buscar servicio" });
+    await buscador.fill("zz");
+    expect(await alto(page.getByRole("button", { name: "Limpiar el buscador" }))).toBeGreaterThanOrEqual(44);
+    // Chromium no informa el estilo de los pseudo-elementos internos del campo (devuelve «auto»):
+    // se comprueba que la regla que apaga el botón nativo esté en las hojas de estilo.
+    const reglaQueApagaElNativo = await page.evaluate(() =>
+      Array.from(document.styleSheets).some((hoja) =>
+        Array.from(hoja.cssRules).some((regla) =>
+          /webkit-search-cancel-button[^}]*appearance:\s*none/.test(regla.cssText),
+        ),
+      ),
+    );
+    expect(reglaQueApagaElNativo).toBe(true);
+  });
 });

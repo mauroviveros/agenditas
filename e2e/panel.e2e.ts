@@ -45,6 +45,20 @@ test("el link de reservas llega en el primer HTML, con el dominio del entorno", 
   expect(html).not.toContain("agenditas.app/reservar");
 });
 
+test("el título y la bajada de cada pantalla llegan en el primer HTML", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  await solista.rpc("create_business", { name: "Primer título", slug: `titulo-${sufijo()}` });
+
+  // Sin hidratar: el encabezado lo dibuja el servidor, no un portal que espera al navegador.
+  const servicios = await (await page.request.get("/panel/servicios")).text();
+  expect(servicios).toMatch(/<h1[^>]*>Servicios<\/h1>/);
+  expect(servicios).toContain("Lo que ofrecés, cuánto dura y cuánto cuesta.");
+
+  const horarios = await (await page.request.get("/panel/horarios")).text();
+  expect(horarios).toMatch(/<h1[^>]*>Horarios<\/h1>/);
+  expect(horarios).toContain("Prendé los días en que atendés y poné las horas.");
+});
+
 test("mientras carga la sesión, el panel manda un esqueleto y no una pantalla en blanco", async ({ page, context }) => {
   await signUpNewUser(context);
 
@@ -123,3 +137,34 @@ function erroresDeLaPagina(page: Page): string[] {
   page.on("pageerror", (error) => errores.push(error.message));
   return errores;
 }
+
+test("celu: el menú del cajón tiene ítems de 44 px y se cierra al elegir una pantalla", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  await solista.rpc("create_business", { name: "Cajón", slug: `cajon-${sufijo()}` });
+  await page.goto("/panel");
+
+  await page.getByRole("banner").getByRole("button", { name: "Mostrar u ocultar el menú" }).click();
+  const cajon = page.getByRole("dialog");
+  const servicios = cajon.getByRole("link", { name: "Servicios" });
+  await expect(servicios).toBeVisible();
+  expect((await servicios.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(44);
+
+  await servicios.click();
+  await expect(page).toHaveURL(/\/panel\/servicios$/);
+  await expect(page.getByRole("heading", { name: "Servicios", level: 1 })).toBeVisible();
+  await expect(cajon).toHaveCount(0);
+});
+
+test.describe("escritorio", () => {
+  test.use({ viewport: { width: 1280, height: 800 } });
+
+  test("los ítems del menú miden 32 px", async ({ page, context }) => {
+    const solista = await signUpNewUser(context);
+    await solista.rpc("create_business", { name: "Menú", slug: `menu-${sufijo()}` });
+    await page.goto("/panel");
+
+    const horarios = page.getByRole("link", { name: "Horarios", exact: true });
+    await expect(horarios).toBeVisible();
+    expect((await horarios.boundingBox())?.height).toBe(32);
+  });
+});

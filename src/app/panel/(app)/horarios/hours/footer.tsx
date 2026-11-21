@@ -61,7 +61,6 @@ export function FormFooter({
               type="button"
               variant="outline"
               size="lg"
-              className="h-11"
               disabled={isPending}
               onClick={onUndo}
             >
@@ -72,7 +71,6 @@ export function FormFooter({
             type="button"
             variant="ghost"
             size="lg"
-            className="h-11"
             disabled={!isDirty || isPending}
             onClick={onDiscard}
           >
@@ -82,7 +80,7 @@ export function FormFooter({
             type="submit"
             form={formId}
             size="lg"
-            className="h-11 flex-1"
+            className="flex-1"
             disabled={!isDirty || !canSave || isPending}
             aria-busy={isPending}
           >

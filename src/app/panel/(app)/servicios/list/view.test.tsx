@@ -8,6 +8,7 @@ import { ServicesView } from "./view";
 // Sin el marco del panel no hay encabezado donde colgar las acciones: se dibujan en el lugar.
 vi.mock("../../panel-slots", () => ({
   PanelHeaderActions: ({ children }: { children: ReactNode }) => children,
+  PanelFooter: ({ children }: { children: ReactNode }) => children,
 }));
 
 const makeServices = (count: number): Service[] =>

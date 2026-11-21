@@ -3,13 +3,7 @@
 import { CopyIcon } from "lucide-react";
 import { type FormEvent, useId, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionCard } from "@/components/section-card";
 import { type HourRange, hoursSchema } from "@/lib/hours/schema";
 import { saveHours } from "../actions";
 import { CopyDayMenu } from "./day/copy-menu";
@@ -38,7 +32,7 @@ const NO_ERRORS: ReadonlyMap<number, string> = new Map();
 
 // La semana completa. Se edita en pantalla y se guarda de una vez (reemplaza lo anterior).
 // En escritorio cada día se edita en su fila; en el celu, en una hoja que se abre al tocarlo.
-export function HoursForm({
+export function HoursView({
   initial,
   today,
 }: {
@@ -144,72 +138,65 @@ export function HoursForm({
       <p role="status" className="sr-only">
         {liveMessage}
       </p>
-      <Card role="region" aria-labelledby="week-title" className="gap-0 py-0">
-        <CardHeader className="border-b px-6 pt-5">
-          <CardTitle
-            id="week-title"
-            role="heading"
-            aria-level={2}
-            className="text-xl font-semibold tracking-tight"
-          >
-            Tu semana
-          </CardTitle>
-          <CardDescription>
-            <span className="tabular-nums">{weekDuration(week)}</span> por
-            semana · el almuerzo es el corte entre dos franjas
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="px-0">
-          <ul data-slot="week" className="divide-y divide-border">
-            {week.map((slots, day) => (
-              <li key={day}>
-                <div className="hidden md:flex md:items-center">
-                  <div className="min-w-0 flex-1">
-                    <DayRow
-                      day={day}
-                      isToday={day === today}
-                      slots={slots}
-                      errors={byDay.get(day) ?? NO_ERRORS}
-                      onToggle={() => edit(toggleDay(week, day))}
-                      onChange={(next) => edit(replaceDay(week, day, next))}
-                    />
-                  </div>
-                  {slots.length > 0 ? (
-                    <div data-slot="copy" className="pr-4">
-                      <CopyDayMenu
-                        dayName={WEEKDAY_NAMES[day]}
-                        onCopy={(to) =>
-                          applyCopy(day, copyDay(week, day, to), to)
-                        }
-                        trigger={
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon-lg"
-                            className="size-11 text-muted-foreground"
-                            aria-label={`Copiar el horario del ${WEEKDAY_NAMES[day]?.toLowerCase()} a otros días`}
-                          />
-                        }
-                      >
-                        <CopyIcon aria-hidden />
-                      </CopyDayMenu>
-                    </div>
-                  ) : null}
-                </div>
-                <div className="md:hidden">
-                  <DaySummary
+      <SectionCard
+        id="week-title"
+        title="Tu semana"
+        description={
+          <>
+            <span className="tabular-nums">{weekDuration(week)}</span> por semana
+            <span className="mt-1 block">Si cortás para almorzar, tocá «+ Almuerzo».</span>
+          </>
+        }
+      >
+        <ul data-slot="week" className="divide-y divide-border">
+          {week.map((slots, day) => (
+            <li key={day}>
+              <div className="hidden md:flex md:items-center">
+                <div className="min-w-0 flex-1">
+                  <DayRow
                     day={day}
                     isToday={day === today}
                     slots={slots}
+                    errors={byDay.get(day) ?? NO_ERRORS}
                     onToggle={() => edit(toggleDay(week, day))}
-                    onOpen={() => setSheetDay(day)}
+                    onChange={(next) => edit(replaceDay(week, day, next))}
                   />
                 </div>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
+                {slots.length > 0 ? (
+                  <div data-slot="copy" className="pr-4">
+                    <CopyDayMenu
+                      dayName={WEEKDAY_NAMES[day]}
+                      onCopy={(to) =>
+                        applyCopy(day, copyDay(week, day, to), to)
+                      }
+                      trigger={
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="text-muted-foreground"
+                          aria-label={`Copiar el horario del ${WEEKDAY_NAMES[day]?.toLowerCase()} a otros días`}
+                        />
+                      }
+                    >
+                      <CopyIcon aria-hidden />
+                    </CopyDayMenu>
+                  </div>
+                ) : null}
+              </div>
+              <div className="md:hidden">
+                <DaySummary
+                  day={day}
+                  isToday={day === today}
+                  slots={slots}
+                  onToggle={() => edit(toggleDay(week, day))}
+                  onOpen={() => setSheetDay(day)}
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </SectionCard>
 
       {sheetDay !== null ? (
         <DaySheet

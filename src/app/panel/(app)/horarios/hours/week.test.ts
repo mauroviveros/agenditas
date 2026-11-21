@@ -89,10 +89,21 @@ describe("splitLunch", () => {
     ]);
   });
 
-  test("busca la hora entera más cercana a la mitad", () => {
+  test("el almuerzo es de 13 a 14 cuando la franja lo contiene", () => {
     expect(splitLunch([slot("09:00", "18:00")])).toEqual([
-      slot("09:00", "14:00"),
-      slot("15:00", "18:00"),
+      slot("09:00", "13:00"),
+      slot("14:00", "18:00"),
+    ]);
+  });
+
+  test("si la franja no contiene de 13 a 14, busca la hora entera más cercana a la mitad", () => {
+    expect(splitLunch([slot("14:00", "20:00")])).toEqual([
+      slot("14:00", "17:00"),
+      slot("18:00", "20:00"),
+    ]);
+    expect(splitLunch([slot("08:00", "13:30")])).toEqual([
+      slot("08:00", "11:00"),
+      slot("12:00", "13:30"),
     ]);
   });
 

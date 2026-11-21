@@ -108,7 +108,6 @@ export function DaySheet({ day, initial, onApply, onClose }: DaySheetProps) {
           <Button
             type="button"
             variant="outline"
-            className="h-11"
             disabled={Boolean(error) || splitLunch(draft) === draft}
             onClick={() => setDraft(splitLunch(draft))}
           >
@@ -119,7 +118,6 @@ export function DaySheet({ day, initial, onApply, onClose }: DaySheetProps) {
           <Button
             type="button"
             variant="ghost"
-            className="h-11"
             onClick={() => setDraft(joinLunch(draft))}
           >
             Sacar el almuerzo
@@ -153,7 +151,7 @@ export function DaySheet({ day, initial, onApply, onClose }: DaySheetProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-11 min-w-44 justify-between text-base font-medium"
+                  className="min-w-44 justify-between text-base font-medium"
                   aria-labelledby={`${targetId} ${targetValueId}`}
                 />
               }
@@ -183,7 +181,6 @@ export function DaySheet({ day, initial, onApply, onClose }: DaySheetProps) {
         <Button
           type="button"
           size="lg"
-          className="h-11"
           disabled={!parsed.success}
           onClick={() => onApply(draft, TARGETS[target].days)}
         >
