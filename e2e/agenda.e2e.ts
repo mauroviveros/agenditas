@@ -409,3 +409,16 @@ test("el aviso de Deshacer se va al abrir un turno nuevo y al cambiar de día", 
   await expect(page).toHaveURL(/dia=2027-03-02$/);
   await expect(page.getByText("Cancelaste el turno de Mateo.")).toHaveCount(0);
 });
+
+test("al mover un turno, cerrar dice «Cerrar» y no se confunde con «Cancelar turno»", async ({ page, context }) => {
+  const solista = await signUpNewUser(context);
+  const ids = await negocioConCorte(solista);
+  await agendar(solista, ids, "Lucía", "10:00:00");
+  await page.goto(`/panel/agenda?dia=${DIA}`);
+
+  await page.getByRole("button", { name: /Lucía/ }).click();
+
+  await expect(formulario(page).getByRole("button", { name: "Cerrar", exact: true }).first()).toBeVisible();
+  await expect(formulario(page).getByRole("button", { name: "Cancelar", exact: true })).toHaveCount(0);
+  await expect(formulario(page).getByRole("button", { name: "Cancelar turno" })).toBeVisible();
+});

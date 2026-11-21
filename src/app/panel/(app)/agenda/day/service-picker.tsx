@@ -20,7 +20,7 @@ interface ServicePickerProps {
 }
 
 // Elegir un servicio entre muchos sin ocupar la pantalla: cerrado es una línea con lo elegido;
-// abierto, un buscador y una lista con scroll de unas 4 filas. Al elegir, se cierra.
+// abierto, un buscador y una lista con scroll de 3 filas y media (la fila cortada avisa que hay más). Al elegir, se cierra.
 export function ServicePicker({ services, value, onChange, invalid, name }: ServicePickerProps) {
   const [open, setOpen] = useState(value === "");
   const [query, setQuery] = useState("");
@@ -75,7 +75,7 @@ export function ServicePicker({ services, value, onChange, invalid, name }: Serv
               />
             </InputGroup>
           ) : null}
-          <div className="flex max-h-44 flex-col overflow-y-auto overscroll-contain md:max-h-32">
+          <div className="flex max-h-39 flex-col overflow-y-auto overscroll-contain md:max-h-28">
             {shown.length === 0 ? (
               <p className="px-2 py-3 text-sm text-muted-foreground">Ningún servicio coincide.</p>
             ) : (

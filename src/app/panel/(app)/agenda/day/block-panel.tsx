@@ -49,7 +49,7 @@ export function BlockPanel({ block, inProgress, open, onOpenChange, onRemove }: 
           : ""
       }
     >
-      <div className="flex flex-col gap-3 px-4 pb-4">
+      <div className="flex flex-col gap-3 px-4 pt-4 pb-4 md:pt-0">
         {error ? (
           <p
             role="alert"

@@ -113,7 +113,7 @@ export function ServiceForm({ service, onSaved, onCancel, upcoming, onDelete }: 
   }
 
   return (
-    <form ref={formRef} onSubmit={submit} noValidate className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-4 pb-4">
+    <form ref={formRef} onSubmit={submit} noValidate className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-4 pt-4 pb-4 md:pt-0">
       <FieldGroup>
         <Field data-invalid={Boolean(errors.name)}>
           <FieldLabel htmlFor={nameId}>Nombre</FieldLabel>
@@ -227,9 +227,9 @@ export function ServiceForm({ service, onSaved, onCancel, upcoming, onDelete }: 
             <div className="mt-2 border-t pt-4 md:mt-0 md:border-t-0 md:pt-0">
               <Button
                 type="button"
-                variant="destructive"
+                variant="outline"
                 size="lg"
-                className="w-full md:w-auto"
+                className="w-full text-destructive md:w-auto"
                 disabled={busy}
                 aria-busy={deleting}
                 onClick={remove}

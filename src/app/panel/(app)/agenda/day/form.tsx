@@ -132,7 +132,7 @@ export function AppointmentForm({
       ref={formRef}
       onSubmit={submit}
       noValidate
-      className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-4 pb-4"
+      className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-4 pt-4 pb-4 md:pt-0"
     >
       <FieldGroup>
         {isMove ? null : (
@@ -252,22 +252,25 @@ export function AppointmentForm({
           </p>
         ) : null}
         {isMove ? (
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            className="text-destructive"
-            disabled={saving || cancelling}
-            aria-busy={cancelling}
-            onClick={cancelAppointment}
-          >
-            {cancelling ? <Spinner aria-hidden /> : null}
-            Cancelar turno
-          </Button>
+          // Aparte y con una línea de por medio, lejos de Mover turno: cancelar no se deshace con un toque.
+          <div className="border-t pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="w-full text-destructive md:w-auto"
+              disabled={saving || cancelling}
+              aria-busy={cancelling}
+              onClick={cancelAppointment}
+            >
+              {cancelling ? <Spinner aria-hidden /> : null}
+              Cancelar turno
+            </Button>
+          </div>
         ) : null}
         <div className="flex flex-col-reverse gap-2 md:flex-row md:justify-end">
           <Button type="button" variant="outline" size="lg" onClick={onCancel}>
-            Cancelar
+            {isMove ? "Cerrar" : "Cancelar"}
           </Button>
           <Button
             type="submit"
