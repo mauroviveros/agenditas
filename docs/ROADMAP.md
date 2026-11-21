@@ -120,7 +120,9 @@ uno, avisa y no lo crea.
 Bloques, en orden (una parada por bloque):
 1. Servicios archivables: `archived_at`, `delete_service` archiva, Deshacer desarchiva.
 2. Tabla `appointments` 🔒 con copia de nombre/duración/precio, cliente y no-superposición.
-3. Bloqueos de horario dentro del mismo constraint.
+3. Bloqueos de horario dentro del mismo constraint (`kind` en `appointments`; si ganan campos
+   propios —motivo, repetición— se separan en su propia tabla, resolviendo ahí la
+   no-superposición, que Postgres no garantiza entre dos tablas).
 4. RPC de turnos 🔒: crear, mover, cancelar, restaurar y `block_time`.
 5. Lectura de la agenda y ruta `/panel/agenda`.
 6. Pantalla del día (shape → esqueleto → live).

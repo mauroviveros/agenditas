@@ -7,14 +7,14 @@ export type Database = {
           Tables: {
             "appointments": {
                   Row: {
-                    "business_id": string,"client_name": string,"client_phone": string | null,"created_at": string,"ends_at": string,"id": string,"service_duration_minutes": number,"service_id": string,"service_name": string,"service_price_cents": number,"starts_at": string,"status": Database["public"]['Enums']["appointment_status"]
+                    "business_id": string,"client_name": string | null,"client_phone": string | null,"created_at": string,"ends_at": string,"id": string,"kind": Database["public"]['Enums']["appointment_kind"],"service_duration_minutes": number | null,"service_id": string | null,"service_name": string | null,"service_price_cents": number | null,"starts_at": string,"status": Database["public"]['Enums']["appointment_status"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "business_id": string,"client_name": string,"client_phone"?: string | null,"created_at"?: string,"ends_at": string,"id"?: string,"service_duration_minutes": number,"service_id": string,"service_name": string,"service_price_cents": number,"starts_at": string,"status"?: Database["public"]['Enums']["appointment_status"]
+                    "business_id": string,"client_name"?: string | null,"client_phone"?: string | null,"created_at"?: string,"ends_at": string,"id"?: string,"kind"?: Database["public"]['Enums']["appointment_kind"],"service_duration_minutes"?: number | null,"service_id"?: string | null,"service_name"?: string | null,"service_price_cents"?: number | null,"starts_at": string,"status"?: Database["public"]['Enums']["appointment_status"]
                   }
                   Update: {
-                    "business_id"?: string,"client_name"?: string,"client_phone"?: string | null,"created_at"?: string,"ends_at"?: string,"id"?: string,"service_duration_minutes"?: number,"service_id"?: string,"service_name"?: string,"service_price_cents"?: number,"starts_at"?: string,"status"?: Database["public"]['Enums']["appointment_status"]
+                    "business_id"?: string,"client_name"?: string | null,"client_phone"?: string | null,"created_at"?: string,"ends_at"?: string,"id"?: string,"kind"?: Database["public"]['Enums']["appointment_kind"],"service_duration_minutes"?: number | null,"service_id"?: string | null,"service_name"?: string | null,"service_price_cents"?: number | null,"starts_at"?: string,"status"?: Database["public"]['Enums']["appointment_status"]
                   }
                   Relationships: [
                     {
@@ -128,7 +128,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "appointment_status": "confirmed"|"cancelled","holiday_kind": "fixed"|"movable"|"bridge"
+            "appointment_kind": "appointment"|"block","appointment_status": "confirmed"|"cancelled","holiday_kind": "fixed"|"movable"|"bridge"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -244,7 +244,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "appointment_status": ["confirmed", "cancelled"],"holiday_kind": ["fixed", "movable", "bridge"]
+            "appointment_kind": ["appointment", "block"],"appointment_status": ["confirmed", "cancelled"],"holiday_kind": ["fixed", "movable", "bridge"]
           }
         }
 } as const

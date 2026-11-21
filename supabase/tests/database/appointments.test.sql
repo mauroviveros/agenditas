@@ -1,16 +1,18 @@
--- Turnos: forma de la tabla, restricciones, no-superposición, permisos y RLS.
+-- Turnos y bloqueos de horario («salgo 30 min»): forma de la tabla, restricciones, no-superposición, permisos y RLS.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(30);
+select plan(37);
 
 select has_table('public', 'appointments', 'existe la tabla appointments');
 select columns_are('public', 'appointments',
-  array['id', 'business_id', 'service_id', 'service_name', 'service_duration_minutes',
+  array['id', 'business_id', 'kind', 'service_id', 'service_name', 'service_duration_minutes',
         'service_price_cents', 'client_name', 'client_phone', 'starts_at', 'ends_at',
         'status', 'created_at'],
   'appointments tiene solo las columnas esperadas');
-select col_not_null('public', 'appointments', 'service_name',
-  'el turno guarda su copia del nombre del servicio');
+select throws_ok(
+  $$ insert into public.appointments (business_id, starts_at, ends_at)
+     values ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '2027-04-01 10:00-03', '2027-04-01 10:30-03') $$,
+  '23514', null, 'un turno necesita su servicio (con su copia) y su cliente');
 
 -- Permisos: authenticated solo lee (escriben las RPC del bloque 4); anon, nada.
 select table_privs_are('public', 'appointments', 'authenticated', array['SELECT'],
@@ -169,14 +171,56 @@ select throws_ok(
   $$ update public.appointments set status = 'confirmed' where client_name = 'Lucía' $$,
   '23P01', null, 'no se puede reconfirmar un turno si su horario se ocupó');
 
--- RLS: cada solista ve solo sus turnos (Ana tiene 4; Beto, 1).
+-- Bloqueos: ocupan horario como un turno, pero sin servicio ni cliente.
+select lives_ok(
+  $$ insert into public.appointments (business_id, kind, starts_at, ends_at)
+     values ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'block',
+       '2027-03-10 10:00-03', '2027-03-10 10:30-03') $$,
+  'un bloqueo entra sin servicio ni cliente');
+select throws_ok(
+  $$ insert into public.appointments (business_id, kind, service_id, service_name,
+       service_duration_minutes, service_price_cents, starts_at, ends_at)
+     values ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'block',
+       'a0000000-0000-0000-0000-000000000001', 'Corte', 30, 100,
+       '2027-03-11 10:00-03', '2027-03-11 10:30-03') $$,
+  '23514', null, 'un bloqueo no lleva servicio');
+select throws_ok(
+  $$ insert into public.appointments (business_id, kind, client_name, starts_at, ends_at)
+     values ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'block', 'Lucía',
+       '2027-03-11 10:00-03', '2027-03-11 10:30-03') $$,
+  '23514', null, 'un bloqueo no lleva cliente');
+select throws_ok(
+  $$ insert into public.appointments (business_id, service_id, service_name,
+       service_duration_minutes, service_price_cents, client_name, starts_at, ends_at)
+     values ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'a0000000-0000-0000-0000-000000000001',
+       'Corte', 30, 100, 'Pisa el bloqueo', '2027-03-10 10:15-03', '2027-03-10 10:45-03') $$,
+  '23P01', null, 'un turno no puede pisar un bloqueo');
+select throws_ok(
+  $$ insert into public.appointments (business_id, kind, starts_at, ends_at)
+     values ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'block',
+       '2027-03-01 10:30-03', '2027-03-01 11:30-03') $$,
+  '23P01', null, 'un bloqueo no puede pisar un turno');
+select throws_ok(
+  $$ insert into public.appointments (business_id, kind, starts_at, ends_at)
+     values ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'block',
+       '2027-03-10 10:20-03', '2027-03-10 10:50-03') $$,
+  '23P01', null, 'un bloqueo no puede pisar otro bloqueo');
+update public.appointments set status = 'cancelled' where kind = 'block';
+select lives_ok(
+  $$ insert into public.appointments (business_id, service_id, service_name,
+       service_duration_minutes, service_price_cents, client_name, starts_at, ends_at)
+     values ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'a0000000-0000-0000-0000-000000000001',
+       'Corte', 30, 100, 'En el hueco', '2027-03-10 10:00-03', '2027-03-10 10:30-03') $$,
+  'un bloqueo cancelado libera el horario');
+
+-- RLS: cada solista ve solo sus turnos y bloqueos (Ana tiene 6; Beto, 1).
 set local role authenticated;
 select set_config('request.jwt.claims',
   '{"sub": "11111111-1111-1111-1111-111111111111", "role": "authenticated"}', true);
 select results_eq(
   $$ select count(*)::int from public.appointments $$,
-  array[4],
-  'Ana ve solo sus 4 turnos y no el de Beto');
+  array[6],
+  'Ana ve solo sus 6 filas y no la de Beto');
 select throws_ok(
   $$ insert into public.appointments (business_id, service_id, service_name,
        service_duration_minutes, service_price_cents, client_name, starts_at, ends_at)
