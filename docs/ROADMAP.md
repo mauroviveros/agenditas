@@ -109,9 +109,24 @@ muestran en 24 h (en un navegador en inglés se ven en 12 h).
 - Sin "Copiar link" ni compartir por WhatsApp, el link de reservas en celu solo se ve
   abriendo el cajón.
 
-## R4 · Agenda del día
+## ▶ R4 · Agenda del día
 
 Cargar un turno a mano, moverlo, cancelar con deshacer y "salgo 30 min".
+
+Decisiones: el turno guarda nombre y teléfono del cliente como texto (R6 crea `clients` y los
+migra). «Salgo 30 min» crea un bloqueo desde ahora que ocupa horario y no mueve turnos; si pisa
+uno, avisa y no lo crea.
+
+Bloques, en orden (una parada por bloque):
+1. Servicios archivables: `archived_at`, `delete_service` archiva, Deshacer desarchiva.
+2. Tabla `appointments` 🔒 con copia de nombre/duración/precio, cliente y no-superposición.
+3. Bloqueos de horario dentro del mismo constraint.
+4. RPC de turnos 🔒: crear, mover, cancelar, restaurar y `block_time`.
+5. Lectura de la agenda y ruta `/panel/agenda`.
+6. Pantalla del día (shape → esqueleto → live).
+7. Cargar y mover turno (Server Actions + formulario).
+8. Cancelar con deshacer, «salgo 30 min» y confirmar al archivar un servicio con turnos futuros.
+9. e2e, auditoría, HISTORIAL y PR.
 
 Al empezar, decidir el borrado de servicios: hoy es real y Deshacer los recrea con otro id.
 Con turnos apuntando a servicios pasa a archivar, y cada turno guarda su copia de nombre,
