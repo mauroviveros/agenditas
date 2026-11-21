@@ -78,6 +78,12 @@ verificación.
   del e2e en `main`; con R3b no apareció en las corridas de diagnóstico. Confirmarlo con un
   test que falle ante errores de consola.
 - Los e2e arman el slug del negocio con `Date.now()` y chocan con `--repeat-each`.
+- Horarios en celu: la fila de cada día (`DaySummary`) es un botón sin ninguna señal
+  (chevron o ícono) de que abre una hoja.
+- Servicios: el campo de precio muestra «1500» mientras la lista dice «$ 1.500»; formatear
+  al abrir el editor.
+- `horarios/hours/day/summary.tsx` usa dos tamaños de fuente fuera de la escala de DESIGN.md
+  (`text-[0.8125rem]` y `text-[1.0625rem]`): llevarlos a la escala o sumarlos a DESIGN.md.
 - Servicios: sin aviso al guardar («Guardaste X»); si se suma sonner, usarlo también para
   el Deshacer. Nombres con caracteres de control (`\n`, `\t`): rechazarlos en Zod y en el
   constraint. Test del tope de 50 con dos sesiones (pgTAP no puede). Sin sesión, las
@@ -93,6 +99,9 @@ muestran en 24 h (en un navegador en inglés se ven en 12 h).
   3:1).
 - Servicios: una sola lista de filas en vez de tabla (escritorio) y lista (celu) a la vez, y
   ver si con el tope de 50 servicios hace falta paginar de a 10.
+- Jerarquía del título: en `SectionCard` el h2 (16 px semibold) pesa más que el h1 del
+  encabezado (16 px medium). Decidir junto con el rebranding (R8) si la card baja a medium o
+  el h1 sube; DESIGN.md hoy dice que la jerarquía la da el lugar.
 - El texto de DESIGN.md «Las pantallas de formulario usan dos columnas, formulario y vista
   previa» no describe Horarios (una columna): corregirlo o decir a qué pantallas aplica.
 - ¿"Desktop first" vale para toda la app? DESIGN.md ahora dice "celu y escritorio" sin
