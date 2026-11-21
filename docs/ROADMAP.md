@@ -91,6 +91,33 @@ muestran en 24 h (en un navegador en inglés se ven en 12 h).
 - Sin "Copiar link" ni compartir por WhatsApp, el link de reservas en celu solo se ve
   abriendo el cajón.
 
+## ▶ R3b · Marco del panel
+
+Que todas las pantallas del panel se definan de una sola manera. Branch `feat/panel-frame`.
+Brief: header con título y bajada desde un registro de pantallas (`src/lib/panel/screens.ts`,
+lo leen el header y el menú); la bajada es de una línea y se ve desde `md`; la ayuda de uso va
+en el cuerpo; el título de card baja a `text-base font-semibold`; controles de 44 px en celu y
+de 32 px desde `md`, filas de ~56 px en escritorio.
+
+1. **Registro y header.** Hecho: `SCREENS`, `findScreen`, `PanelHeader` en el layout, páginas
+   y `loading.tsx` sin wrapper, menú alimentado por el registro. Sin commitear.
+   También: `search.ts` a `lib/services/` y `empty.tsx` dentro de `view.tsx`.
+2. **Densidad única.** 44 px en celu y 32 px desde `md` en filas, chips, footer y botones.
+   *Listo cuando:* las filas de Horarios miden ~56 px en escritorio y 44 px en celu, medido
+   en el navegador.
+3. **Receta de formulario (Horarios).** Título de card a `text-base`; la ayuda pasa a la
+   card y Horarios gana su bajada en el registro. Misma estructura de carpeta que Servicios
+   (`index.tsx` con Suspense y lectura, `skeleton.tsx`, `view.tsx`).
+4. **Receta de lista (Servicios).** Buscador, contenedor de tabla y contador alineados a la
+   receta. Un solo `(app)/error.tsx` con «Probá de nuevo» para todas las pantallas (el error
+   de lectura sube ahí; el sidebar y el header quedan): se van `failed.tsx` y el `try/catch`
+   del loader, que pasa a `index.tsx`.
+5. **Documentos.** `DESIGN.md` (h1 `text-base`, bajada, densidad, recetas, registro), este
+   ROADMAP y el HISTORIAL.
+
+Para después, si Mauro lo decide: una sola lista de filas en vez de tabla y lista de celu a
+la vez, y ver si con tope de 50 servicios hace falta paginar.
+
 ## R4 · Agenda del día
 
 Cargar un turno a mano, moverlo, cancelar con deshacer y "salgo 30 min".
