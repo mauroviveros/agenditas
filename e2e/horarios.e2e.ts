@@ -327,3 +327,18 @@ test.describe("densidad", () => {
     expect(await alto(page.getByRole("button", { name: "Descartar" }))).toBeGreaterThanOrEqual(44);
   });
 });
+
+test("las cards de Horarios titulan en 16 px semibold, con la misma receta", async ({ page, context }) => {
+  await negocioNuevo(context);
+  await page.goto("/panel/horarios");
+
+  for (const nombre of ["Tu semana", "Próximos feriados"]) {
+    const titulo = await page
+      .getByRole("heading", { name: nombre, level: 2 })
+      .evaluate((el) => {
+        const { fontSize, fontWeight } = getComputedStyle(el);
+        return { fontSize, fontWeight };
+      });
+    expect(titulo, nombre).toEqual({ fontSize: "16px", fontWeight: "600" });
+  }
+});
