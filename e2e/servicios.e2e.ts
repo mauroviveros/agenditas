@@ -116,28 +116,28 @@ test.describe("escritorio", () => {
     await expect(page.getByRole("cell", { name: "$ 2.000,50" })).toBeVisible();
   });
 
-  test("borrar avisa y Deshacer lo trae de vuelta", async ({ page, context }) => {
+  test("archivar avisa y Deshacer lo trae de vuelta", async ({ page, context }) => {
     const solista = await negocioNuevo(context);
     await cargarServicios(solista, ["Corte", "Tintura"]);
     await page.goto("/panel/servicios");
 
     await page.getByRole("button", { name: "Corte", exact: true }).click();
-    await page.getByRole("button", { name: "Borrar servicio" }).click();
+    await page.getByRole("button", { name: "Archivar", exact: true }).click();
 
-    await expect(page.getByRole("status")).toContainText("Borraste Corte.");
+    await expect(page.getByRole("status")).toContainText("Archivaste Corte.");
     await expect(page.getByRole("button", { name: "Corte", exact: true })).toHaveCount(0);
 
     await page.getByRole("button", { name: "Deshacer" }).click();
     await expect(page.getByRole("button", { name: "Corte", exact: true })).toBeVisible();
   });
 
-  test("lo borrado queda en Archivados y se restaura desde ahí", async ({ page, context }) => {
+  test("lo archivado queda en Archivados y se restaura desde ahí", async ({ page, context }) => {
     const solista = await negocioNuevo(context);
     await cargarServicios(solista, ["Corte", "Tintura"]);
     await page.goto("/panel/servicios");
     await page.getByRole("button", { name: "Corte", exact: true }).click();
-    await page.getByRole("button", { name: "Borrar servicio" }).click();
-    await expect(page.getByRole("status")).toContainText("Borraste Corte.");
+    await page.getByRole("button", { name: "Archivar", exact: true }).click();
+    await expect(page.getByRole("status")).toContainText("Archivaste Corte.");
 
     // Con el aviso de Deshacer ya cerrado, el servicio sigue a la vista para restaurarlo.
     await page.reload();
@@ -153,8 +153,8 @@ test.describe("escritorio", () => {
     await cargarServicios(solista, ["Corte"]);
     await page.goto("/panel/servicios");
     await page.getByRole("button", { name: "Corte", exact: true }).click();
-    await page.getByRole("button", { name: "Borrar servicio" }).click();
-    await expect(page.getByRole("status")).toContainText("Borraste Corte.");
+    await page.getByRole("button", { name: "Archivar", exact: true }).click();
+    await expect(page.getByRole("status")).toContainText("Archivaste Corte.");
     await cargarServicios(solista, ["Corte"]);
     await page.reload();
 
@@ -164,7 +164,7 @@ test.describe("escritorio", () => {
     await expect(page.getByRole("heading", { name: "Archivados" })).toBeVisible();
   });
 
-  test("al borrar un servicio con turnos por delante avisa que no se tocan", async ({ page, context }) => {
+  test("al archivar un servicio con turnos por delante avisa que no se tocan", async ({ page, context }) => {
     const solista = await negocioNuevo(context);
     await cargarServicios(solista, ["Corte", "Tintura"]);
     const { data: negocio } = await solista.from("businesses").select("id").single();
@@ -182,13 +182,13 @@ test.describe("escritorio", () => {
     await page.goto("/panel/servicios");
 
     await page.getByRole("button", { name: "Tintura", exact: true }).click();
-    await expect(page.getByRole("dialog").getByRole("button", { name: "Borrar servicio" })).toBeVisible();
+    await expect(page.getByRole("dialog").getByRole("button", { name: "Archivar", exact: true })).toBeVisible();
     await expect(page.getByText(/por delante/)).toHaveCount(0);
     await page.getByRole("dialog").getByRole("button", { name: "Cancelar" }).click();
 
     await page.getByRole("button", { name: "Corte", exact: true }).click();
     await expect(
-      page.getByText("Tiene 2 turnos por delante. No se tocan: siguen en tu agenda aunque lo borres."),
+      page.getByText("Tiene 2 turnos por delante. No se tocan: siguen en tu agenda aunque lo archives."),
     ).toBeVisible();
   });
 
@@ -212,17 +212,17 @@ test.describe("escritorio", () => {
     await expect(lista(page).getByText("1–10 de 12 servicios")).toBeVisible();
   });
 
-  test("tocar dos veces «Borrar» borra una sola vez y deja el Deshacer", async ({ page, context }) => {
+  test("tocar dos veces «Archivar» archiva una sola vez y deja el Deshacer", async ({ page, context }) => {
     const solista = await negocioNuevo(context);
     await cargarServicios(solista, ["Corte", "Tintura"]);
     await page.goto("/panel/servicios");
 
     await page.getByRole("button", { name: "Corte", exact: true }).click();
-    await page.getByRole("button", { name: "Borrar servicio" }).dblclick();
+    await page.getByRole("button", { name: "Archivar", exact: true }).dblclick();
 
-    await expect(page.getByRole("status")).toContainText("Borraste Corte.");
-    // Sin el segundo borrado fallido encima: no aparece «Quizás ya lo borraste».
-    await expect(lista(page).getByText("Quizás ya lo borraste")).toHaveCount(0);
+    await expect(page.getByRole("status")).toContainText("Archivaste Corte.");
+    // Sin el segundo archivado fallido encima: no aparece «Quizás ya lo archivaste».
+    await expect(lista(page).getByText("Quizás ya lo archivaste")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Deshacer" })).toBeVisible();
   });
 
@@ -240,14 +240,14 @@ test.describe("escritorio", () => {
     await expect(lista(page).getByText("11–12 de 12 servicios")).toBeVisible();
   });
 
-  test("al borrar todo lo de la última página vuelve a la anterior", async ({ page, context }) => {
+  test("al archivar todo lo de la última página vuelve a la anterior", async ({ page, context }) => {
     const solista = await negocioNuevo(context);
     await cargarServicios(solista, Array.from({ length: 11 }, (_, i) => `Servicio ${String(i + 1).padStart(2, "0")}`));
     await page.goto("/panel/servicios");
 
     await page.getByRole("button", { name: "Siguiente" }).click();
     await page.getByRole("button", { name: "Servicio 11", exact: true }).click();
-    await page.getByRole("button", { name: "Borrar servicio" }).click();
+    await page.getByRole("button", { name: "Archivar", exact: true }).click();
 
     await expect(lista(page).getByText("10 servicios", { exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Servicio 01", exact: true })).toBeVisible();

@@ -10,7 +10,7 @@ interface ArchivedServicesProps {
   onRestore: (service: Service) => void;
 }
 
-// Los servicios que se borraron: siguen guardados (los turnos que tuvieron también) y se pueden
+// Los servicios que se archivaron: siguen guardados (los turnos que tuvieron también) y se pueden
 // traer de vuelta. No cuentan para el tope de 50.
 // shortcut: la lista va completa y sin paginar; plegarla o paginarla si se acumulan.
 export function ArchivedServices({ services, onRestore }: ArchivedServicesProps) {

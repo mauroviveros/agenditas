@@ -119,7 +119,7 @@ describe("createAppointment", () => {
   test.each([
     ["overlap", "Ese horario se acaba de ocupar. Elegí otro."],
     ["invalid_appointment", "Revisá los datos del turno."],
-    ["not_business_owner", "No encontramos ese servicio. Quizás lo borraste."],
+    ["not_business_owner", "No encontramos ese servicio. Quizás lo archivaste."],
   ])("traduce %s y no vuelve a leer", async (code, error) => {
     rpc.mockResolvedValue({ error: { message: code } });
 

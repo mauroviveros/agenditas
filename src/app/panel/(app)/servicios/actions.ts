@@ -10,8 +10,8 @@ import { createClient } from "@/lib/supabase/server";
 export type ServiceResult = { ok: true } | { ok: false; error: string };
 
 const SAVE_GENERIC_ERROR = "No pudimos guardar el servicio. Probá de nuevo.";
-const DELETE_GENERIC_ERROR = "No pudimos borrar el servicio. Probá de nuevo.";
-const RESTORE_GENERIC_ERROR = "No pudimos deshacer el borrado. Probá de nuevo.";
+const DELETE_GENERIC_ERROR = "No pudimos archivar el servicio. Probá de nuevo.";
+const RESTORE_GENERIC_ERROR = "No pudimos deshacer el archivado. Probá de nuevo.";
 const NOT_FOUND_ERROR = "No encontramos ese servicio.";
 
 // Errores de las RPC save_service y delete_service que se le explican al solista. Un
@@ -23,7 +23,7 @@ const SAVE_ERRORS = new Map([
   ["not_business_owner", NOT_FOUND_ERROR],
 ]);
 const DELETE_ERRORS = new Map([
-  ["not_business_owner", "No encontramos ese servicio. Quizás ya lo borraste."],
+  ["not_business_owner", "No encontramos ese servicio. Quizás ya lo archivaste."],
 ]);
 
 // Deshacer vuelve a mostrar el servicio archivado: puede chocar con uno nuevo del mismo nombre
@@ -111,7 +111,7 @@ export async function deleteService(input: unknown): Promise<ServiceResult> {
   return { ok: true };
 }
 
-// Deshace un borrado: desarchiva el servicio (vuelve con el mismo id y en su lugar de la lista).
+// Deshace un archivado: desarchiva el servicio (vuelve con el mismo id y en su lugar de la lista).
 export async function restoreService(input: unknown): Promise<ServiceResult> {
   const parsed = serviceIdSchema.safeParse(input);
   if (!parsed.success) {

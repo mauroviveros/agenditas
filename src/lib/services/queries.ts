@@ -24,7 +24,7 @@ export async function getMyServices(): Promise<Service[]> {
   return data;
 }
 
-// Los archivados (los que se «borraron»), el último archivado primero: se pueden restaurar.
+// Los archivados, el último archivado primero: se pueden restaurar.
 export async function getMyArchivedServices(): Promise<Service[]> {
   const supabase = await createClient();
   const { data, error } = await supabase

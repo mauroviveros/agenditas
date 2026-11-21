@@ -106,12 +106,12 @@ export function withoutErrorsFor(errors: DraftErrors, change: Partial<ServiceDra
   return Object.fromEntries(Object.entries(errors).filter(([field]) => !touched.has(field as DraftField)));
 }
 
-// Lo que se avisa al editar un servicio que todavía tiene turnos por delante: borrarlo no los toca.
+// Lo que se avisa al editar un servicio que todavía tiene turnos por delante: archivarlo no los toca.
 export function upcomingNotice(count: number | undefined): string | null {
   if (!count) {
     return null;
   }
   return count === 1
-    ? "Tiene 1 turno por delante. No se toca: sigue en tu agenda aunque lo borres."
-    : `Tiene ${count} turnos por delante. No se tocan: siguen en tu agenda aunque lo borres.`;
+    ? "Tiene 1 turno por delante. No se toca: sigue en tu agenda aunque lo archives."
+    : `Tiene ${count} turnos por delante. No se tocan: siguen en tu agenda aunque lo archives.`;
 }

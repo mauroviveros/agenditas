@@ -21,7 +21,7 @@ const INVALID_ERROR = "Revisá los datos del turno.";
 const CREATE_ERRORS = new Map([
   ["overlap", OVERLAP_ERROR],
   ["invalid_appointment", INVALID_ERROR],
-  ["not_business_owner", "No encontramos ese servicio. Quizás lo borraste."],
+  ["not_business_owner", "No encontramos ese servicio. Quizás lo archivaste."],
 ]);
 const MOVE_ERRORS = new Map([
   ["overlap", OVERLAP_ERROR],

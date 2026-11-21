@@ -12,7 +12,7 @@ export function countByService(rows: { service_id: string | null }[]): Record<st
   return Object.fromEntries(counts);
 }
 
-// Los turnos confirmados que todavía no empezaron, por servicio: lo que se ve antes de borrar uno.
+// Los turnos confirmados que todavía no empezaron, por servicio: lo que se ve antes de archivar uno.
 // shortcut: lee las filas y las cuenta acá; con miles de turnos por delante (PostgREST corta en
 // 1000) pasar a una RPC que agrupe en la base.
 export async function getUpcomingCounts(): Promise<Record<string, number>> {

@@ -41,9 +41,9 @@ interface ServiceFormProps {
   service: Service | null;
   onSaved: () => void;
   onCancel: () => void;
-  /** Turnos por delante de este servicio: se avisa que borrarlo no los toca. */
+  /** Turnos por delante de este servicio: se avisa que archivarlo no los toca. */
   upcoming?: number;
-  /** Borra el servicio; si falla, el aviso se muestra acá adentro, no detrás del panel. */
+  /** Archiva el servicio; si falla, el aviso se muestra acá adentro, no detrás del panel. */
   onDelete: (service: Service) => Promise<ServiceResult>;
 }
 
@@ -235,7 +235,7 @@ export function ServiceForm({ service, onSaved, onCancel, upcoming, onDelete }: 
                 onClick={remove}
               >
                 {deleting ? <Spinner aria-hidden /> : null}
-                {deleting ? "Borrando…" : "Borrar servicio"}
+                {deleting ? "Archivando…" : "Archivar"}
               </Button>
             </div>
           ) : (

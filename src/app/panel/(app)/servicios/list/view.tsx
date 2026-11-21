@@ -15,7 +15,7 @@ import { ServicesTable } from "./table";
 
 const LIMIT_MESSAGE = `Llegaste al máximo de ${MAX_SERVICES} servicios.`;
 
-// Lo que se ve tras borrar: el servicio para restaurarlo, o el motivo por el que no se pudo.
+// Lo que se ve tras archivar: el servicio para restaurarlo, o el motivo por el que no se pudo.
 type Notice =
   | { kind: "deleted"; service: Service }
   | { kind: "error"; message: string }
@@ -43,7 +43,7 @@ export function ServicesView({
   const [notice, setNotice] = useState<Notice>(null);
   const isFull = services.length >= MAX_SERVICES;
   const limitId = useId();
-  // Lo que se edita se lee de la lista al día; si ya no está (se borró desde otro lado), el
+  // Lo que se edita se lee de la lista al día; si ya no está (se archivó desde otro lado), el
   // editor se cierra solo.
   const editing = editor.service
     ? (services.find(({ id }) => id === editor.service?.id) ?? null)
@@ -55,7 +55,7 @@ export function ServicesView({
   const openEdit = (service: Service) => setEditor({ open: true, service });
   const closeEditor = (open: boolean) => setEditor((current) => ({ ...current, open }));
 
-  // El error de un borrado lo muestra el formulario, que sigue abierto; acá solo se cierra el
+  // El error de un archivado lo muestra el formulario, que sigue abierto; acá solo se cierra el
   // editor y se avisa con Deshacer cuando salió bien.
   async function remove(service: Service): Promise<ServiceResult> {
     const result = await deleteService(service.id);
@@ -105,7 +105,7 @@ export function ServicesView({
         <NoticeBar
           message={
             <>
-              Borraste <span className="font-medium">{notice.service.name}</span>.
+              Archivaste <span className="font-medium">{notice.service.name}</span>.
             </>
           }
           onUndo={() => undo(notice.service)}

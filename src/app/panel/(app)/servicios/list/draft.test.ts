@@ -172,10 +172,10 @@ describe("upcomingNotice", () => {
   });
 
   test("con uno, habla en singular", () => {
-    expect(upcomingNotice(1)).toBe("Tiene 1 turno por delante. No se toca: sigue en tu agenda aunque lo borres.");
+    expect(upcomingNotice(1)).toBe("Tiene 1 turno por delante. No se toca: sigue en tu agenda aunque lo archives.");
   });
 
   test("con varios, habla en plural", () => {
-    expect(upcomingNotice(3)).toBe("Tiene 3 turnos por delante. No se tocan: siguen en tu agenda aunque lo borres.");
+    expect(upcomingNotice(3)).toBe("Tiene 3 turnos por delante. No se tocan: siguen en tu agenda aunque lo archives.");
   });
 });

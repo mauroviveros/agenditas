@@ -153,7 +153,7 @@ describe("saveService", () => {
 });
 
 describe("deleteService", () => {
-  test("borra el servicio del negocio de la sesión", async () => {
+  test("archiva el servicio del negocio de la sesión", async () => {
     rpc.mockResolvedValue({ error: null });
 
     await expect(deleteService(SERVICE_ID)).resolves.toEqual({ ok: true });
@@ -163,7 +163,7 @@ describe("deleteService", () => {
     });
   });
 
-  test("al borrar, vuelve a leer la pantalla", async () => {
+  test("al archivar, vuelve a leer la pantalla", async () => {
     rpc.mockResolvedValue({ error: null });
 
     await deleteService(SERVICE_ID);
@@ -203,7 +203,7 @@ describe("deleteService", () => {
 
     await expect(deleteService(SERVICE_ID)).resolves.toEqual({
       ok: false,
-      error: "No encontramos ese servicio. Quizás ya lo borraste.",
+      error: "No encontramos ese servicio. Quizás ya lo archivaste.",
     });
     expect(revalidatePath).not.toHaveBeenCalled();
   });
@@ -213,7 +213,7 @@ describe("deleteService", () => {
 
     await expect(deleteService(SERVICE_ID)).resolves.toEqual({
       ok: false,
-      error: "No pudimos borrar el servicio. Probá de nuevo.",
+      error: "No pudimos archivar el servicio. Probá de nuevo.",
     });
     expect(console.error).toHaveBeenCalled();
   });
@@ -267,7 +267,7 @@ describe("restoreService", () => {
 
     await expect(restoreService(SERVICE_ID)).resolves.toEqual({
       ok: false,
-      error: "No pudimos deshacer el borrado. Probá de nuevo.",
+      error: "No pudimos deshacer el archivado. Probá de nuevo.",
     });
     expect(console.error).toHaveBeenCalled();
   });

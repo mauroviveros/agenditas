@@ -13,7 +13,7 @@ interface NoticeBarProps {
   onDismiss: () => void;
 }
 
-// Aviso bajo el encabezado tras borrar o cancelar algo: dice qué pasó y deja deshacerlo unos
+// Aviso bajo el encabezado tras archivar o cancelar algo: dice qué pasó y deja deshacerlo unos
 // segundos. El tiempo corre solo mientras nadie apunta ni enfoca el aviso: quien lo lee con calma
 // o con un lector de pantalla no lo ve desaparecer.
 export function NoticeBar({ message, onUndo, onDismiss }: NoticeBarProps) {
