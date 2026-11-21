@@ -236,6 +236,31 @@ test.describe("densidad", () => {
       expect(await alto(page.getByRole("button", { name: "Nuevo servicio" }))).toBe(36);
       expect(await alto(buscador(page))).toBe(32);
     });
+
+    test("las filas de la tabla miden 56 px y llevan 24 px de padding, como las de Horarios", async ({ page, context }) => {
+      const solista = await negocioNuevo(context);
+      await cargarServicios(solista, ["Corte"]);
+      await page.goto("/panel/servicios");
+
+      const fila = page.locator("tbody tr").first();
+      await expect(fila).toBeVisible();
+      expect(await alto(fila)).toBeGreaterThanOrEqual(56);
+      expect(await alto(fila)).toBeLessThanOrEqual(57);
+      const padding = await fila.locator("td").first().evaluate((el) => getComputedStyle(el).paddingLeft);
+      expect(padding).toBe("24px");
+    });
+  });
+
+  test("celu: la lista va en el mismo contenedor con borde y sus filas miden 64 px", async ({ page, context }) => {
+    const solista = await negocioNuevo(context);
+    await cargarServicios(solista, ["Corte"]);
+    await page.goto("/panel/servicios");
+
+    const item = page.getByRole("list").getByRole("button", { name: /Corte/ });
+    await expect(item).toBeVisible();
+    expect(await alto(item)).toBe(64);
+    const borde = await page.getByRole("list").evaluate((el) => getComputedStyle(el.parentElement as Element).borderTopWidth);
+    expect(borde).toBe("1px");
   });
 
   test("celu: «Nuevo servicio» y el buscador miden al menos 44 px", async ({ page, context }) => {
