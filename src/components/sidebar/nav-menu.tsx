@@ -7,26 +7,34 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
-import { SCREENS } from "@/lib/panel/screens";
+import { findScreen, SCREENS } from "@/lib/panel/screens";
 
 export function NavMenu() {
   const pathname = usePathname();
+  const { setOpenMobile } = useSidebar();
+  // El mismo criterio que el encabezado: una ruta anidada marca la pantalla de la que cuelga.
+  const activeHref = findScreen(pathname)?.href;
 
   return (
     <SidebarGroup>
       <SidebarMenu>
         {SCREENS.map(({ label, href, icon: Icon }) => {
-          const isActive = pathname === href;
+          const isActive = activeHref === href;
 
           return (
             <SidebarMenuItem key={href}>
               <SidebarMenuButton
                 isActive={isActive}
-                // className="h-11 border border-transparent data-active:border-sidebar-border md:h-8"
                 tooltip={label}
                 render={
-                  <Link href={href} aria-current={isActive ? "page" : undefined} />
+                  <Link
+                    href={href}
+                    aria-current={isActive ? "page" : undefined}
+                    // En celu el menú es un cajón: al elegir una pantalla se cierra.
+                    onClick={() => setOpenMobile(false)}
+                  />
                 }
               >
                 <Icon aria-hidden />

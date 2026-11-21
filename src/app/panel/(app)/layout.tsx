@@ -9,7 +9,7 @@ import { FooterSlot, PanelSlotsProvider } from "./panel-slots";
 import { PanelSkeleton } from "./skeleton";
 
 // Marco del panel: sidebar que se achica a íconos; en celu se abre como cajón con el botón.
-// Cada rebanada suma su destino acá: hoy solo existe Inicio.
+// Cada pantalla se suma en src/lib/panel/screens.ts: el menú y el encabezado la leen de ahí.
 export default function PanelLayout({ children }: { children: ReactNode }) {
   return (
     <Suspense fallback={<PanelSkeleton />}>

@@ -129,66 +129,66 @@ export function ServicesTable({ services, selectedId, onSelect }: ServicesTableP
         <>
           <div className="overflow-hidden rounded-xl border bg-card">
             <div className="hidden md:block">
-            <Table>
-              <TableCaption className="sr-only">Tus servicios, con su duración y su precio</TableCaption>
-              <TableHeader>
-                {table.getHeaderGroups().map((group) => (
-                  <TableRow key={group.id} className="hover:bg-transparent">
-                    {group.headers.map((header) => {
-                      const sorted = header.column.getIsSorted();
-                      const isPrice = header.column.id === "price_cents";
-                      return (
-                        <TableHead
-                          key={header.id}
-                          aria-sort={ARIA_SORT[sorted || "none"]}
-                          className={cn("px-6 text-muted-foreground", isPrice && "text-right")}
-                        >
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className={cn("-mx-2.5", isPrice && "flex-row-reverse")}
-                            onClick={header.column.getToggleSortingHandler()}
+              <Table>
+                <TableCaption className="sr-only">Tus servicios, con su duración y su precio</TableCaption>
+                <TableHeader>
+                  {table.getHeaderGroups().map((group) => (
+                    <TableRow key={group.id} className="hover:bg-transparent">
+                      {group.headers.map((header) => {
+                        const sorted = header.column.getIsSorted();
+                        const isPrice = header.column.id === "price_cents";
+                        return (
+                          <TableHead
+                            key={header.id}
+                            aria-sort={ARIA_SORT[sorted || "none"]}
+                            className={cn("px-6 text-muted-foreground", isPrice && "text-right")}
                           >
-                            <table.FlexRender header={header} />
-                            <SortIcon sorted={sorted} />
-                          </Button>
-                        </TableHead>
-                      );
-                    })}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {rows.map(({ id, original: service }) => (
-                  <TableRow
-                    key={id}
-                    className="h-14"
-                    data-state={service.id === selectedId ? "selected" : undefined}
-                  >
-                    <TableCell className="w-full max-w-0 px-6 py-3">
-                      <button
-                        type="button"
-                        onClick={() => onSelect(service)}
-                        className={cn("block max-w-full truncate rounded-sm text-left font-medium", FOCUS_RING)}
-                      >
-                        {service.name}
-                      </button>
-                    </TableCell>
-                    <TableCell className="px-6 py-3 tabular-nums text-muted-foreground">
-                      {formatDuration(service.duration_minutes)}
-                    </TableCell>
-                    <TableCell
-                      className={cn(
-                        "px-6 py-3 text-right tabular-nums",
-                        service.price_cents === 0 && "text-muted-foreground",
-                      )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className={cn("-mx-2.5", isPrice && "flex-row-reverse")}
+                              onClick={header.column.getToggleSortingHandler()}
+                            >
+                              <table.FlexRender header={header} />
+                              <SortIcon sorted={sorted} />
+                            </Button>
+                          </TableHead>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+                <TableBody>
+                  {rows.map(({ id, original: service }) => (
+                    <TableRow
+                      key={id}
+                      className="h-14"
+                      data-state={service.id === selectedId ? "selected" : undefined}
                     >
-                      {formatPrice(service.price_cents)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                      <TableCell className="w-full max-w-0 px-6 py-3">
+                        <button
+                          type="button"
+                          onClick={() => onSelect(service)}
+                          className={cn("block max-w-full truncate rounded-sm text-left font-medium", FOCUS_RING)}
+                        >
+                          {service.name}
+                        </button>
+                      </TableCell>
+                      <TableCell className="px-6 py-3 tabular-nums text-muted-foreground">
+                        {formatDuration(service.duration_minutes)}
+                      </TableCell>
+                      <TableCell
+                        className={cn(
+                          "px-6 py-3 text-right tabular-nums",
+                          service.price_cents === 0 && "text-muted-foreground",
+                        )}
+                      >
+                        {formatPrice(service.price_cents)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
 
             <ItemGroup className="gap-0 divide-y md:hidden">

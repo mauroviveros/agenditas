@@ -237,6 +237,16 @@ test.describe("densidad", () => {
       expect(await alto(buscador(page))).toBe(32);
     });
 
+    test("los chips de duración del editor miden 32 px", async ({ page, context }) => {
+      await negocioNuevo(context);
+      await page.goto("/panel/servicios");
+      await page.getByRole("button", { name: "Cargar el primero" }).click();
+
+      const chip = page.getByRole("dialog").locator("label", { hasText: /^30 min$/ });
+      await expect(chip).toBeVisible();
+      expect(await alto(chip)).toBe(32);
+    });
+
     test("las filas de la tabla miden 56 px y llevan 24 px de padding, como las de Horarios", async ({ page, context }) => {
       const solista = await negocioNuevo(context);
       await cargarServicios(solista, ["Corte"]);

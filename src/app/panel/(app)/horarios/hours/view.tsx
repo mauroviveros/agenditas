@@ -143,8 +143,7 @@ export function HoursView({
         title="Tu semana"
         description={
           <>
-            <span className="tabular-nums">{weekDuration(week)}</span> por semana · el
-            almuerzo es el corte entre dos franjas
+            <span className="tabular-nums">{weekDuration(week)}</span> por semana
             <span className="mt-1 block">Si cortás para almorzar, tocá «+ Almuerzo».</span>
           </>
         }

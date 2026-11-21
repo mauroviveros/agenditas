@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 // Lo que se ve mientras llegan la sesión y el negocio: solo el marco del panel (sidebar y
 // encabezado). El contenido queda vacío porque acá no se sabe qué ruta se está cargando;
-// cada pantalla pone el suyo en su loading.tsx. el <main> va dentro de SidebarInset.
+// cada pantalla pone el suyo en su loading.tsx. El <main> va dentro de SidebarInset.
 export function PanelSkeleton() {
   return (
     <SidebarProvider>

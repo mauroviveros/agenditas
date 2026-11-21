@@ -31,14 +31,16 @@ export function PanelSlotsProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Donde caen las acciones de la pantalla, a la derecha del encabezado (lo dibuja PanelPage).
+// Donde caen las acciones de la pantalla, a la derecha del encabezado (lo dibuja PanelHeader, en header.tsx).
 export function ActionsSlot({ className }: { className?: string }) {
   return <div ref={useSlots().setActions} className={className} />;
 }
 
 // Donde caen las acciones de pie (guardar, descartar). Sin nada adentro se oculta (empty:hidden).
+// Es un grupo con nombre y no un <footer>: un pie suelto dentro de la pantalla se anunciaría
+// como «pie de página» sin nombre, con botones adentro.
 export function FooterSlot({ className }: { className?: string }) {
-  return <footer ref={useSlots().setFooter} className={className} />;
+  return <div ref={useSlots().setFooter} role="group" aria-label="Acciones de la pantalla" className={className} />;
 }
 
 // Las acciones de la pantalla (p. ej. «Nuevo servicio»), a la derecha del encabezado. Viven

@@ -33,7 +33,7 @@ import {
 } from "./draft";
 
 const CHIP =
-  "flex h-11 md:h-8 cursor-pointer items-center justify-center rounded-lg border border-input px-2 text-sm tabular-nums transition-colors hover:bg-muted peer-checked:border-primary peer-checked:bg-primary peer-checked:font-medium peer-checked:text-primary-foreground peer-focus-visible:ring-3 peer-focus-visible:ring-ring/50 md:h-9";
+  "flex h-11 md:h-8 cursor-pointer items-center justify-center rounded-lg border border-input px-2 text-sm tabular-nums transition-colors hover:bg-muted peer-checked:border-primary peer-checked:bg-primary peer-checked:font-medium peer-checked:text-primary-foreground peer-focus-visible:ring-3 peer-focus-visible:ring-ring/50";
 
 interface ServiceFormProps {
   /** El servicio que se edita; sin él, el formulario crea uno nuevo. */

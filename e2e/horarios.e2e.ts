@@ -342,3 +342,21 @@ test("las cards de Horarios titulan en 16 px semibold, con la misma receta", asy
     expect(titulo, nombre).toEqual({ fontSize: "16px", fontWeight: "600" });
   }
 });
+
+test("la card de la semana explica una sola vez cómo cortar el almuerzo", async ({ page, context }) => {
+  await negocioNuevo(context);
+  await page.goto("/panel/horarios");
+
+  const semana = page.getByRole("region", { name: "Tu semana" });
+  await expect(semana.getByText("Si cortás para almorzar, tocá «+ Almuerzo».")).toBeVisible();
+  await expect(semana.getByText("el almuerzo es el corte entre dos franjas")).toHaveCount(0);
+});
+
+test("las acciones de pie son un grupo con nombre, no un pie de página suelto", async ({ page, context }) => {
+  await negocioNuevo(context);
+  await page.goto("/panel/horarios");
+  await page.getByRole("switch", { name: "Lunes: no atiende" }).click();
+
+  await expect(page.getByRole("group", { name: "Acciones de la pantalla" })).toBeVisible();
+  await expect(page.getByRole("contentinfo")).toHaveCount(0);
+});

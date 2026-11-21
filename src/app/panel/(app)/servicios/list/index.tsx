@@ -15,6 +15,6 @@ export function ServicesList() {
 // Lee los servicios y se los pasa a la vista (que decide entre la lista y el vacío). Sin
 // try/catch a propósito: si la lectura falla, el error sube a (app)/error.tsx. Mostrar el vacío
 // invitaría a cargar el primero sobre servicios que sí existen.
-async function ServicesLoader() {
+export async function ServicesLoader() {
   return <ServicesView services={await getMyServices()} />;
 }
