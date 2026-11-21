@@ -1,4 +1,4 @@
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Locator, type Page, test } from "@playwright/test";
 import { signUpNewUser } from "./support/session";
 
 const sufijo = () => Date.now().toString(36);
@@ -217,4 +217,33 @@ test("en celu el formulario sube como Drawer y el servicio queda en la lista", a
 
   await expect(formulario).toBeHidden();
   await expect(page.locator("[data-slot=item]", { hasText: "Corte" })).toContainText("45 min");
+});
+
+// La misma regla de densidad que Horarios: 44 px en celu, 32 px (36 la acción principal)
+// desde md.
+const alto = async (locator: Locator) => (await locator.boundingBox())?.height ?? 0;
+const buscador = (page: Page) => page.getByRole("group").filter({ has: page.getByRole("searchbox") });
+
+test.describe("densidad", () => {
+  test.describe("escritorio", () => {
+    test.use({ viewport: { width: 1280, height: 800 } });
+
+    test("«Nuevo servicio» mide 36 px y el buscador 32 px", async ({ page, context }) => {
+      const solista = await negocioNuevo(context);
+      await cargarServicios(solista, ["Corte"]);
+      await page.goto("/panel/servicios");
+
+      expect(await alto(page.getByRole("button", { name: "Nuevo servicio" }))).toBe(36);
+      expect(await alto(buscador(page))).toBe(32);
+    });
+  });
+
+  test("celu: «Nuevo servicio» y el buscador miden al menos 44 px", async ({ page, context }) => {
+    const solista = await negocioNuevo(context);
+    await cargarServicios(solista, ["Corte"]);
+    await page.goto("/panel/servicios");
+
+    expect(await alto(page.getByRole("button", { name: "Nuevo servicio" }))).toBeGreaterThanOrEqual(44);
+    expect(await alto(buscador(page))).toBeGreaterThanOrEqual(44);
+  });
 });

@@ -70,7 +70,7 @@ export function ServicesView({ services }: { services: Service[] }) {
         {/* En celu solo el ícono; el texto queda para lectores de pantalla. */}
         <Button
           size="lg"
-          className="size-11 px-0 aria-disabled:pointer-events-none aria-disabled:opacity-50 md:h-9 md:w-auto md:px-2.5"
+          className="w-11 px-0 aria-disabled:pointer-events-none aria-disabled:opacity-50 md:w-auto md:px-2.5"
           aria-disabled={isFull || undefined}
           aria-describedby={isFull ? limitId : undefined}
           onClick={isFull ? undefined : openNew}
@@ -142,7 +142,7 @@ function NoticeBar({
       >
         <CircleAlertIcon aria-hidden className="mt-0.5 size-5 shrink-0 text-destructive" />
         <p className="flex-1 font-medium">{notice.message}</p>
-        <Button variant="ghost" size="sm" className="h-11 md:h-7" onClick={onDismiss}>
+        <Button variant="ghost" size="sm" onClick={onDismiss}>
           Cerrar
         </Button>
       </div>
@@ -163,7 +163,6 @@ function NoticeBar({
       <Button
         variant="outline"
         size="sm"
-        className="h-11 md:h-7"
         onClick={() => onUndo(notice.service)}
       >
         Deshacer
@@ -180,7 +179,7 @@ function ServicesEmpty({ onCreate }: { onCreate: () => void }) {
       <p className="text-muted-foreground">
         Sin servicios tus clientes no pueden sacar turno. Cargá el primero.
       </p>
-      <Button size="lg" className="h-11 md:h-9" onClick={onCreate}>
+      <Button size="lg" onClick={onCreate}>
         Cargar el primero
       </Button>
     </div>

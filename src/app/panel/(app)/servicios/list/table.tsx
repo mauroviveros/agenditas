@@ -104,7 +104,7 @@ export function ServicesTable({ services, selectedId, onSelect }: ServicesTableP
 
   return (
     <div className="flex flex-col gap-4">
-      <InputGroup className="h-11 md:h-8 md:max-w-sm">
+      <InputGroup className="md:max-w-sm">
         <InputGroupAddon>
           <SearchIcon aria-hidden />
         </InputGroupAddon>
@@ -121,7 +121,7 @@ export function ServicesTable({ services, selectedId, onSelect }: ServicesTableP
       {rows.length === 0 ? (
         <div className="flex flex-col items-start gap-3 rounded-xl border bg-card p-4">
           <p className="font-medium">No encontramos servicios con «{query.trim()}»</p>
-          <Button variant="outline" className="h-11 md:h-8" onClick={() => search("")}>
+          <Button variant="outline" onClick={() => search("")}>
             Borrar la búsqueda
           </Button>
         </div>

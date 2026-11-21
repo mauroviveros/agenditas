@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Locator, test } from "@playwright/test";
 import { signUpNewUser } from "./support/session";
 
 const sufijo = () => Date.now().toString(36);
@@ -293,4 +293,37 @@ test("los próximos feriados aparecen bajo la semana, sin alerta de error", asyn
     feriados.getByRole("listitem").first().or(feriados.getByText("Todavía no hay feriados para mostrar.")),
   ).toBeVisible();
   await expect(feriados.getByRole("alert")).toHaveCount(0);
+});
+
+// Una regla de densidad para todo el panel: 44 px de alto en celu y 32 px (36 la acción
+// principal) desde md, con filas de ~56 px en escritorio.
+const alto = async (locator: Locator) => (await locator.boundingBox())?.height ?? 0;
+
+test.describe("densidad", () => {
+  test.describe("escritorio", () => {
+    test.use({ viewport: { width: 1280, height: 800 } });
+
+    test("un día abierto mide ~56 px y sus controles 32 px", async ({ page, context }) => {
+      await negocioNuevo(context);
+      await page.goto("/panel/horarios");
+      await page.getByRole("switch", { name: "Lunes: no atiende" }).click();
+
+      const fila = page.locator("[data-slot=day-row][data-open=true]");
+      await expect(fila).toHaveCount(1);
+      expect(await alto(fila)).toBeGreaterThanOrEqual(56);
+      expect(await alto(fila)).toBeLessThanOrEqual(60);
+      expect(await alto(page.getByLabel("Lunes, desde"))).toBe(32);
+      expect(await alto(page.getByRole("button", { name: "Almuerzo" }))).toBe(32);
+      expect(await alto(page.getByRole("button", { name: "Guardar horarios" }))).toBe(36);
+    });
+  });
+
+  test("celu: los controles miden al menos 44 px", async ({ page, context }) => {
+    await negocioNuevo(context);
+    await page.goto("/panel/horarios");
+    await page.getByRole("switch", { name: "Lunes: no atiende" }).click();
+
+    expect(await alto(page.getByRole("button", { name: "Guardar horarios" }))).toBeGreaterThanOrEqual(44);
+    expect(await alto(page.getByRole("button", { name: "Descartar" }))).toBeGreaterThanOrEqual(44);
+  });
 });

@@ -185,8 +185,8 @@ export function HoursForm({
                           <Button
                             type="button"
                             variant="ghost"
-                            size="icon-lg"
-                            className="size-11 text-muted-foreground"
+                            size="icon"
+                            className="text-muted-foreground"
                             aria-label={`Copiar el horario del ${WEEKDAY_NAMES[day]?.toLowerCase()} a otros días`}
                           />
                         }

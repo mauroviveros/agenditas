@@ -33,7 +33,7 @@ import {
 } from "./draft";
 
 const CHIP =
-  "flex h-11 cursor-pointer items-center justify-center rounded-lg border border-input px-2 text-sm tabular-nums transition-colors hover:bg-muted peer-checked:border-primary peer-checked:bg-primary peer-checked:font-medium peer-checked:text-primary-foreground peer-focus-visible:ring-3 peer-focus-visible:ring-ring/50 md:h-9";
+  "flex h-11 md:h-8 cursor-pointer items-center justify-center rounded-lg border border-input px-2 text-sm tabular-nums transition-colors hover:bg-muted peer-checked:border-primary peer-checked:bg-primary peer-checked:font-medium peer-checked:text-primary-foreground peer-focus-visible:ring-3 peer-focus-visible:ring-ring/50 md:h-9";
 
 interface ServiceFormProps {
   /** El servicio que se edita; sin él, el formulario crea uno nuevo. */
@@ -120,7 +120,6 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
             onChange={(event) => update({ name: event.target.value })}
             placeholder="Corte de pelo"
             autoComplete="off"
-            className="h-11 md:h-8"
             aria-invalid={errors.name ? true : undefined}
             aria-describedby={errors.name ? nameErrorId : undefined}
           />
@@ -163,7 +162,7 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
               <FieldLabel htmlFor={minutesId} className="sr-only">
                 Minutos
               </FieldLabel>
-              <InputGroup className="h-11 md:h-8">
+              <InputGroup>
                 <InputGroupInput
                   id={minutesId}
                   value={draft.otherMinutes}
@@ -186,7 +185,7 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
 
         <Field data-invalid={Boolean(errors.price)}>
           <FieldLabel htmlFor={priceId}>Precio</FieldLabel>
-          <InputGroup className="h-11 md:h-8">
+          <InputGroup>
             <InputGroupAddon>
               <InputGroupText>$</InputGroupText>
             </InputGroupAddon>
@@ -224,7 +223,7 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
                 type="button"
                 variant="destructive"
                 size="lg"
-                className="h-11 w-full md:h-9 md:w-auto"
+                className="w-full md:w-auto"
                 disabled={busy}
                 aria-busy={deleting}
                 onClick={remove}
@@ -237,10 +236,10 @@ export function ServiceForm({ service, onSaved, onCancel, onDelete }: ServiceFor
             <span />
           )}
           <div className="flex flex-col-reverse gap-2 md:flex-row">
-            <Button type="button" variant="outline" size="lg" className="h-11 md:h-9" onClick={onCancel}>
+            <Button type="button" variant="outline" size="lg" onClick={onCancel}>
               Cancelar
             </Button>
-            <Button type="submit" size="lg" className="h-11 md:h-9" disabled={busy} aria-busy={saving}>
+            <Button type="submit" size="lg" disabled={busy} aria-busy={saving}>
               {saving ? <Spinner aria-hidden /> : null}
               {saving ? "Guardando…" : "Guardar servicio"}
             </Button>

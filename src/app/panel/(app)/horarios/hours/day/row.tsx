@@ -56,7 +56,7 @@ export function DayRow({
     <div
       data-slot="day-row"
       data-open={isOpen}
-      className="grid min-h-[88px] grid-cols-[8rem_auto_1fr] items-center gap-x-6 px-6 py-3"
+      className="grid min-h-14 grid-cols-[8rem_auto_1fr] items-center gap-x-6 px-6 py-2"
     >
       <div className="flex flex-col gap-0.5">
         <DayName
@@ -94,7 +94,7 @@ export function DayRow({
                   {index === 1 && hasLunch && first ? (
                     <span
                       data-slot="lunch-chip"
-                      className="whitespace-nowrap inline-flex h-11 items-center rounded-full border border-dashed border-input px-4 text-sm font-medium tabular-nums text-muted-foreground"
+                      className="whitespace-nowrap inline-flex h-8 items-center rounded-full border border-dashed border-input px-4 text-sm font-medium tabular-nums text-muted-foreground"
                     >
                       almuerzo {first.end_time}–{slot.start_time}
                     </span>
@@ -114,7 +114,7 @@ export function DayRow({
               <Button
                 type="button"
                 variant="ghost"
-                className="h-11 text-primary"
+                className="text-primary"
                 disabled={!canSplit}
                 onClick={() => onChange(splitLunch(slots))}
               >
@@ -125,8 +125,7 @@ export function DayRow({
               <Button
                 type="button"
                 variant="ghost"
-                size="icon-lg"
-                className="size-11"
+                size="icon"
                 aria-label={`Sacar el almuerzo del ${dayName?.toLowerCase()}`}
                 onClick={() => onChange(joinLunch(slots))}
               >

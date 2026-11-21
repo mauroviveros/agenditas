@@ -104,7 +104,7 @@ export function BusinessForm({ heading }: { heading: ReactNode }) {
                   <Button
                     type="button"
                     variant="secondary"
-                    className="mt-2 h-11"
+                    className="mt-2"
                     onClick={() => setSlugSuffix("")}
                   >
                     Cambiar link

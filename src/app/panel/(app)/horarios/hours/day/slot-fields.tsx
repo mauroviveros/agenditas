@@ -23,7 +23,7 @@ export function SlotFields({
   const shared = {
     type: "time",
     className:
-      "h-11 min-w-0 flex-1 bg-transparent text-base font-semibold tracking-tight tabular-nums md:w-[8rem] md:flex-none md:text-base",
+      "min-w-0 flex-1 bg-transparent text-base font-semibold tracking-tight tabular-nums md:w-[8rem] md:flex-none md:text-base",
     "aria-invalid": invalid ? true : undefined,
     "aria-describedby": invalid ? describedBy : undefined,
   } as const;
