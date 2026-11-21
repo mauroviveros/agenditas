@@ -1,4 +1,4 @@
-import { ClockIcon, HouseIcon, TagIcon, type LucideIcon } from "lucide-react";
+import { CalendarDaysIcon, ClockIcon, HouseIcon, TagIcon, type LucideIcon } from "lucide-react";
 
 export interface Screen {
   href: string;
@@ -15,6 +15,12 @@ export interface Screen {
 // se define una sola vez. Cada rebanada suma la suya acá.
 export const SCREENS: readonly Screen[] = [
   { href: "/panel", label: "Inicio", titleIsBusinessName: true, icon: HouseIcon },
+  {
+    href: "/panel/agenda",
+    label: "Agenda",
+    subtitle: "Los turnos del día.",
+    icon: CalendarDaysIcon,
+  },
   {
     href: "/panel/horarios",
     label: "Horarios",

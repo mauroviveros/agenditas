@@ -34,3 +34,15 @@ export function formatDate(date: string, today: string): string {
   const year = date.slice(0, 4);
   return year === today.slice(0, 4) ? text : `${text} de ${year}`;
 }
+
+const timeFormat = new Intl.DateTimeFormat("es-AR", {
+  timeZone: TIME_ZONE,
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
+/** La hora de un instante ISO en Buenos Aires, en 24 h ("10:00"). */
+export function formatTime(instant: string): string {
+  return timeFormat.format(new Date(instant));
+}

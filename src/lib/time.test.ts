@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { dateInBuenosAires, formatDate, weekdayIndex } from "./time";
+import { dateInBuenosAires, formatDate, formatTime, weekdayIndex } from "./time";
 
 describe("weekdayIndex", () => {
   test("cuenta desde el lunes (0) hasta el domingo (6)", () => {
@@ -40,5 +40,16 @@ describe("formatDate", () => {
 
   test("no corre el día por la zona horaria", () => {
     expect(formatDate("2027-01-01", "2027-01-01")).toBe("viernes 1 de enero");
+  });
+});
+
+describe("formatTime", () => {
+  test("muestra la hora de Buenos Aires en 24 h", () => {
+    expect(formatTime("2027-03-01T13:00:00+00:00")).toBe("10:00");
+    expect(formatTime("2027-03-01T22:45:00Z")).toBe("19:45");
+  });
+
+  test("la medianoche es 00:00 y no 24:00", () => {
+    expect(formatTime("2027-03-01T03:00:00Z")).toBe("00:00");
   });
 });
